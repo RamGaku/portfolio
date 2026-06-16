@@ -1,0 +1,173 @@
+[
+  {
+    "id": "enhans-positioning",
+    "title": "Enhans FDE 포지셔닝",
+    "period": "2024-2026",
+    "category": "Positioning",
+    "summary": "고객 현장의 모호한 요구를 장비, 데이터, API, 운영 화면, 문서화로 번역한 경험을 Enhans FDE 역할의 문제 구조에 맞춰 정리한 항목입니다.",
+    "highlights": [
+      "직접 Commerce OS를 개발했다고 과장하지 않고, Ontology, Workflow, Agent/App 레이어와 맞닿는 인접 경험을 분리해 제시합니다.",
+      "장비 데이터가 어떤 프로토콜과 저장소를 거쳐 운영 화면과 보고서로 도달하는지 프로젝트별 DATA FLOW로 설명합니다.",
+      "고객 환경에 임베딩되어 요구사항 추출, 데이터 경로 검증, 현장 제약 정리, 운영 산출물 작성까지 수행했습니다."
+    ],
+    "technologies": ["FDE", "Customer Engineering", "Industrial Data", "Ontology Mapping", "Workflow Design", "Agent-ready KB"],
+    "evidence": [
+      "고객 현장 배포와 장애 대응 기록",
+      "장비-서버-DB-웹 화면으로 이어지는 end-to-end 구현 기록",
+      "프로토콜/펌웨어 디버깅과 문서화 산출물"
+    ],
+    "tags": ["Enhans", "FDE", "고객 문제 정의", "Commerce OS 인접 경험", "Ontology", "Workflow", "Agent", "데이터 흐름"]
+  },
+  {
+    "id": "cheongsong-high-vibration",
+    "title": "청송양수 고진동 분석 도구 개선",
+    "period": "NADA",
+    "category": "Vibration Analytics",
+    "summary": "주도했지만 실패도 남긴 프로젝트입니다. 고진동 분석을 위해 데이터 이관, Trend import, DB export/import, 분석 조건, VibLowExplorer 개선을 함께 다뤘습니다.",
+    "highlights": [
+      "현장 요구사항을 VibLowExplorer 기능/UX 수정 항목으로 분해하고 11건의 수정 기록을 남겼습니다.",
+      "OPC DA Reader fast reader, Trend import, 전체 DB export 테스트를 통해 기존 데이터를 분석 가능한 형태로 옮기는 경로를 검증했습니다.",
+      "LVDT 설정과 Fmax 변경처럼 센서 의미와 분석 조건이 결과 해석에 미치는 영향을 함께 추적했습니다."
+    ],
+    "technologies": ["Vibration", "OPC DA Reader", "Fast Reader", "Trend Import", "DB Export", "DB Import", "LVDT", "Fmax", "VibLowExplorer"],
+    "evidence": [
+      "VibLowExplorer 수정 11건",
+      "OPC DA Reader fast reader",
+      "전체 DB export 테스트와 분석"
+    ],
+    "tags": ["청송양수", "고진동", "진동 분석", "트렌드", "VibLowExplorer", "LVDT", "Fmax", "실패에서 배운 점"]
+  },
+  {
+    "id": "naval-report-automation",
+    "title": "추진전동기 자동 보고서 프로그램",
+    "period": "NADA",
+    "category": "Report Automation",
+    "summary": "운전/알람/트렌드 데이터를 파싱하고, No Data 처리, 그래프 생성, 문서 템플릿 반영, PDF 출력까지 이어지는 반복 보고서 업무를 자동화 흐름으로 정리했습니다.",
+    "highlights": [
+      "수동 보고서 작성에서 생길 수 있는 누락과 형식 오류를 줄이기 위해 입력 데이터와 템플릿 규칙 중심의 산출 구조로 바꿨습니다.",
+      "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식을 설계했습니다.",
+      "운영자가 결과를 검토할 수 있도록 그래프, 표, 문서 섹션의 생성 기준을 분리했습니다."
+    ],
+    "technologies": ["Report Automation", "Trend Data", "Alarm Data", "Parser", "No Data Handling", "Chart Rendering", "PDF", "Template"],
+    "evidence": [
+      "추진전동기 자동 보고서 프로그램 작업 기록",
+      "No Data 처리와 그래프/문서 출력 흐름 정리",
+      "운영 보고서 산출 기준 문서화"
+    ],
+    "tags": ["해군", "방산", "추진전동기", "자동 보고서", "PDF", "Workflow", "리포트 자동화"]
+  },
+  {
+    "id": "gjpp-digital-twin",
+    "title": "경주풍력 Digital Twin 데이터 플랫폼",
+    "period": "NADA",
+    "category": "Digital Twin",
+    "summary": "현장 설비 데이터가 Edge, CenterServer, REST/status API, RTDB, 3D Viewer까지 이어지는지 검증한 Edge-Center-Viewer 통합 경험입니다.",
+    "highlights": [
+      "DtEdgeServer 서비스 배포와 시작 상태를 확인하고, 센터 시스템으로 넘어가는 데이터 경로를 검증했습니다.",
+      "3D Viewer와 운영 화면에서 실제 데이터가 반영되는지 확인하며 장비, Edge, API, Viewer 계층을 분리해 원인을 좁혔습니다.",
+      "배포 후 확인 절차와 버전 정보를 남겨 재현 가능한 운영 점검 흐름으로 정리했습니다."
+    ],
+    "technologies": ["Digital Twin", "DtEdgeServer", "CenterServer", "3D Viewer", "REST API", "RTDB", "Windows Service", ".NET", "OPC UA"],
+    "evidence": [
+      "경주풍력/NIA Edge 구성 기록",
+      "DtEdgeServer v1.0.2 배포 검증",
+      "Edge - Center - Viewer 데이터 흐름 확인"
+    ],
+    "tags": ["경주풍력", "Digital Twin", "Edge", "CenterServer", "DtViewer", "3D Viewer", "데이터 플랫폼", "App Builder"]
+  },
+  {
+    "id": "modbus-mapping-skill",
+    "title": "Legacy Config Automation with Modbus Mapping Skill",
+    "period": "2026",
+    "category": "Workflow Automation",
+    "summary": "레거시 솔루션의 Modbus 설정 생성을 AI Skill로 가공했습니다. IO Map Excel과 OnlineTSI DB 채널을 매칭해 T-DataServer용 mapping_modbus.csv를 생성하는 흐름입니다.",
+    "highlights": [
+      "IO Map, 채널 DB, 주소 offset, register type, 125 register read limit을 함께 반영하는 자동화 절차를 정리했습니다.",
+      "개인 노하우로 남기 쉬운 설정 작업을 Codex Skill과 CLI 기반 산출물로 바꿨습니다.",
+      "자동 생성 결과를 사람이 검증할 수 있도록 mapping_modbus.csv 중심으로 설계했습니다."
+    ],
+    "technologies": ["Modbus TCP", "NModbus", "IO Map", "XLSX", "OnlineTSI DB", "T-DataServer", "CSV Mapping", "Codex Skill", "CLI"],
+    "evidence": [
+      "modbus-mapper Skill 작성",
+      "Modbus address offset 분석",
+      "125 register read limit 반영"
+    ],
+    "tags": ["Modbus", "mapping_modbus", "AI Skill", "Codex Skill", "Workflow", "레거시 자동화", "T-DataServer", "OnlineTSI"]
+  },
+  {
+    "id": "closed-network-onlinetsi",
+    "title": "폐쇄망 OnlineTSI 운영 환경 설계",
+    "period": "NADA",
+    "category": "Closed Network Ops",
+    "summary": "폐쇄망 환경의 OnlineTSI 설치, 복구 이미지, UWF, DHCP, 네트워크 분리, 운영 문서 검증을 다룬 경험입니다. Edge Computing 경험과는 분리해 설명합니다.",
+    "highlights": [
+      "인터넷 연결을 전제로 하지 않는 설치/복구/운영 조건을 검토했습니다.",
+      "UWF, golden image, DHCP, 네트워크 분리처럼 폐쇄망 솔루션 운영에 필요한 제약을 체크리스트로 정리했습니다.",
+      "접속 정보, 내부 경로, 계정 등 민감 정보는 공개 KB와 포트폴리오에서 제외했습니다."
+    ],
+    "technologies": ["OnlineTSI", "Closed Network", "Windows", "UWF", "Golden Image", "DHCP", "Network Isolation", "O&M Manual", "Checklist"],
+    "evidence": [
+      "폐쇄망 OnlineTSI 운영 환경 정리",
+      "설치/복구 이미지와 네트워크 구성 검토",
+      "운영 문서와 설치 절차 대조"
+    ],
+    "tags": ["폐쇄망", "OnlineTSI", "망분리", "UWF", "DHCP", "Golden Image", "운영 환경", "보안 제약"]
+  },
+  {
+    "id": "industrial-interface-playbook",
+    "title": "Industrial Interface Playbook",
+    "period": "NADA",
+    "category": "Integration",
+    "summary": "OPC DA/UA, Modbus TCP, gRPC, REST, HSMS 등 여러 인터페이스 경험을 장비-어댑터-서비스-저장/API-운영 화면의 공통 데이터 흐름으로 정리했습니다.",
+    "highlights": [
+      "DCS, PLC, 게이트웨이, 서버 사이의 데이터 링크와 태그, 주소, 채널 의미를 함께 확인했습니다.",
+      "프로토콜 이름을 나열하는 데서 멈추지 않고 운영 화면에서 같은 의미로 해석되도록 데이터 의미를 맞췄습니다.",
+      "로컬 수집 값과 원격 화면 값의 차이를 비교해 어느 계층에서 데이터가 끊겼는지 분리했습니다."
+    ],
+    "technologies": ["OPC DA", "OPC UA", "Modbus TCP", "gRPC", "REST", "HSMS", "DCS", "PLC Gateway", "RTDB", "Tag Mapping"],
+    "evidence": [
+      "Yanbu DCS OPC 연동 완료 기록",
+      "VMS-DCS Modbus TCP 링크 검토",
+      "다수 인터페이스 경험 정리"
+    ],
+    "tags": ["OPC", "Modbus", "gRPC", "REST", "HSMS", "DCS", "PLC", "Ontology", "산업 데이터", "인터페이싱"]
+  },
+  {
+    "id": "edge-computing-platform",
+    "title": "Edge Computing 데이터 플랫폼 배포 검증",
+    "period": "NADA",
+    "category": "Edge Computing",
+    "summary": "Edge Computing 환경에서 서비스 배포, REST endpoint, RTDB, InfluxDB/Grafana, 원격 화면까지 데이터가 도달하는지 검증했습니다. 폐쇄망 경험과는 별개의 Edge 데이터 처리 경험입니다.",
+    "highlights": [
+      "DtEdgeServer 배포와 Windows Service 시작 상태를 확인했습니다.",
+      "REST endpoint로 최신 태그 데이터를 확인하며 수집 상태를 좁혀 갔습니다.",
+      "RTDB, InfluxDB, Grafana, 원격 화면 사이의 차이를 비교해 문제 계층을 분리했습니다."
+    ],
+    "technologies": [".NET", "Windows Service", "DtEdgeServer", "REST API", "RTDB", "InfluxDB", "Grafana", "QuestDB", "Edge Computing"],
+    "evidence": [
+      "DtEdgeServer v1.0.2 배포 검증",
+      "TMS 원격 데이터 미표시 분석",
+      "Edge 기반 데이터 시각화 구성"
+    ],
+    "tags": ["Edge Computing", "DtEdgeServer", "RTDB", "시계열 데이터", "API", "Grafana", "InfluxDB", "Pipeline"]
+  },
+  {
+    "id": "firmware-root-cause",
+    "title": "Firmware/Protocol Root Cause Analysis",
+    "period": "NADA",
+    "category": "Low-Level Debugging",
+    "summary": "C#/C++ 경계의 request-response, binary protocol, timeout, resync, 구조체 layout 차이를 추적해 장비 통신 문제의 원인을 좁혔습니다.",
+    "highlights": [
+      "VDPM/AlphaPoint 계열 재설정 명령 흐름에서 응답 지연과 timeout 정책을 분석했습니다.",
+      "C# BinaryWriter와 C++ BOOL 크기 차이처럼 wire format을 깨뜨리는 원인을 찾아 정렬 문제를 파악했습니다.",
+      "KP board request-response 흐름을 로그와 프로토콜 단위로 분해해 재현 가능한 디버깅 단위로 정리했습니다."
+    ],
+    "technologies": ["C#", "C++", "Binary Protocol", "Request Response", "Timeout", "Resync", "Firmware", "Wire Format", "Log Analysis"],
+    "evidence": [
+      "SendConfigs/Reconfig protocol 분석",
+      "KP board request-response 디버깅",
+      "C#과 C++ binary layout 차이 분석"
+    ],
+    "tags": ["펌웨어", "프로토콜", "C#", "C++", "타임아웃", "디버깅", "Root Cause", "Integration"]
+  }
+]

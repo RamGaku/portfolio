@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+*.local
+data/*.local.json
+.firebase
+.playwright-mcp
+.dev-logs
+*.tsbuildinfo
+portfolio-*.png
+v2-*.png
+integrated-*.png
+redteam-*.png

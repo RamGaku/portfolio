@@ -1,0 +1,1376 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ElementType,
+  type FocusEvent as ReactFocusEvent,
+  type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode
+} from "react";
+import { Send, X } from "lucide-react";
+import knowledge from "../data/public-kb.json";
+
+type LangText = {
+  ko: string;
+  en?: string;
+};
+
+type KnowledgeEntry = {
+  id: string;
+  title: string;
+  period: string;
+  category: string;
+  summary: string;
+  highlights: string[];
+  technologies: string[];
+  evidence: string[];
+  tags: string[];
+};
+
+type FlowNode = {
+  label: string;
+  meta: string;
+};
+
+type StackLayer = {
+  layer: string;
+  tech: string[];
+};
+
+type ProjectDetail = {
+  id: string;
+  problem: string;
+  role: string;
+  actions: string[];
+  outcomes: string[];
+  dataFlow: FlowNode[];
+  layers: StackLayer[];
+};
+
+type ChatSource = {
+  id: string;
+  title: string;
+  category: string;
+  summary: string;
+};
+
+type ChatMessage = {
+  role: "user" | "bot";
+  content: string;
+  jump?: {
+    anchor: string;
+    label: string;
+  };
+  sources?: ChatSource[];
+  mode?: string;
+};
+
+type ChatResponse = {
+  answer: string;
+  mode: string;
+  sources: ChatSource[];
+};
+
+const kb = knowledge as KnowledgeEntry[];
+const projects = kb.filter((entry) => entry.id !== "enhans-positioning");
+
+const CHAT_INTRO =
+  "안녕하세요. 김가람의 포트폴리오 KB 가이드입니다. Vertex AI와 공개 경력 KB를 기준으로 답하고, 관련 프로젝트 섹션으로 안내합니다. 요구사항 추출, Enhans Fit, 데이터 흐름, 현장 배포, 산업용 통신, Edge 데이터, 펌웨어 디버깅, 문서화 경험을 물어보세요.";
+
+const projectDetails: Record<string, ProjectDetail> = {
+  "cheongsong-high-vibration": {
+    id: "project-cheongsong-high-vibration",
+    problem:
+      "청송양수 고진동 분석은 실패한 프로젝트였지만, 그래서 더 많은 것을 남겼습니다. 데이터 이관, 트렌드 확인, 분석 조건 조정, 센서 설정, 분석 도구 UX가 한 번에 얽혀 있었습니다.",
+    role:
+      "분석 담당자가 실제로 써야 하는 흐름을 기준으로 데이터 경로와 도구 변경 요구를 정리했고, DB export/import와 VibLowExplorer 개선 항목을 주도했습니다.",
+    actions: [
+      "현장 요구사항을 VibLowExplorer 기능/UX 수정 항목으로 분해",
+      "Trend import와 전체 DB export/import 검증",
+      "OPC DA Reader fast reader와 분석 데이터 조회 흐름 확인",
+      "LVDT 설정과 Fmax 변경처럼 분석 조건에 영향을 주는 값을 함께 추적",
+      "실패 원인을 숨기지 않고, 데이터 경로와 분석 도구 요구를 다음 프로젝트의 체크리스트로 정리"
+    ],
+    outcomes: [
+      "VibLowExplorer 수정 11건과 전체 DB export 테스트 기록을 남김",
+      "분석 도구는 화면이 아니라 데이터 이관, 조건, 센서 의미가 맞아야 작동한다는 교훈을 체득",
+      "Enhans 관점에서는 실패 경험까지 근거화해 고객 요구와 데이터 모델의 어긋남을 빠르게 찾는 역량으로 연결"
+    ],
+    dataFlow: [
+      { label: "현장 운전/진동 데이터", meta: "Vibration, LVDT, turbine context" },
+      { label: "수집/조회", meta: "OPC DA Reader, fast reader" },
+      { label: "이관/정규화", meta: "Trend import, DB export/import" },
+      { label: "분석 조건", meta: "Fmax, sensor setting" },
+      { label: "분석 도구", meta: "VibLowExplorer, report evidence" }
+    ],
+    layers: [
+      { layer: "Source", tech: ["Vibration", "LVDT", "Turbine data"] },
+      { layer: "Ingestion", tech: ["OPC DA Reader", "Fast Reader"] },
+      { layer: "Data Ops", tech: ["DB Export", "DB Import", "Trend Import"] },
+      { layer: "Analysis", tech: ["Fmax", "VibLowExplorer", "UX 개선"] }
+    ]
+  },
+  "naval-report-automation": {
+    id: "project-naval-report-automation",
+    problem:
+      "추진전동기 보고서는 데이터 확인, 그래프 생성, 템플릿 반영, PDF 산출이 반복되는 업무였습니다. 사람이 매번 수동으로 정리하면 누락과 형식 오류가 생기기 쉬웠습니다.",
+    role:
+      "운영 데이터가 보고서 산출물로 변환되는 단계를 정의하고, No Data 처리와 그래프/문서 출력을 자동화 가능한 흐름으로 묶었습니다.",
+    actions: [
+      "원천 데이터, 알람/트렌드, 그래프, 보고서 템플릿의 책임 분리",
+      "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식 설계",
+      "반복 생성되는 차트와 표를 프로그램 산출물로 전환",
+      "배포 시 필요한 런타임과 실행 환경 조건 확인",
+      "운영자가 결과를 검토할 수 있도록 보고서 흐름과 산출 기준을 문서화"
+    ],
+    outcomes: [
+      "반복 보고서 작성 업무를 데이터 기반 자동 산출 흐름으로 재구성",
+      "보고서 품질을 개인 수작업이 아니라 입력 데이터와 템플릿 규칙에 의존하게 만듦",
+      "Enhans 관점에서는 Workflow 자동화와 고객 검토 가능한 산출물 설계 경험으로 연결"
+    ],
+    dataFlow: [
+      { label: "운전/알람/트렌드 데이터", meta: "raw operation records" },
+      { label: "파싱/예외 처리", meta: "No Data, validation" },
+      { label: "시각화 생성", meta: "trend plot, chart assets" },
+      { label: "문서 템플릿", meta: "section, table, narrative" },
+      { label: "보고서 출력", meta: "PDF/package delivery" }
+    ],
+    layers: [
+      { layer: "Input", tech: ["Trend data", "Alarm data", "Raw files"] },
+      { layer: "Processing", tech: ["Parser", "No Data handling", "Validation"] },
+      { layer: "Rendering", tech: ["Chart", "Template", "PDF"] },
+      { layer: "Ops", tech: ["Runtime packaging", "User review", "Report workflow"] }
+    ]
+  },
+  "gjpp-digital-twin": {
+    id: "project-gjpp-digital-twin",
+    problem:
+      "경주풍력 Digital Twin은 현장 데이터가 Edge를 거쳐 센터 시스템과 3D Viewer까지 도달해야 했습니다. 값이 보이지 않으면 장비, Edge, API, Viewer 중 어느 층의 문제인지 분리해야 했습니다.",
+    role:
+      "Edge - Center - Viewer 통합 솔루션의 데이터 흐름을 검증하고, 운영자가 보는 3D 화면까지 실제 데이터가 이어지는지 확인했습니다.",
+    actions: [
+      "DtEdgeServer 서비스 배포와 시작 상태 확인",
+      "Edge에서 센터 시스템으로 넘어가는 상태/API 경로 검증",
+      "3D Viewer와 운영 화면에서 데이터 반영 여부 확인",
+      "현장 데이터와 원격 화면 데이터가 다른 경우 계층별로 원인 분리",
+      "배포 후 확인 절차와 버전 정보를 남겨 재현 가능한 운영 점검으로 정리"
+    ],
+    outcomes: [
+      "경주풍력/NIA Edge 구성과 DtEdgeServer v1.0.2 배포 검증 기록 보유",
+      "데이터 플랫폼 경험을 단순 백엔드가 아니라 현장-센터-시각화 end-to-end 흐름으로 설명 가능",
+      "Enhans 관점에서는 App Builder와 현장 데이터 운영 화면을 잇는 경험으로 연결"
+    ],
+    dataFlow: [
+      { label: "현장 설비/SCADA", meta: "wind turbine, sensor data" },
+      { label: "Edge 수집", meta: "DtEdgeServer, Windows Service" },
+      { label: "센터 연동", meta: "CenterServer, REST/status API" },
+      { label: "시계열/상태 데이터", meta: "RTDB, operation state" },
+      { label: "3D Viewer", meta: "Digital Twin operation UI" }
+    ],
+    layers: [
+      { layer: "Field", tech: ["SCADA", "Sensor data", "OPC UA"] },
+      { layer: "Edge", tech: ["DtEdgeServer", ".NET", "Windows Service"] },
+      { layer: "Center", tech: ["REST API", "RTDB", "Status check"] },
+      { layer: "Surface", tech: ["DtViewer", "3D Viewer", "Digital Twin"] }
+    ]
+  },
+  "modbus-mapping-skill": {
+    id: "project-modbus-mapping-skill",
+    problem:
+      "레거시 솔루션의 Modbus 설정은 IO Map, 채널 DB, 주소 offset, 레지스터 제한을 동시에 맞춰야 합니다. 수동 작업은 반복적이고 실수 가능성이 높았습니다.",
+    role:
+      "반복 설정 업무를 AI가 호출 가능한 Skill로 가공하고, 사람이 검증 가능한 mapping_modbus.csv 산출물로 떨어지게 만들었습니다.",
+    actions: [
+      "IO Map Excel과 OnlineTSI DB 채널을 매칭하는 입력/출력 정의",
+      "주소 offset, register type, 125 register read limit 같은 프로토콜 제약 반영",
+      "T-DataServer용 mapping_modbus.csv 생성 절차 정리",
+      "Codex Skill로 명령어, 검증 방식, 실패 케이스를 문서화",
+      "자동 생성 결과를 사람이 다시 검토할 수 있도록 CSV 산출물 중심으로 설계"
+    ],
+    outcomes: [
+      "레거시 설정 노하우를 개인 기억이 아니라 호출 가능한 AI Skill로 전환",
+      "Modbus mapping 반복 작업의 실수 가능성을 줄이는 운영 워크플로우를 구성",
+      "Enhans 관점에서는 Workflow와 Agent-ready KB를 실제 업무 자동화로 만든 사례"
+    ],
+    dataFlow: [
+      { label: "IO Map", meta: "xlsx/xls register list" },
+      { label: "채널 조회", meta: "OnlineTSI DB channel matching" },
+      { label: "주소 규칙", meta: "offset, type, read limit" },
+      { label: "CSV 생성", meta: "mapping_modbus.csv" },
+      { label: "T-DataServer", meta: "runtime config input" }
+    ],
+    layers: [
+      { layer: "Input", tech: ["Excel", "IO Map", "Channel DB"] },
+      { layer: "Protocol", tech: ["Modbus TCP", "NModbus", "Register limit"] },
+      { layer: "Automation", tech: ["Codex Skill", "CLI", "Validation"] },
+      { layer: "Output", tech: ["CSV Mapping", "T-DataServer", "Config generation"] }
+    ]
+  },
+  "closed-network-onlinetsi": {
+    id: "project-closed-network-onlinetsi",
+    problem:
+      "OnlineTSI는 폐쇄망 환경에서 설치, 복구, 네트워크 분리, 운영 문서 검증까지 고려해야 하는 솔루션이었습니다. 인터넷 연결을 전제로 한 일반 배포 방식으로는 운영 안정성을 보장하기 어려웠습니다.",
+    role:
+      "폐쇄망 솔루션 운영 조건을 기준으로 설치/복구 이미지, DHCP/네트워크 구성, 문서 검증, 배포 체크리스트를 정리했습니다.",
+    actions: [
+      "폐쇄망 OnlineTSI 운영 환경과 일반 Edge Computing 경험을 분리해 정리",
+      "UWF, golden image, 복구 전략처럼 현장 운영 안정성에 필요한 항목 검토",
+      "DHCP와 네트워크 분리 조건을 설치 체크리스트에 반영",
+      "원본 사양서와 운영 문서를 대조해 설치 절차의 누락 위험 확인",
+      "민감한 접속 정보는 포트폴리오/챗봇 KB에서 배제"
+    ],
+    outcomes: [
+      "폐쇄망 특유의 배포 제약을 이해하고, 운영 가능한 형태로 솔루션을 묶는 경험 확보",
+      "보안/망분리 환경에서 문서, 이미지, 네트워크, 복구 절차가 함께 중요하다는 점을 체득",
+      "Enhans 관점에서는 고객 환경에 임베딩되어 제품 적용 조건을 정의하는 FDE 역량으로 연결"
+    ],
+    dataFlow: [
+      { label: "폐쇄망 설치 환경", meta: "offline site, isolated network" },
+      { label: "시스템 이미지", meta: "golden image, restore plan" },
+      { label: "운영 보호", meta: "UWF, controlled changes" },
+      { label: "네트워크 구성", meta: "DHCP, topology, separation" },
+      { label: "검증 문서", meta: "install checklist, O&M evidence" }
+    ],
+    layers: [
+      { layer: "Environment", tech: ["Closed network", "Windows", "OnlineTSI"] },
+      { layer: "Provisioning", tech: ["Golden Image", "Snapshot", "Installer"] },
+      { layer: "Ops Control", tech: ["UWF", "DHCP", "Network isolation"] },
+      { layer: "Evidence", tech: ["Checklist", "O&M Manual", "Spec review"] }
+    ]
+  },
+  "industrial-interface-playbook": {
+    id: "project-industrial-interface-playbook",
+    problem:
+      "산업 현장 데이터는 OPC DA/UA, Modbus, gRPC, REST, HSMS처럼 서로 다른 인터페이스를 지나갑니다. 데이터가 끊기면 프로토콜 이름보다 태그 의미, 주소, 채널, 수집 주기, 운영 화면의 기대값을 함께 봐야 했습니다.",
+    role:
+      "여러 프로젝트에서 다룬 인터페이스 경험을 장비-어댑터-서버-DB-화면의 공통 플레이북으로 정리했습니다.",
+    actions: [
+      "DCS, PLC, 게이트웨이, 서버 사이의 데이터 링크 구조 확인",
+      "OPC DA/UA, Modbus TCP, REST, gRPC, HSMS의 역할과 제약을 프로젝트 단위로 구분",
+      "태그, 주소 offset, 채널, 레지스터 제한을 운영 데이터 의미에 맞춰 정렬",
+      "로컬 수집 값과 원격 화면 값의 차이를 비교해 계층별 원인 분리",
+      "프로토콜 경험을 Enhans의 Ontology/Workflow 언어로 번역"
+    ],
+    outcomes: [
+      "OPC, Modbus, REST, gRPC, HSMS를 단순 나열이 아니라 데이터 흐름 관점으로 설명 가능",
+      "고객 요구를 장비 데이터 의미와 운영 화면 기대값으로 바꾸는 역량을 포트폴리오 중심축으로 정리",
+      "Enhans 관점에서는 Ontology mapping과 외부 시스템 integration 감각으로 연결"
+    ],
+    dataFlow: [
+      { label: "장비/DCS/PLC", meta: "field device, gateway" },
+      { label: "프로토콜 어댑터", meta: "OPC DA/UA, Modbus, HSMS" },
+      { label: "서비스 레이어", meta: "T-DataServer, Edge service" },
+      { label: "저장/API", meta: "RTDB, REST, gRPC" },
+      { label: "운영 표면", meta: "Viewer, report, dashboard" }
+    ],
+    layers: [
+      { layer: "Protocol", tech: ["OPC DA", "OPC UA", "Modbus TCP", "HSMS"] },
+      { layer: "Service", tech: ["T-DataServer", "Gateway", "Edge Server"] },
+      { layer: "API/Data", tech: ["REST", "gRPC", "RTDB"] },
+      { layer: "Meaning", tech: ["Tag mapping", "Address offset", "Channel model"] }
+    ]
+  },
+  "edge-computing-platform": {
+    id: "project-edge-computing-platform",
+    problem:
+      "Edge Computing 환경에서는 데이터 수집 서비스가 떠 있어도 운영 화면까지 값이 보인다는 보장은 없습니다. 서비스, API, DB, 시각화 레이어를 함께 확인해야 했습니다.",
+    role:
+      "DtEdgeServer와 시계열/시각화 스택을 운영 관점에서 검증하고, 원격 화면 미표시 같은 문제를 데이터 경로 기준으로 좁혔습니다.",
+    actions: [
+      "Edge service 배포와 시작 상태 확인",
+      "REST endpoint로 최신 태그 데이터 수집 상태 검증",
+      "RTDB와 InfluxDB/Grafana 같은 조회 레이어의 역할 분리",
+      "로컬 장비 데이터와 원격 화면 데이터 차이 비교",
+      "배포 버전과 서비스 상태를 운영 점검 기록으로 남김"
+    ],
+    outcomes: [
+      "DtEdgeServer v1.0.2 배포 검증과 TMS 원격 데이터 미표시 분석 기록 보유",
+      "Edge Computing은 폐쇄망과 별개의 경험으로 분리해 설명",
+      "Enhans 관점에서는 Pipeline/App Builder에 필요한 data readiness 검증 경험으로 연결"
+    ],
+    dataFlow: [
+      { label: "현장 데이터 스트림", meta: "machine tag, sensor value" },
+      { label: "Edge Service", meta: "DtEdgeServer, Windows Service" },
+      { label: "API/저장", meta: "REST, RTDB, time-series DB" },
+      { label: "관측/시각화", meta: "Grafana, InfluxDB, QuestDB" },
+      { label: "운영 판단", meta: "remote screen, status check" }
+    ],
+    layers: [
+      { layer: "Runtime", tech: [".NET", "Windows Service", "Edge Computing"] },
+      { layer: "Data", tech: ["RTDB", "InfluxDB", "QuestDB"] },
+      { layer: "Interface", tech: ["REST API", "Tag endpoint", "Status API"] },
+      { layer: "Observability", tech: ["Grafana", "Remote screen", "Service check"] }
+    ]
+  },
+  "firmware-root-cause": {
+    id: "project-firmware-root-cause",
+    problem:
+      "장비 명령은 전송되지만 응답이 늦거나 누락되고, 서버와 펌웨어가 같은 데이터를 다르게 해석하는 문제가 있었습니다. 원인은 timeout만이 아니라 binary layout과 언어별 타입 차이일 수 있었습니다.",
+    role:
+      "C#/C++ 경계의 request-response 흐름을 재현 가능한 단위로 쪼개고, wire format과 구조체 정렬 문제까지 내려가 원인을 좁혔습니다.",
+    actions: [
+      "VDPM/AlphaPoint 계열 재설정 명령 흐름 분석",
+      "응답 지연 상황에서 timeout과 resync 전략 검토",
+      "C# BinaryWriter와 C++ BOOL 크기 차이로 인한 layout 불일치 파악",
+      "KP board request-response 흐름을 로그와 프로토콜 단위로 분해",
+      "펌웨어/호스트 경계에서 데이터가 깨지는 지점을 문서화"
+    ],
+    outcomes: [
+      "SendConfigs/Reconfig protocol, KP board request-response, C#과 C++ binary layout 차이 분석 기록 보유",
+      "애매한 통신 문제를 로그, wire format, 실행 순서로 좁히는 low-level debugging 역량 제시",
+      "Enhans 관점에서는 외부 시스템 연결이 실패할 때 끝까지 원인을 추적하는 integration 안정성 경험으로 연결"
+    ],
+    dataFlow: [
+      { label: "사양/명령 정의", meta: "protocol spec, command ID" },
+      { label: "Host 요청", meta: "C#, BinaryWriter" },
+      { label: "Wire Format", meta: "binary layout, type size" },
+      { label: "Firmware 응답", meta: "C++, board state" },
+      { label: "재동기화", meta: "timeout, resync, logging" }
+    ],
+    layers: [
+      { layer: "Host", tech: ["C#", "BinaryWriter", "Request-response"] },
+      { layer: "Firmware", tech: ["C++", "Board protocol", "State handling"] },
+      { layer: "Transport", tech: ["Binary Protocol", "Timeout", "Resync"] },
+      { layer: "Debug", tech: ["Wire format", "Log analysis", "Root cause"] }
+    ]
+  }
+};
+
+const storyActs = [
+  {
+    id: "requirements",
+    n: "01",
+    tag: "한마디로 - 요구사항 추출",
+    title: "고객의 언어를\n제품 요구로\n번역합니다",
+    body: [
+      "현장의 요청은 처음부터 완성된 요구사항으로 오지 않습니다. 운영 방식, 데이터 위치, 검증 기준, 실제 사용 화면이 섞인 말로 전달됩니다.",
+      "그래서 제 일은 코드보다 질문에서 시작합니다. 고객의 표현을 존중하되, 그 안의 운영 맥락을 제품 요구와 데이터 흐름으로 바꾸는 과정을 요구사항 추출이라고 봅니다."
+    ],
+    hero: true
+  },
+  {
+    id: "data",
+    n: "02",
+    tag: "결국 - 데이터",
+    title: "데이터,\n알파이자 오메가",
+    body: [
+      "수많은 요구를 따라가다 보면 결국 한 문장으로 모입니다. '이 데이터를, 이렇게, 보고 싶다.' 화면도, 알람도, 리포트도 그 변형일 뿐입니다.",
+      "그래서 저는 고객의 요구를 데이터의 흐름으로 번역합니다. 어떤 데이터가 어디서 나와, 어떻게 가공되어, 누구에게 보여야 하는가."
+    ]
+  },
+  {
+    id: "flow",
+    n: "03",
+    tag: "그래서 - 흐름을 잇는다",
+    title: "장비에서 화면까지,\n끊긴 곳을 찾는다",
+    body: [
+      "데이터는 장비에서 출발해 프로토콜, 서버, DB, 운영 화면까지 여러 층을 지납니다. 문제는 늘 어딘가에서 끊깁니다. 장비엔 값이 있는데 화면엔 보이지 않습니다.",
+      "제 일의 절반은 그 끊긴 지점을 한 층씩 따라가 찾아내고, 다시 잇는 것입니다."
+    ],
+    flow: true
+  }
+];
+
+const flowStages = [
+  { key: "장비 · 센서", items: ["Vibration", "Turbine", "SCADA"] },
+  { key: "프로토콜", items: ["OPC DA/UA", "Modbus TCP", "HSMS"] },
+  { key: "운영 데이터 레이어", items: ["Edge Server", "RTDB", "REST API"] },
+  { key: "화면 · 산출물", items: ["3D Viewer", "Grafana", "Report PDF"] }
+];
+
+const fitLenses = [
+  {
+    term: "Problem Discovery",
+    title: "실패한 프로젝트도 근거로 남긴다",
+    text: "청송양수 고진동 프로젝트에서 데이터 이관, 분석 조건, 도구 UX가 어긋나는 지점을 추적했고 그 실패를 다음 체크리스트로 바꿨습니다.",
+    anchor: "project-cheongsong-high-vibration"
+  },
+  {
+    term: "Ontology",
+    title: "운영 객체와 데이터 의미 정렬",
+    text: "태그, 주소 offset, 채널, 레지스터 제한을 맞춰 장비 데이터가 운영 화면에서 같은 의미로 해석되게 했습니다.",
+    anchor: "project-industrial-interface-playbook"
+  },
+  {
+    term: "Workflow",
+    title: "반복 점검을 절차와 자동화로 전환",
+    text: "Modbus mapping과 보고서 생성을 사람이 검증 가능한 산출물 중심의 자동화 절차로 정리했습니다.",
+    anchor: "project-modbus-mapping-skill"
+  },
+  {
+    term: "Agent / App",
+    title: "데이터가 실제 사용 화면까지 가게",
+    text: "Edge, Center, REST API, RTDB, 3D Viewer를 연결해 운영자가 확인하고 판단할 수 있는 표면까지 검증했습니다.",
+    anchor: "project-gjpp-digital-twin"
+  }
+];
+
+const scriptedIntents = [
+  {
+    keys: ["요구사항", "추출", "고객", "원하는", "requirement"],
+    reply:
+      "김가람의 출발점은 요구사항 추출입니다. 현장의 요청을 그대로 받아 적는 것이 아니라, 운영 방식, 데이터 위치, 검증 기준, 실제 사용 화면을 함께 확인해 제품 요구와 데이터 흐름으로 바꿉니다.",
+    jump: "requirements",
+    label: "요구사항 추출 보기"
+  },
+  {
+    keys: ["데이터", "흐름", "알파", "오메가", "data", "보고"],
+    reply:
+      "결국 고객의 요구는 '이 데이터를, 이렇게, 보고 싶다'로 모입니다. 그래서 각 프로젝트를 장비/프로토콜/서비스/저장/API/화면의 데이터 흐름으로 풀어 두었습니다. 프로젝트 카드를 열면 DATA FLOW와 LAYER STACK을 바로 볼 수 있습니다.",
+    jump: "data",
+    label: "결국 데이터 보기"
+  },
+  {
+    keys: ["commerce", "ontology", "workflow", "agent", "agentos", "커머스", "온톨로지", "워크플로우", "에이전트", "인핸스"],
+    reply:
+      "직접 Commerce OS를 개발했다고 말하지는 않습니다. 대신 Enhans FDE에 필요한 인접 경험은 있습니다. 태그/주소/채널을 운영 객체처럼 정렬한 경험은 Ontology와, 배포 점검과 Modbus mapping 자동화는 Workflow와, REST/RTDB/화면/문서까지 검증한 경험은 Agent/App 실행 환경과 맞닿아 있습니다.",
+    jump: "fit",
+    label: "Enhans 매핑 보기"
+  },
+  {
+    keys: ["청송", "고진동", "진동", "실패"],
+    reply:
+      "청송양수 고진동 프로젝트는 주도했지만 성공 사례로만 포장하지 않았습니다. 데이터 이관, 분석 조건, 센서 설정, VibLowExplorer UX가 함께 맞아야 한다는 교훈을 남긴 프로젝트입니다.",
+    jump: "project-cheongsong-high-vibration",
+    label: "청송양수 프로젝트 보기"
+  },
+  {
+    keys: ["경주", "풍력", "digital twin", "dt", "3d", "viewer"],
+    reply:
+      "경주풍력 Digital Twin은 Edge에서 센터 시스템, REST/status API, RTDB, 3D Viewer까지 이어지는 end-to-end 데이터 흐름을 검증한 경험입니다.",
+    jump: "project-gjpp-digital-twin",
+    label: "경주풍력 DT 보기"
+  },
+  {
+    keys: ["폐쇄망", "onlinetsi", "offline", "망분리"],
+    reply:
+      "폐쇄망 경험은 Edge Computing과 분리해서 봐야 합니다. 폐쇄망은 OnlineTSI 운영 환경에서 설치, 복구 이미지, UWF, DHCP, 네트워크 분리, 문서 검증을 다룬 경험이고, Edge는 현장 데이터 처리 환경 경험입니다.",
+    jump: "project-closed-network-onlinetsi",
+    label: "폐쇄망 OnlineTSI 보기"
+  },
+];
+
+const promptChips = [
+  ["요구사항 추출", "요구사항 추출이 무슨 뜻이야?"],
+  ["Enhans Fit", "Commerce OS Ontology Workflow Agent와 맞닿는 근거를 보여줘"],
+  ["데이터 플로우", "프로젝트별 데이터 플로우와 레이어 스택을 설명해줘"],
+  ["경주풍력 DT", "경주풍력 Digital Twin 프로젝트로 이동"],
+  ["폐쇄망", "폐쇄망 OnlineTSI와 Edge Computing 경험 차이를 설명해줘"],
+  ["Modbus Skill", "Modbus Mapping Skill 프로젝트를 설명해줘"],
+  ["펌웨어 디버깅", "펌웨어/프로토콜 디버깅 경험을 설명해줘"]
+];
+
+function projectAnchor(id: string) {
+  return id === "enhans-positioning" ? "requirements" : `project-${id}`;
+}
+
+function getProjectDetail(id: string) {
+  return projectDetails[id] ?? {
+    id: projectAnchor(id),
+    problem: "",
+    role: "",
+    actions: [],
+    outcomes: [],
+    dataFlow: [],
+    layers: []
+  };
+}
+
+function scrollToAnchor(anchor: string) {
+  const target = document.getElementById(anchor);
+  if (!target) {
+    return;
+  }
+
+  if (target.classList.contains("proj")) {
+    target.classList.add("open");
+  }
+
+  const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - 76);
+  window.history.replaceState(null, "", `#${anchor}`);
+  window.scrollTo({ top, behavior: "smooth" });
+  target.classList.add("flash");
+  window.setTimeout(() => target.classList.remove("flash"), 1100);
+}
+
+function hasKeyword(question: string, keywords: string[]) {
+  const lower = question.toLowerCase();
+  return keywords.some((keyword) => lower.includes(keyword.toLowerCase()));
+}
+
+// --- Inline content editing -------------------------------------------------
+
+type EditState = {
+  admin: boolean;
+  resolve: (id: string, fallback: string) => string;
+  setDraft: (id: string, value: string, fallback: string) => void;
+  dirtyCount: number;
+};
+
+const EditCtx = createContext<EditState | null>(null);
+
+function Editable({
+  id,
+  value,
+  as = "span",
+  className,
+  display,
+  multiline = false,
+  stop = false
+}: {
+  id: string;
+  value: string;
+  as?: ElementType;
+  className?: string;
+  display?: (text: string) => ReactNode;
+  multiline?: boolean;
+  stop?: boolean;
+}) {
+  const ctx = useContext(EditCtx);
+  const text = ctx ? ctx.resolve(id, value) : value;
+  const Tag = as;
+
+  if (!ctx?.admin) {
+    return <Tag className={className}>{display ? display(text) : text}</Tag>;
+  }
+
+  const classes = ["editable", multiline ? "editable-ml" : "", className]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <Tag
+      className={classes}
+      contentEditable
+      suppressContentEditableWarning
+      spellCheck={false}
+      data-eid={id}
+      onClick={stop ? (event: ReactMouseEvent) => event.stopPropagation() : undefined}
+      onKeyDown={(event: ReactKeyboardEvent<HTMLElement>) => {
+        if (!multiline && event.key === "Enter") {
+          event.preventDefault();
+          event.currentTarget.blur();
+        }
+      }}
+      onBlur={(event: ReactFocusEvent<HTMLElement>) => {
+        const element = event.currentTarget;
+        const raw = multiline ? element.innerText : element.textContent ?? "";
+        const cleaned = raw.replace(/ /g, " ").replace(/\n{3,}/g, "\n\n").trimEnd();
+        ctx.setDraft(id, cleaned, value);
+      }}
+    >
+      {text}
+    </Tag>
+  );
+}
+
+export default function App() {
+  const [navScrolled, setNavScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("requirements");
+  const [openProjects, setOpenProjects] = useState<Set<string>>(
+    () => new Set(projects[0] ? [projects[0].id] : [])
+  );
+  const [chatOpen, setChatOpen] = useState(true);
+
+  const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [admin, setAdmin] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [loginId, setLoginId] = useState("");
+  const [loginPw, setLoginPw] = useState("");
+  const [loginErr, setLoginErr] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+
+  const navItems = useMemo(
+    () => [
+      ["requirements", "요구사항"],
+      ["data", "데이터"],
+      ["fit", "직무 매핑"],
+      ["work", "현장 기록"]
+    ],
+    []
+  );
+
+  useEffect(() => {
+    setChatOpen(true);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/content")
+      .then((response) => (response.ok ? response.json() : {}))
+      .then((data) => {
+        if (!cancelled && data && typeof data === "object" && !Array.isArray(data)) {
+          setOverrides(data as Record<string, string>);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    setOpenProjects((current) => {
+      if (current.size || !projects[0]) {
+        return current;
+      }
+      return new Set([projects[0].id]);
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setNavScrolled(window.scrollY > 24);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observedIds = ["requirements", "data", "flow", "fit", "work"];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target.id) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: [0.1, 0.3, 0.6] }
+    );
+
+    observedIds.forEach((id) => {
+      const target = document.getElementById(id);
+      if (target) observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!window.location.hash) {
+      return;
+    }
+
+    window.setTimeout(() => scrollToAnchor(window.location.hash.slice(1)), 80);
+  }, []);
+
+  const resolve = useCallback(
+    (id: string, fallback: string) => {
+      if (id in draft) return draft[id];
+      if (id in overrides) return overrides[id];
+      return fallback;
+    },
+    [draft, overrides]
+  );
+
+  const stageDraft = useCallback(
+    (id: string, value: string, fallback: string) => {
+      setDraft((current) => {
+        const baseline = id in overrides ? overrides[id] : fallback;
+        const next = { ...current };
+        if (value === baseline) {
+          delete next[id];
+        } else {
+          next[id] = value;
+        }
+        return next;
+      });
+      setSaveMsg("");
+    },
+    [overrides]
+  );
+
+  const dirtyCount = Object.keys(draft).length;
+
+  const editValue = useMemo<EditState>(
+    () => ({ admin, resolve, setDraft: stageDraft, dirtyCount }),
+    [admin, resolve, stageDraft, dirtyCount]
+  );
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: loginId, pw: loginPw })
+      });
+      if (!response.ok) {
+        setLoginErr("아이디 또는 비밀번호가 올바르지 않습니다.");
+        return;
+      }
+      const data = (await response.json()) as { token: string };
+      setToken(data.token);
+      setAdmin(true);
+      setLoginOpen(false);
+      setLoginErr("");
+      setLoginId("");
+      setLoginPw("");
+    } catch {
+      setLoginErr("로그인 요청 실패. 개발 서버 상태를 확인해 주세요.");
+    }
+  };
+
+  const logout = () => {
+    setAdmin(false);
+    setToken(null);
+    setDraft({});
+    setSaveMsg("");
+  };
+
+  const discard = () => {
+    setDraft({});
+    setSaveMsg("");
+  };
+
+  const save = async () => {
+    if (dirtyCount === 0 || !token) return;
+    setSaving(true);
+    setSaveMsg("");
+    try {
+      const response = await fetch("/api/content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(draft)
+      });
+      if (response.status === 401) {
+        setAdmin(false);
+        setToken(null);
+        setDraft({});
+        setSaveMsg("세션이 만료되었습니다. 다시 로그인해 주세요.");
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      setOverrides((current) => ({ ...current, ...draft }));
+      setDraft({});
+      setSaveMsg("저장되었습니다.");
+    } catch {
+      setSaveMsg("저장에 실패했습니다.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleProject = (id: string) => {
+    setOpenProjects((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const jumpToProject = (anchor: string) => {
+    const projectId = anchor.replace(/^project-/, "");
+    if (anchor.startsWith("project-")) {
+      setOpenProjects((current) => new Set(current).add(projectId));
+    }
+    scrollToAnchor(anchor);
+  };
+
+  const brandInner = (
+    <>
+      <span className="dot" aria-hidden="true" />
+      <span className="who">
+        <Editable as="b" id="nav.name" value="김가람" stop />
+        <Editable as="span" id="nav.role" value="Forward Deployed Engineer" stop />
+      </span>
+    </>
+  );
+
+  return (
+    <EditCtx.Provider value={editValue}>
+      <nav className={`nav ${navScrolled ? "scrolled" : ""}`}>
+        <div className="wrap nav-wrap">
+          {admin ? (
+            <div className="brand">{brandInner}</div>
+          ) : (
+            <a
+              className="brand"
+              href="#requirements"
+              onClick={(event) => {
+                event.preventDefault();
+                scrollToAnchor("requirements");
+              }}
+            >
+              {brandInner}
+            </a>
+          )}
+          <div className="nav-links">
+            {navItems.map(([id, label]) => (
+              <a
+                className={activeSection === id ? "active" : ""}
+                href={`#${id}`}
+                key={id}
+                onClick={(event) => {
+                  event.preventDefault();
+                  scrollToAnchor(id);
+                }}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+          <div className="nav-end">
+            <div className="nav-right" aria-label="Language">
+              <button className="lang on" type="button">KO</button>
+              <button className="lang" type="button" disabled>EN</button>
+            </div>
+            {!admin ? (
+              <button className="admin-btn" type="button" onClick={() => setLoginOpen(true)}>
+                Admin
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </nav>
+
+      <main id="top">
+        <div id="story">
+          {storyActs.map((act) => (
+            <section className={`act ${act.hero ? "act-hero" : ""}`} id={act.id} key={act.id}>
+              <div className="wrap act-inner">
+                <div className="act-meta">
+                  <span className="act-n">{act.n}</span>
+                  <Editable as="span" className="act-tag" id={`story.${act.id}.tag`} value={act.tag} />
+                </div>
+                <Editable
+                  as="h1"
+                  className="act-title"
+                  id={`story.${act.id}.title`}
+                  value={act.title}
+                  multiline
+                  display={(text) =>
+                    text.split("\n").map((line, index) => <span key={index}>{line}</span>)
+                  }
+                />
+                <div className="act-body">
+                  {act.body.map((line, index) => (
+                    <Editable
+                      key={index}
+                      as="p"
+                      id={`story.${act.id}.body.${index}`}
+                      value={line}
+                      display={(text) => highlightKeywords(text)}
+                    />
+                  ))}
+                </div>
+                {act.flow ? <FlowDiagram /> : null}
+                {act.hero ? (
+                  <div className="scroll-cue">
+                    <span className="line" />
+                    <span>아래로</span>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <section className="fit" id="fit">
+          <div className="wrap">
+            <SectionHead
+              idBase="section.fit"
+              tag="Enhans Fit"
+              title="Commerce OS를 과장하지 않고 연결하기"
+              desc="직접 Commerce OS 개발 경험이라고 말하지 않습니다. 대신 Enhans FDE가 보는 문제 구조에 맞춰, 기존 현장 경험이 어느 레이어와 만나는지 명확히 보여줍니다."
+            />
+            <div className="fit-grid">
+              {fitLenses.map((lens, index) => {
+                const inner = (
+                  <>
+                    <Editable as="span" id={`fit.${index}.term`} value={lens.term} stop />
+                    <Editable as="h3" id={`fit.${index}.title`} value={lens.title} stop />
+                    <Editable as="p" id={`fit.${index}.text`} value={lens.text} stop />
+                  </>
+                );
+                return admin ? (
+                  <div className="fit-card" key={lens.anchor}>
+                    {inner}
+                  </div>
+                ) : (
+                  <button
+                    className="fit-card"
+                    key={lens.anchor}
+                    type="button"
+                    onClick={() => jumpToProject(lens.anchor)}
+                  >
+                    {inner}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="work" id="work">
+          <div className="wrap">
+            <SectionHead
+              idBase="section.work"
+              tag="현장 기록"
+              title="프로젝트로 보는 데이터 흐름"
+              desc="각 프로젝트를 문제 · 데이터 플로우 · 레이어별 기술 스택 · 내 역할 · 결과로 분리했습니다. 기술 담당자가 장비에서 화면까지 이어지는 흐름을 바로 확인할 수 있게 구성했습니다."
+            />
+            <div className="proj-list">
+              {projects.map((project, index) => (
+                <ProjectItem
+                  key={project.id}
+                  index={index}
+                  admin={admin}
+                  open={openProjects.has(project.id)}
+                  project={project}
+                  onToggle={() => toggleProject(project.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {!chatOpen ? (
+        <button className="fab" type="button" onClick={() => setChatOpen(true)} aria-label="Open portfolio AI chat">
+          <img src="/assets/daftpunk_logo.png" alt="" aria-hidden="true" />
+        </button>
+      ) : null}
+      <PortfolioChat
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        onJump={jumpToProject}
+      />
+
+      {loginOpen ? (
+        <div className="modal-back" onClick={() => setLoginOpen(false)}>
+          <form className="login-box" onClick={(event) => event.stopPropagation()} onSubmit={handleLogin}>
+            <h3>Admin 로그인</h3>
+            <input
+              className="login-input"
+              type="text"
+              autoComplete="username"
+              placeholder="아이디"
+              value={loginId}
+              onChange={(event) => setLoginId(event.target.value)}
+              autoFocus
+            />
+            <input
+              className="login-input"
+              type="password"
+              autoComplete="current-password"
+              placeholder="비밀번호"
+              value={loginPw}
+              onChange={(event) => setLoginPw(event.target.value)}
+            />
+            {loginErr ? <p className="login-err">{loginErr}</p> : null}
+            <div className="login-actions">
+              <button type="button" onClick={() => setLoginOpen(false)}>
+                취소
+              </button>
+              <button type="submit">로그인</button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {admin ? (
+        <div className="edit-bar">
+          <span className="edit-status">
+            {dirtyCount > 0 ? `${dirtyCount}건 변경됨` : "편집 모드"}
+            {saveMsg ? ` · ${saveMsg}` : ""}
+          </span>
+          <button className="eb-ghost" type="button" onClick={discard} disabled={dirtyCount === 0 || saving}>
+            되돌리기
+          </button>
+          <button className="eb-primary" type="button" onClick={save} disabled={dirtyCount === 0 || saving}>
+            {saving ? "저장 중..." : "저장"}
+          </button>
+          <button className="eb-ghost" type="button" onClick={logout}>
+            로그아웃
+          </button>
+        </div>
+      ) : null}
+    </EditCtx.Provider>
+  );
+}
+
+function highlightKeywords(text: string) {
+  const keywords = ["요구사항 추출", "데이터의 흐름", "데이터", "질문", "Commerce OS", "Ontology", "Workflow", "Agent"];
+  const parts = text.split(/(요구사항 추출|데이터의 흐름|데이터|질문|Commerce OS|Ontology|Workflow|Agent)/g);
+  return parts.map((part, index) =>
+    keywords.includes(part) ? (
+      <em key={`${part}-${index}`}>{part}</em>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
+  );
+}
+
+function SectionHead({ idBase, tag, title, desc }: { idBase: string; tag: string; title: string; desc: string }) {
+  return (
+    <div className="section-head">
+      <Editable as="span" className="eyebrow" id={`${idBase}.eyebrow`} value={tag} />
+      <Editable as="h2" id={`${idBase}.title`} value={title} />
+      <Editable as="p" id={`${idBase}.desc`} value={desc} />
+    </div>
+  );
+}
+
+function FlowDiagram() {
+  return (
+    <>
+      <div className="flow-diagram">
+        {flowStages.map((stage, index) => (
+          <div className="flow-part" key={stage.key}>
+            <div className="flow-stage">
+              <Editable as="div" className="fs-k" id={`flow.stage.${index}.key`} value={stage.key} />
+              <ul>
+                {stage.items.map((item, itemIndex) => (
+                  <Editable
+                    as="li"
+                    key={itemIndex}
+                    id={`flow.stage.${index}.item.${itemIndex}`}
+                    value={item}
+                  />
+                ))}
+              </ul>
+            </div>
+            {index < flowStages.length - 1 ? <div className="flow-arrow">→</div> : null}
+          </div>
+        ))}
+      </div>
+      <Editable
+        as="p"
+        className="flow-caption"
+        id="flow.caption"
+        value="데이터가 끊기면, 이 길을 한 층씩 되짚습니다."
+      />
+    </>
+  );
+}
+
+function ProjectItem({
+  admin,
+  index,
+  onToggle,
+  open,
+  project
+}: {
+  admin: boolean;
+  index: number;
+  onToggle: () => void;
+  open: boolean;
+  project: KnowledgeEntry;
+}) {
+  const detail = getProjectDetail(project.id);
+  const num = String(index + 1).padStart(2, "0");
+  const headInner = (
+    <>
+      <span className="proj-num">{num}</span>
+      <span className="proj-title-wrap">
+        <Editable as="span" className="proj-cat" id={`kb.${project.id}.category`} value={project.category} stop />
+        <Editable as="span" className="proj-title" id={`kb.${project.id}.title`} value={project.title} stop />
+        <Editable as="span" className="proj-short" id={`kb.${project.id}.summary`} value={project.summary} stop />
+      </span>
+      <span className="proj-toggle" aria-hidden="true">+</span>
+    </>
+  );
+  return (
+    <article className={`proj ${open ? "open" : ""}`} id={projectAnchor(project.id)}>
+      {admin ? (
+        <div className="proj-head" role="button" tabIndex={0} onClick={onToggle}>
+          {headInner}
+        </div>
+      ) : (
+        <button className="proj-head" type="button" onClick={onToggle}>
+          {headInner}
+        </button>
+      )}
+      <div className="proj-body">
+        <div className="proj-body-inner">
+          <div className="project-flow-panel">
+            <div className="dh">DATA FLOW</div>
+            <div className="project-flow">
+              {detail.dataFlow.map((node, nodeIndex) => (
+                <div className="flow-step-wrap" key={`${project.id}-${nodeIndex}`}>
+                  <div className="flow-step">
+                    <span className="flow-step-index">{String(nodeIndex + 1).padStart(2, "0")}</span>
+                    <Editable
+                      as="strong"
+                      id={`project.${project.id}.flow.${nodeIndex}.label`}
+                      value={node.label}
+                    />
+                    <Editable
+                      as="span"
+                      id={`project.${project.id}.flow.${nodeIndex}.meta`}
+                      value={node.meta}
+                    />
+                  </div>
+                  {nodeIndex < detail.dataFlow.length - 1 ? (
+                    <span className="project-flow-arrow" aria-hidden="true">→</span>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="layer-panel">
+            <div className="dh">LAYER STACK</div>
+            <div className="layer-grid">
+              {detail.layers.map((layer, layerIndex) => (
+                <div className="layer-card" key={`${project.id}-${layerIndex}`}>
+                  <Editable
+                    as="span"
+                    id={`project.${project.id}.layer.${layerIndex}.name`}
+                    value={layer.layer}
+                  />
+                  <div>
+                    {layer.tech.map((tech, techIndex) => (
+                      <Editable
+                        as="em"
+                        key={techIndex}
+                        id={`project.${project.id}.layer.${layerIndex}.tech.${techIndex}`}
+                        value={tech}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="proj-detail">
+            <div className="detail-block problem">
+              <div className="dh">PROBLEM</div>
+              <Editable as="p" id={`project.${project.id}.problem`} value={detail.problem} />
+            </div>
+            <div className="detail-block role">
+              <div className="dh">ROLE</div>
+              <Editable as="p" id={`project.${project.id}.role`} value={detail.role} />
+            </div>
+            <div className="detail-block approach-block">
+              <div className="dh">APPROACH</div>
+              <ul>
+                {detail.actions.map((action, actionIndex) => (
+                  <Editable
+                    as="li"
+                    key={actionIndex}
+                    id={`project.${project.id}.action.${actionIndex}`}
+                    value={action}
+                  />
+                ))}
+              </ul>
+            </div>
+            <div className="detail-block result-block">
+              <div className="dh">RESULT</div>
+              <ul>
+                {detail.outcomes.map((outcome, outcomeIndex) => (
+                  <Editable
+                    as="li"
+                    key={outcomeIndex}
+                    id={`project.${project.id}.outcome.${outcomeIndex}`}
+                    value={outcome}
+                  />
+                ))}
+              </ul>
+            </div>
+            <div className="detail-block span2 evidence">
+              <div className="dh">EVIDENCE</div>
+              <ul>
+                {project.evidence.map((item, itemIndex) => (
+                  <Editable
+                    as="li"
+                    key={itemIndex}
+                    id={`kb.${project.id}.evidence.${itemIndex}`}
+                    value={item}
+                  />
+                ))}
+              </ul>
+              <div className="dh stack-dh">STACK</div>
+              <div className="tags">
+                {project.technologies.map((tech, techIndex) => (
+                  <Editable
+                    as="span"
+                    className="tag"
+                    key={techIndex}
+                    id={`kb.${project.id}.technologies.${techIndex}`}
+                    value={tech}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function PortfolioChat({
+  onClose,
+  onJump,
+  open
+}: {
+  onClose: () => void;
+  onJump: (anchor: string) => void;
+  open: boolean;
+}) {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      role: "bot",
+      content: CHAT_INTRO
+    }
+  ]);
+  const [question, setQuestion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, open]);
+
+  const ask = async (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed || loading) return;
+
+    setQuestion("");
+    setLoading(true);
+    setMessages((current) => [...current, { role: "user", content: trimmed }]);
+
+    const scripted = scriptedIntents.find((intent) => hasKeyword(trimmed, intent.keys));
+    if (scripted) {
+      window.setTimeout(() => {
+        setMessages((current) => [
+          ...current,
+          {
+            role: "bot",
+            content: scripted.reply,
+            jump: { anchor: scripted.jump, label: scripted.label }
+          }
+        ]);
+        setLoading(false);
+      }, 320);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: trimmed })
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = (await response.json()) as ChatResponse;
+      setMessages((current) => [
+        ...current,
+        {
+          role: "bot",
+          content: data.answer,
+          sources: data.sources,
+          mode: data.mode
+        }
+      ]);
+    } catch {
+      setMessages((current) => [
+        ...current,
+        {
+          role: "bot",
+          content: "로컬 API 응답을 받지 못했습니다. 개발 서버 상태를 확인해 주세요."
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void ask(question);
+  };
+
+  return (
+    <aside className={`chat ${open ? "open" : ""}`} aria-live="polite">
+      <div className="chat-head">
+        <button className="av" type="button" onClick={onClose} aria-label="Close chat">
+          <img src="/assets/daftpunk_logo.png" alt="" aria-hidden="true" />
+        </button>
+        <div className="ht">
+          <b>
+            <span className="live" />
+            <Editable as="span" id="chat.title" value="포트폴리오 KB" />
+          </b>
+          <Editable as="span" id="chat.subtitle" value="Vertex AI + 공개 KB" />
+        </div>
+        <button className="chat-close" type="button" onClick={onClose} aria-label="Close chat">
+          <X size={18} aria-hidden="true" />
+        </button>
+      </div>
+      <div className="chat-body" ref={bodyRef}>
+        {messages.map((message, index) => (
+          <div className={`msg ${message.role}`} key={`${message.role}-${index}`}>
+            {index === 0 && message.role === "bot" ? (
+              <Editable as="p" id="chat.intro" value={CHAT_INTRO} multiline />
+            ) : (
+              <p>{message.content}</p>
+            )}
+            {message.jump ? (
+              <button className="jump" type="button" onClick={() => onJump(message.jump!.anchor)}>
+                {message.jump.label}
+              </button>
+            ) : null}
+            {message.sources?.length ? (
+              <div className="source-links">
+                {message.sources.slice(0, 4).map((source) => (
+                  <button
+                    key={source.id}
+                    type="button"
+                    onClick={() => onJump(projectAnchor(source.id))}
+                  >
+                    {source.title}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ))}
+        {loading ? (
+          <div className="typing" aria-label="typing">
+            <span />
+            <span />
+            <span />
+          </div>
+        ) : null}
+      </div>
+      <div className="chat-prompts">
+        {promptChips.map(([label, prompt]) => (
+          <button className="chip" type="button" key={label} onClick={() => void ask(prompt)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <form className="chat-input" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          autoComplete="off"
+          placeholder="포트폴리오에 대해 물어보세요..."
+          value={question}
+          onChange={(event) => setQuestion(event.target.value)}
+        />
+        <button type="submit" disabled={!question.trim() || loading} aria-label="Send">
+          <Send size={18} aria-hidden="true" />
+        </button>
+      </form>
+    </aside>
+  );
+}

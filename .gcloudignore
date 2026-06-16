@@ -1,0 +1,13 @@
+.git
+.gitignore
+node_modules
+dist
+.firebase
+.dev-tools
+.dev-logs
+.playwright-mcp
+*.tsbuildinfo
+*.png
+.env
+.env.*
+!.env.example
