@@ -238,27 +238,15 @@ export function answerLocally(question: string, results: SearchResult[]): ChatRe
     };
   }
 
-  const [primary, ...rest] = results;
-  const sourceTitles = results.map((result) => result.title).join(", ");
-  const supporting = rest
-    .slice(0, 2)
-    .map((result) => `${result.title}에서는 ${result.highlights[0]}`)
-    .join(" ");
-
-  const answer = [
-    `질문은 "${question}"에 대한 공개 경력 근거로 답할 수 있습니다.`,
-    `핵심은 ${primary.summary}`,
-    `대표 근거는 다음과 같습니다. ${primary.highlights.slice(0, 2).join(" ")}`,
-    supporting,
-    `관련 기술/맥락은 ${primary.technologies.slice(0, 6).join(", ")}이며, 참고한 KB 항목은 ${sourceTitles}입니다.`
-  ]
+  const [primary] = results;
+  const answer = [primary.summary, primary.highlights[0]]
     .filter(Boolean)
-    .join("\n\n");
+    .join(" ");
 
   return {
     mode: "local",
     answer,
-    sources: toSources(results)
+    sources: toSources([primary])
   };
 }
 

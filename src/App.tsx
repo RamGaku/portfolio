@@ -234,19 +234,17 @@ const projectDetails: Record<string, ProjectDetail> = {
       "FDE 관점에서 가장 가까운 사례 — 반복 설정 작업을 호출 가능한 도구로 만들어 실제 업무 자동화로 이어진 솔루션 경험"
     ],
     dataFlow: [
-      { label: "IO Map", meta: "xlsx/xls register list" },
-      { label: "DB Config 조회", meta: "OnlineTSI · CLI Tool" },
-      { label: "주소 매핑", meta: "offset, type, read limit" },
+      { label: "IO Map · DB Config", meta: "xlsx · OnlineTSI" },
+      { label: "주소 매핑", meta: "offset · type · 125 limit" },
       { label: "CSV 생성", meta: "mapping_modbus.csv" },
       { label: "결과 보고", meta: "HTML 보고서" },
       { label: "실값 테스트", meta: "Modpoll · 자연어 지시" }
     ],
     layers: [
-      { layer: "Input", tech: ["Excel", "IO Map", "Channel DB"] },
+      { layer: "Input", tech: ["Excel", "IO Map", "OnlineTSI DB"] },
       { layer: "Protocol", tech: ["Modbus TCP", "NModbus", "Register limit"] },
-      { layer: "Automation", tech: ["Codex Skill", "CLI", "DB Connector"] },
-      { layer: "Test", tech: ["Modpoll", "자연어 테스트", "HTML Report"] },
-      { layer: "Output", tech: ["CSV Mapping", "T-DataServer", "Config generation"] }
+      { layer: "Automation", tech: ["Codex Skill", "CLI", "DB Connector", "HTML Report"] },
+      { layer: "Output", tech: ["CSV Mapping", "T-DataServer", "Modpoll", "자연어 테스트"] }
     ]
   }
 };
@@ -1387,7 +1385,7 @@ function PortfolioChat({
             ) : null}
             {message.sources?.length ? (
               <div className="source-links">
-                {message.sources.slice(0, 4).map((source) => (
+                {message.sources.slice(0, 1).map((source) => (
                   <button
                     key={source.id}
                     type="button"

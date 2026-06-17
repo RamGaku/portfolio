@@ -58,7 +58,7 @@
   },
   {
     "id": "modbus-mapping-skill",
-    "title": "Legacy Config Automation with Modbus Mapping Skill",
+    "title": "Modbus 매핑 자동화 AI Skill",
     "period": "2026",
     "category": "Workflow Automation",
     "summary": "레거시 솔루션의 Modbus 설정 생성을 AI Skill로 가공했습니다. IO Map Excel과 OnlineTSI DB 채널을 매칭해 T-DataServer용 mapping_modbus.csv를 생성하고, Modpoll 내장으로 실제 값까지 자연어로 테스트할 수 있도록 확장한 흐름입니다.",
