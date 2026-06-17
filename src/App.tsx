@@ -563,6 +563,28 @@ export default function App() {
     window.setTimeout(() => scrollToAnchor(window.location.hash.slice(1)), 80);
   }, []);
 
+  // 숨겨진 admin 진입: 입력칸 밖에서 "admin"을 순서대로 타이핑하면 로그인 모달이 열린다.
+  useEffect(() => {
+    let buffer = "";
+    const handleKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)
+      ) {
+        return;
+      }
+      if (event.key.length !== 1) return;
+      buffer = (buffer + event.key.toLowerCase()).slice(-5);
+      if (buffer === "admin") {
+        buffer = "";
+        setLoginOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
   const resolve = useCallback(
     (id: string, fallback: string) => {
       if (id in draft) return draft[id];
@@ -725,13 +747,6 @@ export default function App() {
               </a>
             ))}
           </div>
-          <div className="nav-end">
-            {!admin ? (
-              <button className="admin-btn" type="button" onClick={() => setLoginOpen(true)}>
-                Admin
-              </button>
-            ) : null}
-          </div>
         </div>
       </nav>
 
@@ -769,7 +784,7 @@ export default function App() {
                 {act.hero ? (
                   <div className="scroll-cue">
                     <span className="line" />
-                    <span>아래로</span>
+                    <span>Scroll</span>
                   </div>
                 ) : null}
               </div>
