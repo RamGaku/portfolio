@@ -353,6 +353,35 @@ section {
   font-size: 14px;
 }
 
+.vdpm-embed-wrap {
+  position: relative;
+  width: 100%;
+  margin-top: 40px;
+  aspect-ratio: 1600 / 720;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #eef2f7;
+}
+
+.vdpm-embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  /* slightly taller than the frame so the artifact's trailing whitespace
+     overflows and is clipped by the wrap, instead of showing a scrollbar */
+  height: calc(100% + 28px);
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .vdpm-embed-wrap {
+    margin-top: 28px;
+  }
+}
+
 .fit,
 .work {
   padding: 104px 0;

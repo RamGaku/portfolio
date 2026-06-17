@@ -386,28 +386,16 @@ const flowStages = [
 
 const fitLenses = [
   {
-    term: "Problem Discovery",
-    title: "실패한 프로젝트도 근거로 남긴다",
-    text: "청송양수 고진동 프로젝트에서 데이터 이관, 분석 조건, 도구 UX가 어긋나는 지점을 추적했고 그 실패를 다음 체크리스트로 바꿨습니다.",
+    term: "Solution Lifecycle",
+    title: "진동 모니터링 솔루션의 전체적인 개발 및 유지보수 경험",
+    text: "현장 요구 정리부터 분석 도구(VibLowExplorer) 개발, 데이터 이관·분석 조건 검증, 유지보수까지 진동 모니터링 솔루션의 전 주기를 직접 다뤘습니다.",
     anchor: "project-cheongsong-high-vibration"
   },
   {
-    term: "Ontology",
-    title: "운영 객체와 데이터 의미 정렬",
-    text: "태그, 주소 offset, 채널, 레지스터 제한을 맞춰 장비 데이터가 운영 화면에서 같은 의미로 해석되게 했습니다.",
+    term: "Protocol Integration",
+    title: "여러 프로토콜 데이터 인터페이싱 경험",
+    text: "OPC DA/UA, Modbus TCP, REST, gRPC, HSMS 등 서로 다른 산업 인터페이스를 장비-서버-운영 화면 흐름으로 연결했습니다.",
     anchor: "project-industrial-interface-playbook"
-  },
-  {
-    term: "Workflow",
-    title: "반복 점검을 절차와 자동화로 전환",
-    text: "Modbus mapping과 보고서 생성을 사람이 검증 가능한 산출물 중심의 자동화 절차로 정리했습니다.",
-    anchor: "project-modbus-mapping-skill"
-  },
-  {
-    term: "Agent / App",
-    title: "데이터가 실제 사용 화면까지 가게",
-    text: "Edge, Center, REST API, RTDB, 3D Viewer를 연결해 운영자가 확인하고 판단할 수 있는 표면까지 검증했습니다.",
-    anchor: "project-gjpp-digital-twin"
   }
 ];
 
@@ -887,8 +875,8 @@ export default function App() {
             <SectionHead
               idBase="section.fit"
               tag="Enhans Fit"
-              title="Commerce OS를 과장하지 않고 연결하기"
-              desc="직접 Commerce OS 개발 경험이라고 말하지 않습니다. 대신 Enhans FDE가 보는 문제 구조에 맞춰, 기존 현장 경험이 어느 레이어와 만나는지 명확히 보여줍니다."
+              title="Enhans의 FDE와 적합한 이유"
+              desc="현장에서 쌓은 경험 중 Enhans FDE 역할과 가장 맞닿는 부분을 정리했습니다."
             />
             <div className="fit-grid">
               {fitLenses.map((lens, index) => {
@@ -1056,6 +1044,20 @@ function FlowDiagram() {
         className="flow-caption"
         id="flow.caption"
         value="데이터가 끊기면, 이 길을 한 층씩 되짚습니다."
+      />
+      <div className="vdpm-embed-wrap">
+        <iframe
+          className="vdpm-embed"
+          src="/vdpm-flow.html"
+          title="VDPM System Data Flow"
+          loading="lazy"
+        />
+      </div>
+      <Editable
+        as="p"
+        className="flow-caption"
+        id="flow.vdpm.caption"
+        value="실제 사례 — VDPM 시스템의 데이터 흐름 (장비 → 수집 → 서버 → 운영 화면)."
       />
     </>
   );
