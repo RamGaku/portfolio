@@ -478,7 +478,7 @@ export default function App() {
   const [openProjects, setOpenProjects] = useState<Set<string>>(
     () => new Set(projects[0] ? [projects[0].id] : [])
   );
-  const [chatOpen, setChatOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -501,10 +501,6 @@ export default function App() {
     ],
     []
   );
-
-  useEffect(() => {
-    setChatOpen(true);
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -730,10 +726,6 @@ export default function App() {
             ))}
           </div>
           <div className="nav-end">
-            <div className="nav-right" aria-label="Language">
-              <button className="lang on" type="button">KO</button>
-              <button className="lang" type="button" disabled>EN</button>
-            </div>
             {!admin ? (
               <button className="admin-btn" type="button" onClick={() => setLoginOpen(true)}>
                 Admin
@@ -850,8 +842,11 @@ export default function App() {
       </main>
 
       {!chatOpen ? (
-        <button className="fab" type="button" onClick={() => setChatOpen(true)} aria-label="Open portfolio AI chat">
-          <img src="/assets/daftpunk_logo.png" alt="" aria-hidden="true" />
+        <button className="fab" type="button" onClick={() => setChatOpen(true)} aria-label="포트폴리오 AI 챗봇 열기">
+          <span className="fab-ic">
+            <img src="/assets/daftpunk_logo.png" alt="" aria-hidden="true" />
+          </span>
+          <span className="fab-label">AI에게 물어보기</span>
         </button>
       ) : null}
       <PortfolioChat

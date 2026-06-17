@@ -743,26 +743,51 @@ section {
   right: 24px;
   bottom: 24px;
   z-index: 200;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  overflow: hidden;
+  gap: 11px;
+  height: 54px;
+  padding: 6px 18px 6px 6px;
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   background: #050505;
   color: #ffffff;
   cursor: pointer;
   box-shadow:
-    0 12px 30px rgba(215, 169, 89, 0.28),
+    0 14px 34px rgba(0, 0, 0, 0.24),
     0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s var(--ease);
 }
 
-.fab img {
+.fab:hover {
+  transform: translateY(-2px);
+}
+
+.fab-ic {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.fab-ic img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.48);
+  transform: scale(1.5);
+}
+
+.fab-label {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .fab {
+    right: 16px;
+    bottom: 16px;
+  }
 }
 
 .chat {
