@@ -10,7 +10,7 @@
 ## 1. 다른 PC에서 이어서 작업 (집/회사 어디서든)
 
 ```bash
-git clone https://github.com/Ramga-kim/portfolio.git   # 처음 1회
+git clone https://github.com/RamGaku/portfolio.git   # 처음 1회
 # 이미 받아놨으면:  git pull
 cd portfolio
 npm install        # node_modules는 git에 없음 → 매 PC 1회 필요

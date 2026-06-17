@@ -15,7 +15,7 @@
 ## 2. 빠른 시작
 
 ```bash
-git clone https://github.com/Ramga-kim/portfolio.git
+git clone https://github.com/RamGaku/portfolio.git
 cd portfolio
 npm install
 npm run dev
