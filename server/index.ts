@@ -5,7 +5,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
-import { answerLocally, loadKnowledge, retrieve } from "./rag/retriever";
+import { answerLocally, loadKnowledge, retrieveSemantic } from "./rag/retriever";
 import { answerWithVertex, isVertexConfigured } from "./rag/vertex";
 import { loadOverrides, saveOverrides } from "./content";
 
@@ -67,7 +67,7 @@ app.post("/api/chat", async (req, res) => {
   }
 
   const question = parsed.data.question;
-  const results = retrieve(question);
+  const results = await retrieveSemantic(question);
   const vertexAnswer = await answerWithVertex(question, results);
   res.json(vertexAnswer ?? answerLocally(question, results));
 });

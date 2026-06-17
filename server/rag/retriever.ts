@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ChatResponse, KnowledgeEntry, SearchResult } from "../types";
 import { loadOverrides, type ContentOverrides } from "../content";
+import { loadProfileEntries } from "./profile";
+import { cosineSimilarity, embed, embeddingsEnabled } from "./embeddings";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "../..");
@@ -33,17 +35,12 @@ const sensitivePatterns = [
 ];
 
 const expansionMap: Record<string, string[]> = {
-  "인핸스": ["enhans", "fde", "customer", "commerce", "현장", "고객", "데이터"],
-  "enhans": ["인핸스", "fde", "customer", "commerce", "현장", "고객"],
-  "fde": ["forward", "deployed", "현장", "고객", "문제", "요구사항", "workflow", "ontology"],
-  "commerce": ["커머스", "ontology", "workflow", "agent", "데이터", "요구사항", "현장"],
-  "커머스": ["commerce", "ontology", "workflow", "agent", "데이터", "요구사항", "현장"],
-  "ontology": ["온톨로지", "태그", "주소", "채널", "데이터", "의미", "opc", "modbus"],
-  "온톨로지": ["ontology", "태그", "주소", "채널", "데이터", "의미", "opc", "modbus"],
-  "workflow": ["워크플로우", "자동화", "점검", "절차", "mapping", "cli"],
-  "워크플로우": ["workflow", "자동화", "점검", "절차", "mapping", "cli"],
-  "agent": ["에이전트", "kb", "검색", "도구", "api", "workflow", "검증"],
-  "에이전트": ["agent", "kb", "검색", "도구", "api", "workflow", "검증"],
+  "인핸스": ["enhans", "fde", "customer", "솔루션", "현장", "고객", "데이터", "통합"],
+  "enhans": ["인핸스", "fde", "customer", "solution", "현장", "고객", "통합"],
+  "fde": ["forward", "deployed", "현장", "고객", "문제", "요구사항", "솔루션", "통합"],
+  "솔루션": ["solution", "개발", "통합", "운영", "유지보수", "배포"],
+  "통합": ["integration", "연동", "인터페이스", "시스템", "데이터"],
+  "자동화": ["automation", "절차", "점검", "mapping", "cli", "스킬"],
   "성과": ["결과", "임팩트", "수치", "검증", "evidence"],
   "임팩트": ["성과", "결과", "수치", "운영", "검증"],
   "rag": ["kb", "검색", "질문", "답변", "문서", "근거"],
@@ -103,7 +100,8 @@ function applyEntryOverrides(entry: KnowledgeEntry, overrides: ContentOverrides)
 
 export function loadKnowledge(): KnowledgeEntry[] {
   const overrides = loadOverrides();
-  return loadRawKnowledge().map((entry) => applyEntryOverrides(entry, overrides));
+  const projects = loadRawKnowledge().map((entry) => applyEntryOverrides(entry, overrides));
+  return [...projects, ...loadProfileEntries()];
 }
 
 export function isSensitiveQuestion(question: string): boolean {
@@ -128,9 +126,18 @@ export function retrieve(question: string, limit = 4): SearchResult[] {
       for (const term of queryTerms) {
         if (tokens.has(term)) {
           score += 4;
+          continue;
         }
         if (lowerHaystack.includes(term)) {
           score += 2;
+          continue;
+        }
+        // 한국어 조사 허용: 질의 토큰이 KB 토큰을 품으면 부분 매칭 (예: "취미가" ⊇ "취미", "년생이야" ⊇ "년생")
+        for (const token of tokens) {
+          if (token.length >= 2 && term.length > token.length && term.includes(token)) {
+            score += 1;
+            break;
+          }
         }
       }
 
@@ -149,6 +156,53 @@ export function retrieve(question: string, limit = 4): SearchResult[] {
   return scored.slice(0, limit);
 }
 
+type IndexedEntry = { entry: KnowledgeEntry; vector: number[] };
+
+let semanticIndex: { signature: string; items: IndexedEntry[] } | null = null;
+
+function knowledgeSignature(entries: KnowledgeEntry[]): string {
+  return entries.map((entry) => `${entry.id}:${entryToSearchText(entry).length}`).join("|");
+}
+
+async function buildIndex(entries: KnowledgeEntry[]): Promise<IndexedEntry[] | null> {
+  const signature = knowledgeSignature(entries);
+  if (semanticIndex && semanticIndex.signature === signature) {
+    return semanticIndex.items;
+  }
+
+  const vectors = await embed(entries.map((entry) => entryToSearchText(entry)));
+  if (!vectors) {
+    return null;
+  }
+
+  const items = entries.map((entry, index) => ({ entry, vector: vectors[index] }));
+  semanticIndex = { signature, items };
+  return items;
+}
+
+/**
+ * Vector (semantic) retrieval: embeds the KB once (cached, re-embedded when the
+ * KB text changes) and the question, then ranks by cosine similarity. Falls
+ * back to keyword retrieval when Vertex embeddings are unavailable or fail.
+ */
+export async function retrieveSemantic(question: string, limit = 4): Promise<SearchResult[]> {
+  if (embeddingsEnabled()) {
+    const index = await buildIndex(loadKnowledge());
+    if (index) {
+      const queryVectors = await embed([question]);
+      if (queryVectors) {
+        const query = queryVectors[0];
+        return index
+          .map(({ entry, vector }) => ({ ...entry, score: cosineSimilarity(query, vector) }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, limit);
+      }
+    }
+  }
+
+  return retrieve(question, limit);
+}
+
 export function answerLocally(question: string, results: SearchResult[]): ChatResponse {
   if (isSensitiveQuestion(question)) {
     return {
@@ -165,21 +219,6 @@ export function answerLocally(question: string, results: SearchResult[]): ChatRe
       answer:
         "공개 경력 KB에서 바로 연결되는 근거를 찾지 못했습니다. 질문을 Enhans 적합성, 청송양수 고진동, 추진전동기 보고서, 경주풍력 Digital Twin, Modbus Mapping Skill, 폐쇄망 OnlineTSI, 산업용 인터페이스, Edge Computing, 펌웨어 디버깅 중 하나로 좁혀 주면 더 정확하게 답할 수 있습니다.",
       sources: []
-    };
-  }
-
-  if (isCommerceQuestion(question)) {
-    const mapped = results.filter((result) => result.id !== "enhans-positioning");
-    const sources = mapped.length ? mapped : results;
-    return {
-      mode: "local",
-      answer: [
-        "직접 Commerce OS를 개발했다고 답하지는 않습니다. 공개 KB 기준으로 말할 수 있는 것은 Enhans FDE 역할과 맞닿는 인접 경험입니다.",
-        "Ontology에 가까운 근거는 태그, 주소 offset, 채널, 레지스터 제한처럼 장비 데이터의 의미를 운영 객체에 맞춰 정렬한 경험입니다.",
-        "Workflow에 가까운 근거는 배포 점검 절차, Modbus mapping 자동화, 설정 적용 순서 안정화처럼 반복 작업을 검증 가능한 절차로 만든 경험입니다.",
-        "Agent/App에 가까운 근거는 REST API, RTDB, Grafana/InfluxDB, 문서 산출물을 통해 데이터가 실제 사용 화면과 검토 흐름까지 도달하게 한 경험입니다."
-      ].join("\n\n"),
-      sources: toSources(sources.slice(0, 4))
     };
   }
 
@@ -218,12 +257,6 @@ export function answerLocally(question: string, results: SearchResult[]): ChatRe
     answer,
     sources: toSources(results)
   };
-}
-
-function isCommerceQuestion(question: string) {
-  const terms = ["commerce", "ontology", "workflow", "agent", "agentos", "커머스", "온톨로지", "워크플로우", "에이전트"];
-  const normalized = question.toLowerCase();
-  return terms.some((term) => normalized.includes(term));
 }
 
 function isImpactQuestion(question: string) {

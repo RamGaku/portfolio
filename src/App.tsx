@@ -132,7 +132,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "반복 보고서 작성 업무를 데이터 기반 자동 산출 흐름으로 재구성",
       "보고서 품질을 개인 수작업이 아니라 입력 데이터와 템플릿 규칙에 의존하게 만듦",
-      "Enhans 관점에서는 Workflow 자동화와 고객 검토 가능한 산출물 설계 경험으로 연결"
+      "Enhans 관점에서는 반복 업무를 자동화 흐름으로 바꾸고 고객이 검토 가능한 산출물로 설계한 솔루션 경험으로 연결"
     ],
     dataFlow: [
       { label: "운전/알람/트렌드 데이터", meta: "raw operation records" },
@@ -164,7 +164,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "경주풍력/NIA Edge 구성과 DtEdgeServer v1.0.2 배포 검증 기록 보유",
       "데이터 플랫폼 경험을 단순 백엔드가 아니라 현장-센터-시각화 end-to-end 흐름으로 설명 가능",
-      "Enhans 관점에서는 App Builder와 현장 데이터 운영 화면을 잇는 경험으로 연결"
+      "Enhans 관점에서는 현장 데이터를 운영 화면까지 잇는 end-to-end 솔루션 통합 경험으로 연결"
     ],
     dataFlow: [
       { label: "현장 설비/SCADA", meta: "wind turbine, sensor data" },
@@ -196,7 +196,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "레거시 설정 노하우를 개인 기억이 아니라 호출 가능한 AI Skill로 전환",
       "Modbus mapping 반복 작업의 실수 가능성을 줄이는 운영 워크플로우를 구성",
-      "Enhans 관점에서는 Workflow와 Agent-ready KB를 실제 업무 자동화로 만든 사례"
+      "Enhans 관점에서는 반복 설정 작업을 호출 가능한 도구로 만들어 실제 업무 자동화로 연결한 솔루션 경험"
     ],
     dataFlow: [
       { label: "IO Map", meta: "xlsx/xls register list" },
@@ -260,7 +260,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "OPC, Modbus, REST, gRPC, HSMS를 단순 나열이 아니라 데이터 흐름 관점으로 설명 가능",
       "고객 요구를 장비 데이터 의미와 운영 화면 기대값으로 바꾸는 역량을 포트폴리오 중심축으로 정리",
-      "Enhans 관점에서는 Ontology mapping과 외부 시스템 integration 감각으로 연결"
+      "Enhans 관점에서는 이기종 시스템을 데이터 의미 기준으로 통합하는 솔루션 감각으로 연결"
     ],
     dataFlow: [
       { label: "장비/DCS/PLC", meta: "field device, gateway" },
@@ -292,7 +292,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "DtEdgeServer v1.0.2 배포 검증과 TMS 원격 데이터 미표시 분석 기록 보유",
       "Edge Computing은 폐쇄망과 별개의 경험으로 분리해 설명",
-      "Enhans 관점에서는 Pipeline/App Builder에 필요한 data readiness 검증 경험으로 연결"
+      "Enhans 관점에서는 데이터가 운영 화면까지 도달하는지 검증하는 data readiness 솔루션 경험으로 연결"
     ],
     dataFlow: [
       { label: "현장 데이터 스트림", meta: "machine tag, sensor value" },
@@ -399,56 +399,23 @@ const fitLenses = [
   }
 ];
 
+// 사이트 고유 개념(요구사항 추출)만 즉답 + 섹션 점프로 처리하고,
+// 나머지 질문은 모두 서버 RAG(/api/chat)로 보낸다.
 const scriptedIntents = [
   {
-    keys: ["요구사항", "추출", "고객", "원하는", "requirement"],
+    keys: ["요구사항 추출"],
     reply:
       "김가람의 출발점은 요구사항 추출입니다. 현장의 요청을 그대로 받아 적는 것이 아니라, 운영 방식, 데이터 위치, 검증 기준, 실제 사용 화면을 함께 확인해 제품 요구와 데이터 흐름으로 바꿉니다.",
     jump: "requirements",
     label: "요구사항 추출 보기"
-  },
-  {
-    keys: ["데이터", "흐름", "알파", "오메가", "data", "보고"],
-    reply:
-      "결국 고객의 요구는 '이 데이터를, 이렇게, 보고 싶다'로 모입니다. 그래서 각 프로젝트를 장비/프로토콜/서비스/저장/API/화면의 데이터 흐름으로 풀어 두었습니다. 프로젝트 카드를 열면 DATA FLOW와 LAYER STACK을 바로 볼 수 있습니다.",
-    jump: "data",
-    label: "결국 데이터 보기"
-  },
-  {
-    keys: ["commerce", "ontology", "workflow", "agent", "agentos", "커머스", "온톨로지", "워크플로우", "에이전트", "인핸스"],
-    reply:
-      "직접 Commerce OS를 개발했다고 말하지는 않습니다. 대신 Enhans FDE에 필요한 인접 경험은 있습니다. 태그/주소/채널을 운영 객체처럼 정렬한 경험은 Ontology와, 배포 점검과 Modbus mapping 자동화는 Workflow와, REST/RTDB/화면/문서까지 검증한 경험은 Agent/App 실행 환경과 맞닿아 있습니다.",
-    jump: "fit",
-    label: "Enhans 매핑 보기"
-  },
-  {
-    keys: ["청송", "고진동", "진동", "실패"],
-    reply:
-      "청송양수 고진동 프로젝트는 주도했지만 성공 사례로만 포장하지 않았습니다. 데이터 이관, 분석 조건, 센서 설정, VibLowExplorer UX가 함께 맞아야 한다는 교훈을 남긴 프로젝트입니다.",
-    jump: "project-cheongsong-high-vibration",
-    label: "청송양수 프로젝트 보기"
-  },
-  {
-    keys: ["경주", "풍력", "digital twin", "dt", "3d", "viewer"],
-    reply:
-      "경주풍력 Digital Twin은 Edge에서 센터 시스템, REST/status API, RTDB, 3D Viewer까지 이어지는 end-to-end 데이터 흐름을 검증한 경험입니다.",
-    jump: "project-gjpp-digital-twin",
-    label: "경주풍력 DT 보기"
-  },
-  {
-    keys: ["폐쇄망", "onlinetsi", "offline", "망분리"],
-    reply:
-      "폐쇄망 경험은 Edge Computing과 분리해서 봐야 합니다. 폐쇄망은 OnlineTSI 운영 환경에서 설치, 복구 이미지, UWF, DHCP, 네트워크 분리, 문서 검증을 다룬 경험이고, Edge는 현장 데이터 처리 환경 경험입니다.",
-    jump: "project-closed-network-onlinetsi",
-    label: "폐쇄망 OnlineTSI 보기"
-  },
+  }
 ];
 
 const promptChips = [
   ["요구사항 추출", "요구사항 추출이 무슨 뜻이야?"],
-  ["Enhans Fit", "Commerce OS Ontology Workflow Agent와 맞닿는 근거를 보여줘"],
+  ["Enhans Fit", "Enhans FDE에 적합한 이유가 뭐야?"],
   ["데이터 플로우", "프로젝트별 데이터 플로우와 레이어 스택을 설명해줘"],
-  ["경주풍력 DT", "경주풍력 Digital Twin 프로젝트로 이동"],
+  ["경주풍력 DT", "경주풍력 Digital Twin 프로젝트를 설명해줘"],
   ["폐쇄망", "폐쇄망 OnlineTSI와 Edge Computing 경험 차이를 설명해줘"],
   ["Modbus Skill", "Modbus Mapping Skill 프로젝트를 설명해줘"],
   ["펌웨어 디버깅", "펌웨어/프로토콜 디버깅 경험을 설명해줘"]
@@ -875,7 +842,7 @@ export default function App() {
             <SectionHead
               idBase="section.fit"
               tag="Enhans Fit"
-              title="Enhans의 FDE와 적합한 이유"
+              title="Enhans FDE에 적합한 이유"
               desc="현장에서 쌓은 경험 중 Enhans FDE 역할과 가장 맞닿는 부분을 정리했습니다."
             />
             <div className="fit-grid">
@@ -995,8 +962,8 @@ export default function App() {
 }
 
 function highlightKeywords(text: string) {
-  const keywords = ["요구사항 추출", "데이터의 흐름", "데이터", "질문", "Commerce OS", "Ontology", "Workflow", "Agent"];
-  const parts = text.split(/(요구사항 추출|데이터의 흐름|데이터|질문|Commerce OS|Ontology|Workflow|Agent)/g);
+  const keywords = ["요구사항 추출", "데이터의 흐름", "데이터", "질문"];
+  const parts = text.split(/(요구사항 추출|데이터의 흐름|데이터|질문)/g);
   return parts.map((part, index) =>
     keywords.includes(part) ? (
       <em key={`${part}-${index}`}>{part}</em>
