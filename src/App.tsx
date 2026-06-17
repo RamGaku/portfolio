@@ -935,17 +935,19 @@ function CollapsibleSection({
   eyebrow,
   title,
   defaultOpen = true,
+  tint = false,
   children
 }: {
   id: string;
   eyebrow: string;
   title: string;
   defaultOpen?: boolean;
+  tint?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <section className={`csec ${open ? "open" : ""}`} id={id}>
+    <section className={`csec ${tint ? "csec-tint" : ""} ${open ? "open" : ""}`} id={id}>
       <div className="wrap">
         <div className="csec-head" role="button" tabIndex={0} onClick={() => setOpen((value) => !value)}>
           <span className="csec-head-text">
@@ -979,7 +981,7 @@ function AboutSection() {
 
 function CareerSection() {
   return (
-    <CollapsibleSection id="career" eyebrow="Career" title="경력">
+    <CollapsibleSection id="career" eyebrow="Career" title="경력" tint>
       <div className="career">
         {careerEntries.map((entry, index) => (
           <div className="career-item" key={entry.company}>
