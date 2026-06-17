@@ -34,6 +34,9 @@ const sensitivePatterns = [
   /(vpn|anydesk|원격).*(주소|계정|아이디|비밀번호|암호|password|접속 정보)/
 ];
 
+// 폴백 전용. 정상 경로는 retrieveSemantic()의 벡터 임베딩이 처리하고,
+// 임베딩이 비활성/실패해 retrieve() 키워드 경로로 떨어졌을 때만 사용된다.
+// 한↔영 도메인 어휘(예: 모드버스↔modbus, 청송↔vnet-7000)를 이어 폴백 품질을 유지한다.
 const expansionMap: Record<string, string[]> = {
   "인핸스": ["enhans", "fde", "customer", "솔루션", "현장", "고객", "데이터", "통합"],
   "enhans": ["인핸스", "fde", "customer", "solution", "현장", "고객", "통합"],

@@ -84,6 +84,39 @@ const CHAT_INTRO =
   "안녕하세요. 김가람의 포트폴리오 KB 가이드입니다. Vertex AI와 공개 경력 KB를 기준으로 답하고, 관련 프로젝트 섹션으로 안내합니다. 요구사항 추출, Enhans Fit, 데이터 흐름, 현장 배포, 산업용 통신, Edge 데이터, 펌웨어 디버깅, 문서화 경험을 물어보세요.";
 
 const projectDetails: Record<string, ProjectDetail> = {
+  "expense-approval-skill": {
+    id: "project-expense-approval-skill",
+    problem:
+      "매월 반복되는 경비 청구 결재는 사람마다 다른 양식의 영수증을 수동으로 합산·정리해야 했습니다. 영수증 양식이 일관되지 않아 합산 과정에서 휴먼 에러가 발생하고, 같은 청구를 매번 동일한 절차로 반복해야 하는 구조였습니다.",
+    role:
+      "반복 결재 업무를 AI Skill로 가공해, 영수증 OCR부터 전자결재 페이지 입력·첨부 제출까지 단일 자연어 명령으로 끝나도록 설계하고 사내에 배포했습니다.",
+    actions: [
+      "영수증 1장당 1 에이전트의 병렬 OCR 구조로, 처리 시간이 영수증 수량과 무관해지도록 설계",
+      "메인 에이전트의 컨텍스트 오염을 피하기 위해 OCR·정보 추출을 서브 에이전트로 격리",
+      "입력은 xlsx / pdf / 이미지로 다양하게 받고 출력은 PDF로 통일해 결재 수신 부서의 영수증 양식을 일원화",
+      "Playwright MCP로 AI가 전자결재 페이지에 직접 정보를 입력하도록 자동화",
+      "처리된 영수증을 압축 파일로 첨부하는 후처리 단계까지 한 흐름에 묶어 사내 배포 후 운영 검증"
+    ],
+    outcomes: [
+      "프롬프트 한 줄('2월 경비청구 올려줘')로 결재 제출까지 끝나는 운영 흐름으로 전환",
+      "영수증 합산 과정의 휴먼 에러를 줄이고, 결재 수신 부서가 받는 영수증 양식을 단일 PDF로 일원화",
+      "Playwright MCP를 통해 '브라우저로 하는 모든 절차를 AI Tool 범위로 확장할 수 있다'는 가능성을 사내 사례로 검증",
+      "FDE 관점에서 가장 가까운 사례 — 반복 업무를 에이전트 워크플로우로 운영에 꽂아 실제 사용자에게 배포한 솔루션 경험"
+    ],
+    dataFlow: [
+      { label: "영수증 수집", meta: "xlsx · pdf · img" },
+      { label: "병렬 OCR", meta: "영수증 per agent" },
+      { label: "정보 추출", meta: "결재 항목 · 금액 합산" },
+      { label: "전자결재 입력", meta: "Playwright MCP" },
+      { label: "첨부 · 제출", meta: "PDF 압축 파일" }
+    ],
+    layers: [
+      { layer: "Input", tech: ["Receipt files", "XLSX", "PDF", "Image"] },
+      { layer: "AI", tech: ["OCR Agent", "Parallel Agents", "Context Isolation"] },
+      { layer: "Automation", tech: ["Playwright MCP", "Browser Driver", "Form Fill"] },
+      { layer: "Delivery", tech: ["PDF Archive", "사내 전자결재", "사내 배포"] }
+    ]
+  },
   "cheongsong-high-vibration": {
     id: "project-cheongsong-high-vibration",
     problem:
@@ -100,7 +133,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "요구 스펙상으로는 완료했지만, 용도에 맞지 않는 플랫폼 탓에 사용성이 떨어진 '실패한 프로젝트'로 솔직하게 남김",
       "같은 도메인이라도 직군·개인별 이해도 차이가 크다 — 관련된다면 설계 단계부터 반드시 관여해야 더 큰 사고를 막는다는 점을 체득",
-      "최종 사용자조차 요구를 추상적으로만 아는 경우가 많아, 빠른 MVP로 '생각한 것이 맞는지' 확인시켜야 한다는 교훈",
+      "최종 사용자조차 요구를 추상적으로만 아는 경우가 많다 — 이후 프로젝트는 빠른 MVP로 '생각한 것이 맞는지' 먼저 확인시키는 방식으로 전환",
       "현장 실무자와 쌓은 신뢰 관계가 곤란한 상황에서 실제로 큰 도움이 된다는 것을 경험"
     ],
     dataFlow: [
@@ -133,7 +166,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "반복 보고서 작성 업무를 데이터 기반 자동 산출 흐름으로 재구성",
       "보고서 품질을 개인 수작업이 아니라 입력 데이터와 템플릿 규칙에 의존하게 만듦",
-      "Enhans 관점에서는 반복 업무를 자동화 흐름으로 바꾸고 고객이 검토 가능한 산출물로 설계한 솔루션 경험으로 연결"
+      "운영자가 결과를 재검토할 수 있도록 산출 기준을 분리·문서화해 운영팀이 인계받을 수 있는 워크플로우로 정착"
     ],
     dataFlow: [
       { label: "운전/알람/트렌드 데이터", meta: "raw operation records" },
@@ -165,7 +198,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     outcomes: [
       "경주풍력/NIA Edge 구성과 DtEdgeServer v1.0.2 배포 검증 기록 보유",
       "데이터 플랫폼 경험을 단순 백엔드가 아니라 현장-센터-시각화 end-to-end 흐름으로 설명 가능",
-      "Enhans 관점에서는 현장 데이터를 운영 화면까지 잇는 end-to-end 솔루션 통합 경험으로 연결"
+      "FDE 관점에서 가장 가까운 사례 — 현장 데이터가 운영 화면까지 이어지는 통합 솔루션을 직접 다룬 경험"
     ],
     dataFlow: [
       { label: "현장 설비/SCADA", meta: "wind turbine, sensor data" },
@@ -184,32 +217,35 @@ const projectDetails: Record<string, ProjectDetail> = {
   "modbus-mapping-skill": {
     id: "project-modbus-mapping-skill",
     problem:
-      "레거시 솔루션의 Modbus 설정은 IO Map, 채널 DB, 주소 offset, 레지스터 제한을 동시에 맞춰야 합니다. 수동 작업은 반복적이고 실수 가능성이 높았습니다.",
+      "레거시 솔루션의 Modbus 설정은 IO Map, 채널 DB, 주소 offset, 레지스터 제한을 동시에 맞춰야 합니다. 수동 매핑은 반복적이고 실수가 잦았으며, 설정한 Node에 실제 값이 나오는지 확인하기 위해 매번 별도 Modbus 테스트 도구를 띄워야 했습니다.",
     role:
-      "반복 설정 업무를 AI가 호출 가능한 Skill로 가공하고, 사람이 검증 가능한 mapping_modbus.csv 산출물로 떨어지게 만들었습니다.",
+      "반복 설정 업무를 AI가 호출 가능한 Skill로 가공하고, 매핑부터 결과 보고·실값 테스트까지 한 자리에서 끝나도록 통합했습니다.",
     actions: [
       "IO Map Excel과 OnlineTSI DB 채널을 매칭하는 입력/출력 정의",
       "주소 offset, register type, 125 register read limit 같은 프로토콜 제약 반영",
-      "T-DataServer용 mapping_modbus.csv 생성 절차 정리",
-      "Codex Skill로 명령어, 검증 방식, 실패 케이스를 문서화",
-      "자동 생성 결과를 사람이 다시 검토할 수 있도록 CSV 산출물 중심으로 설계"
+      "DB에 직접 접속해 Config를 조회하는 CLI Tool을 만들어 매핑 입력을 자동 수집",
+      "T-DataServer용 mapping_modbus.csv 생성 절차 정리 및 Codex Skill로 명령어/검증/실패 케이스 문서화",
+      "수행 결과를 HTML 보고서로 사용자에게 가시화하고, Modpoll CLI를 Skill에 내장해 자연어 지시만으로 Modbus 실값 테스트까지 수행"
     ],
     outcomes: [
       "레거시 설정 노하우를 개인 기억이 아니라 호출 가능한 AI Skill로 전환",
-      "Modbus mapping 반복 작업의 실수 가능성을 줄이는 운영 워크플로우를 구성",
-      "Enhans 관점에서는 반복 설정 작업을 호출 가능한 도구로 만들어 실제 업무 자동화로 연결한 솔루션 경험"
+      "매핑 생성 → 결과 보고 → 실값 테스트가 한 흐름에서 끝나며, 별도 Modbus 도구를 띄울 필요가 없어짐",
+      "자연어 지시 + HTML 보고서 구조를 통해 결과를 사람이 즉시 검토할 수 있는 운영 워크플로우 확보",
+      "FDE 관점에서 가장 가까운 사례 — 반복 설정 작업을 호출 가능한 도구로 만들어 실제 업무 자동화로 이어진 솔루션 경험"
     ],
     dataFlow: [
       { label: "IO Map", meta: "xlsx/xls register list" },
-      { label: "채널 조회", meta: "OnlineTSI DB channel matching" },
-      { label: "주소 규칙", meta: "offset, type, read limit" },
+      { label: "DB Config 조회", meta: "OnlineTSI · CLI Tool" },
+      { label: "주소 매핑", meta: "offset, type, read limit" },
       { label: "CSV 생성", meta: "mapping_modbus.csv" },
-      { label: "T-DataServer", meta: "runtime config input" }
+      { label: "결과 보고", meta: "HTML 보고서" },
+      { label: "실값 테스트", meta: "Modpoll · 자연어 지시" }
     ],
     layers: [
       { layer: "Input", tech: ["Excel", "IO Map", "Channel DB"] },
       { layer: "Protocol", tech: ["Modbus TCP", "NModbus", "Register limit"] },
-      { layer: "Automation", tech: ["Codex Skill", "CLI", "Validation"] },
+      { layer: "Automation", tech: ["Codex Skill", "CLI", "DB Connector"] },
+      { layer: "Test", tech: ["Modpoll", "자연어 테스트", "HTML Report"] },
       { layer: "Output", tech: ["CSV Mapping", "T-DataServer", "Config generation"] }
     ]
   }
@@ -228,23 +264,13 @@ const storyActs = [
     hero: true
   },
   {
-    id: "data",
-    n: "02",
-    tag: "결국 - 데이터",
-    title: "데이터,\n알파이자 오메가",
-    body: [
-      "수많은 요구를 따라가다 보면 결국 한 문장으로 모입니다. '이 데이터를, 이렇게, 보고 싶다.' 화면도, 알람도, 리포트도 그 변형일 뿐입니다.",
-      "그래서 저는 고객의 요구를 데이터의 흐름으로 번역합니다. 어떤 데이터가 어디서 나와, 어떻게 가공되어, 누구에게 보여야 하는가."
-    ]
-  },
-  {
     id: "flow",
-    n: "03",
-    tag: "그래서 - 흐름을 잇는다",
+    n: "02",
+    tag: "결국 - 데이터 흐름을 잇는다",
     title: "장비에서 화면까지,\n끊긴 곳을 찾는다",
     body: [
-      "데이터는 장비에서 출발해 프로토콜, 서버, DB, 운영 화면까지 여러 층을 지납니다. 문제는 늘 어딘가에서 끊깁니다. 장비엔 값이 있는데 화면엔 보이지 않습니다.",
-      "제 일의 절반은 그 끊긴 지점을 한 층씩 따라가 찾아내고, 다시 잇는 것입니다."
+      "수많은 요구를 따라가다 보면 결국 한 문장으로 모입니다. '이 데이터를, 이렇게, 보고 싶다.' 화면도, 알람도, 리포트도 그 변형일 뿐입니다.",
+      "데이터는 장비에서 출발해 프로토콜, 서버, DB, 운영 화면까지 여러 층을 지납니다. 제 일의 절반은 그 끊긴 지점을 한 층씩 따라가 찾아내고, 다시 잇는 것입니다."
     ],
     flow: true
   }
@@ -261,7 +287,7 @@ const fitLenses = [
   {
     term: "Solution Lifecycle",
     title: "진동 모니터링 솔루션의 전체적인 개발 및 유지보수 경험",
-    text: "현장 요구 정리부터 분석 도구(VibLowExplorer) 개발, 데이터 이관·분석 조건 검증, 유지보수까지 진동 모니터링 솔루션의 전 주기를 직접 다뤘습니다.",
+    text: "현장 요구 정리부터 데이터 이관·분석 조건 검증, 기능 추가, 유지보수까지 진동 모니터링 솔루션의 전 주기를 직접 다뤘습니다.",
     anchor: "project-cheongsong-high-vibration"
   },
   {
@@ -288,14 +314,15 @@ const promptChips = [
   ["요구사항 추출", "요구사항 추출이 무슨 뜻이야?"],
   ["Enhans Fit", "Enhans FDE에 적합한 이유가 뭐야?"],
   ["경력", "어떤 회사에서 무슨 일을 했어?"],
-  ["청송양수", "청송양수 고진동 프로젝트 설명해줘"],
+  ["전자결재 AI", "사내 전자결재 AI Skill 프로젝트를 설명해줘"],
   ["경주풍력 DT", "경주풍력 Digital Twin 프로젝트를 설명해줘"],
   ["Modbus Skill", "Modbus Mapping Skill 프로젝트를 설명해줘"],
+  ["청송양수", "청송양수 고진동 프로젝트 설명해줘"],
   ["데이터 플로우", "프로젝트별 데이터 플로우와 레이어 스택을 설명해줘"]
 ];
 
 const aboutSummary =
-  "산업 현장의 모호한 요구를 데이터 흐름으로 번역해, 센서·펌웨어부터 서버·DB·운영 화면까지 솔루션 전반을 개발하고 유지보수해온 엔지니어입니다. 진동 모니터링 솔루션의 개발·운영과 이기종 시스템 간 데이터 인터페이스가 핵심 경험이며, 실패한 프로젝트의 원인까지 근거로 남기는 방식으로 일합니다.";
+  "산업 현장의 모호한 요구를 데이터 흐름으로 번역해, 센서·임베디드 환경부터 서버·운영 화면까지 솔루션 전반을 다뤄온 엔지니어입니다. 진동 모니터링 솔루션의 개발·운영과 이기종 시스템 간 데이터 인터페이스가 핵심 경험이며, 실패한 프로젝트의 원인까지 근거로 남기는 방식으로 일합니다.";
 
 const aboutFacts = [
   "1993년생 · 수원 거주",
@@ -320,7 +347,7 @@ const careerEntries: CareerEntry[] = [
     points: [
       "진동 모니터링 솔루션 VNET-7000 / VNET-7300의 개발·유지보수 및 요구 기능 추가",
       "경주풍력 Digital Twin 등 국책 연구과제에서 전체 솔루션 개발 참여",
-      "타사 시스템과의 데이터 인터페이스 설계·검증, 솔루션 네트워크/DB 이중화 수행",
+      "타사 시스템과의 데이터 인터페이스(OPC, Modbus, REST 등) 설계·검증 및 운영 환경 안정화",
       "센서·펌웨어부터 응용프로그램까지 전 레이어를 다루며 진동 같은 대용량 신호 데이터 처리"
     ],
     stack: ["C++(펌웨어)", ".NET Framework", "WinForm", "WPF", "MSSQL", "RTDB"]
@@ -534,7 +561,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const observedIds = ["requirements", "data", "flow", "about", "career", "background", "fit", "work"];
+    const observedIds = ["requirements", "flow", "about", "career", "background", "fit", "work"];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries

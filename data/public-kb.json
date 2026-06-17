@@ -19,42 +19,23 @@
     "tags": ["Enhans", "FDE", "고객 문제 정의", "솔루션 엔지니어링", "시스템 통합", "현장 임베딩", "데이터 흐름", "end-to-end"]
   },
   {
-    "id": "cheongsong-high-vibration",
-    "title": "청송양수 고진동 데이터 측정·전송",
-    "period": "NADA",
-    "category": "Vibration Analytics",
-    "summary": "주도했지만 실패도 남긴 프로젝트입니다. 현장에서 운영 중이던 VNET-7000에 기능을 추가해 진동 데이터를 측정하고 중앙연구원으로 전송(Export)하는 부분을 담당했습니다.",
+    "id": "expense-approval-skill",
+    "title": "사내 전자결재 AI Skill 배포",
+    "period": "2026",
+    "category": "Agentic Automation",
+    "summary": "반복되는 경비 청구 결재를 자연어 한 줄로 끝내는 AI Skill을 만들어 사내에 배포했습니다. 영수증 OCR(병렬 에이전트) → 전자결재 자동 입력(Playwright MCP) → 첨부 압축까지 한 흐름으로 자동화한 사례입니다.",
     "highlights": [
-      "'진동' 과제라는 이유로 VNET-7000으로 해결 가능하다고 Top-Down으로 합의·계약됐으나, 실제 진동 발생 부위가 회전체가 아니어서 설계 괴리가 발생했습니다.",
-      "이미 납품이 확정된 하드웨어·소프트웨어 위에 용도에 맞지 않는 기능을 얹다 보니 산출 데이터의 품질과 사용성이 저하됐습니다.",
-      "요구 스펙은 충족했지만 결과적으로 실패한 프로젝트로 솔직하게 남기고, 원인을 다음 프로젝트의 체크리스트로 전환했습니다."
+      "영수증 1장당 1 에이전트의 병렬 OCR 구조로, 영수증 수량과 무관하게 처리 시간을 일정하게 유지하고 메인 에이전트의 컨텍스트 오염을 차단했습니다.",
+      "Playwright MCP로 AI가 전자결재 페이지에 정보를 직접 입력하도록 위임 — 브라우저로 하는 모든 절차를 AI Tool 범위로 확장할 수 있다는 가능성을 확인했습니다.",
+      "입력 양식(xlsx · pdf · 이미지)은 다양하게 받고 출력은 PDF로 통일해 결재 수신 부서의 영수증 양식을 일원화했습니다."
     ],
-    "technologies": ["Vibration", "VNET-7000", "Data Export", "측정", "중앙연구원 전송"],
+    "technologies": ["AI Agent", "Parallel Agents", "OCR", "Playwright MCP", "Browser Automation", "사내 전자결재", "Workflow Automation"],
     "evidence": [
-      "VNET-7000 기능 추가 및 진동 데이터 중앙연구원 전송 구현",
-      "진동 발생 부위와 측정 대상의 도메인 괴리 분석",
-      "요구 스펙 충족 vs 실제 사용성 저하의 원인 기록"
+      "영수증 per-agent 병렬 OCR 구조 설계 및 사내 배포",
+      "Playwright MCP 기반 전자결재 페이지 자동 입력 흐름 구현",
+      "프롬프트 한 줄('2월 경비청구 올려줘')로 결재 제출까지 단일 명령 워크플로우 정착"
     ],
-    "tags": ["청송양수", "고진동", "진동 데이터", "VNET-7000", "Export", "도메인 괴리", "실패에서 배운 점", "요구사항 추출"]
-  },
-  {
-    "id": "naval-report-automation",
-    "title": "추진전동기 자동 보고서 프로그램",
-    "period": "NADA",
-    "category": "Report Automation",
-    "summary": "운전/알람/트렌드 데이터를 파싱하고, No Data 처리, 그래프 생성, 문서 템플릿 반영, PDF 출력까지 이어지는 반복 보고서 업무를 자동화 흐름으로 정리했습니다.",
-    "highlights": [
-      "수동 보고서 작성에서 생길 수 있는 누락과 형식 오류를 줄이기 위해 입력 데이터와 템플릿 규칙 중심의 산출 구조로 바꿨습니다.",
-      "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식을 설계했습니다.",
-      "운영자가 결과를 검토할 수 있도록 그래프, 표, 문서 섹션의 생성 기준을 분리했습니다."
-    ],
-    "technologies": ["Report Automation", "Trend Data", "Alarm Data", "Parser", "No Data Handling", "Chart Rendering", "PDF", "Template"],
-    "evidence": [
-      "추진전동기 자동 보고서 프로그램 작업 기록",
-      "No Data 처리와 그래프/문서 출력 흐름 정리",
-      "운영 보고서 산출 기준 문서화"
-    ],
-    "tags": ["해군", "방산", "추진전동기", "자동 보고서", "PDF", "Workflow", "리포트 자동화"]
+    "tags": ["전자결재", "사내 자동화", "AI Skill", "Playwright MCP", "OCR", "병렬 에이전트", "Agentic", "FDE"]
   },
   {
     "id": "gjpp-digital-twin",
@@ -80,18 +61,56 @@
     "title": "Legacy Config Automation with Modbus Mapping Skill",
     "period": "2026",
     "category": "Workflow Automation",
-    "summary": "레거시 솔루션의 Modbus 설정 생성을 AI Skill로 가공했습니다. IO Map Excel과 OnlineTSI DB 채널을 매칭해 T-DataServer용 mapping_modbus.csv를 생성하는 흐름입니다.",
+    "summary": "레거시 솔루션의 Modbus 설정 생성을 AI Skill로 가공했습니다. IO Map Excel과 OnlineTSI DB 채널을 매칭해 T-DataServer용 mapping_modbus.csv를 생성하고, Modpoll 내장으로 실제 값까지 자연어로 테스트할 수 있도록 확장한 흐름입니다.",
     "highlights": [
       "IO Map, 채널 DB, 주소 offset, register type, 125 register read limit을 함께 반영하는 자동화 절차를 정리했습니다.",
-      "개인 노하우로 남기 쉬운 설정 작업을 Codex Skill과 CLI 기반 산출물로 바꿨습니다.",
-      "자동 생성 결과를 사람이 검증할 수 있도록 mapping_modbus.csv 중심으로 설계했습니다."
+      "DB에 직접 접속해 Config를 조회하는 CLI Tool을 만들고, 결과를 HTML 보고서로 사용자에게 가시화했습니다.",
+      "Modpoll CLI를 Skill에 내장해 생성된 Modbus 매핑을 자연어 지시만으로 즉시 테스트할 수 있게 만들었습니다."
     ],
-    "technologies": ["Modbus TCP", "NModbus", "IO Map", "XLSX", "OnlineTSI DB", "T-DataServer", "CSV Mapping", "Codex Skill", "CLI"],
+    "technologies": ["Modbus TCP", "NModbus", "Modpoll", "IO Map", "XLSX", "OnlineTSI DB", "T-DataServer", "CSV Mapping", "Codex Skill", "CLI", "HTML Report"],
     "evidence": [
-      "modbus-mapper Skill 작성",
-      "Modbus address offset 분석",
-      "125 register read limit 반영"
+      "modbus-mapper Skill 작성 및 Codex 등록",
+      "Modbus address offset 분석 및 125 register read limit 반영",
+      "DB Config 조회 CLI Tool · HTML 결과 보고서 · Modpoll 내장 테스트 워크플로우 구축"
     ],
-    "tags": ["Modbus", "mapping_modbus", "AI Skill", "Codex Skill", "Workflow", "레거시 자동화", "T-DataServer", "OnlineTSI"]
+    "tags": ["Modbus", "mapping_modbus", "AI Skill", "Codex Skill", "Modpoll", "HTML Report", "자연어 테스트", "레거시 자동화", "T-DataServer", "OnlineTSI"]
+  },
+  {
+    "id": "naval-report-automation",
+    "title": "추진전동기 자동 보고서 프로그램",
+    "period": "NADA",
+    "category": "Report Automation",
+    "summary": "운전/알람/트렌드 데이터를 파싱하고, No Data 처리, 그래프 생성, 문서 템플릿 반영, PDF 출력까지 이어지는 반복 보고서 업무를 자동화 흐름으로 정리했습니다.",
+    "highlights": [
+      "수동 보고서 작성에서 생길 수 있는 누락과 형식 오류를 줄이기 위해 입력 데이터와 템플릿 규칙 중심의 산출 구조로 바꿨습니다.",
+      "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식을 설계했습니다.",
+      "운영자가 결과를 검토할 수 있도록 그래프, 표, 문서 섹션의 생성 기준을 분리했습니다."
+    ],
+    "technologies": ["Report Automation", "Trend Data", "Alarm Data", "Parser", "No Data Handling", "Chart Rendering", "PDF", "Template"],
+    "evidence": [
+      "추진전동기 자동 보고서 프로그램 작업 기록",
+      "No Data 처리와 그래프/문서 출력 흐름 정리",
+      "운영 보고서 산출 기준 문서화"
+    ],
+    "tags": ["해군", "방산", "추진전동기", "자동 보고서", "PDF", "Workflow", "리포트 자동화"]
+  },
+  {
+    "id": "cheongsong-high-vibration",
+    "title": "청송양수 고진동 데이터 측정·전송",
+    "period": "NADA",
+    "category": "Vibration Analytics",
+    "summary": "주도했지만 실패도 남긴 프로젝트입니다. 현장에서 운영 중이던 VNET-7000에 기능을 추가해 진동 데이터를 측정하고 중앙연구원으로 전송(Export)하는 부분을 담당했습니다.",
+    "highlights": [
+      "'진동' 과제라는 이유로 VNET-7000으로 해결 가능하다고 Top-Down으로 합의·계약됐으나, 실제 진동 발생 부위가 회전체가 아니어서 설계 괴리가 발생했습니다.",
+      "이미 납품이 확정된 하드웨어·소프트웨어 위에 용도에 맞지 않는 기능을 얹다 보니 산출 데이터의 품질과 사용성이 저하됐습니다.",
+      "요구 스펙은 충족했지만 결과적으로 실패한 프로젝트로 솔직하게 남기고, 원인을 다음 프로젝트의 체크리스트로 전환했습니다."
+    ],
+    "technologies": ["Vibration", "VNET-7000", "Data Export", "측정", "중앙연구원 전송"],
+    "evidence": [
+      "VNET-7000 기능 추가 및 진동 데이터 중앙연구원 전송 구현",
+      "진동 발생 부위와 측정 대상의 도메인 괴리 분석",
+      "요구 스펙 충족 vs 실제 사용성 저하의 원인 기록"
+    ],
+    "tags": ["청송양수", "고진동", "진동 데이터", "VNET-7000", "Export", "도메인 괴리", "실패에서 배운 점", "요구사항 추출"]
   }
 ]
