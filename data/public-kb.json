@@ -20,22 +20,22 @@
   },
   {
     "id": "cheongsong-high-vibration",
-    "title": "청송양수 고진동 분석 도구 개선",
+    "title": "청송양수 고진동 데이터 측정·전송",
     "period": "NADA",
     "category": "Vibration Analytics",
-    "summary": "주도했지만 실패도 남긴 프로젝트입니다. 고진동 분석을 위해 데이터 이관, Trend import, DB export/import, 분석 조건, VibLowExplorer 개선을 함께 다뤘습니다.",
+    "summary": "주도했지만 실패도 남긴 프로젝트입니다. 현장에서 운영 중이던 VNET-7000에 기능을 추가해 진동 데이터를 측정하고 중앙연구원으로 전송(Export)하는 부분을 담당했습니다.",
     "highlights": [
-      "현장 요구사항을 VibLowExplorer 기능/UX 수정 항목으로 분해하고 11건의 수정 기록을 남겼습니다.",
-      "OPC DA Reader fast reader, Trend import, 전체 DB export 테스트를 통해 기존 데이터를 분석 가능한 형태로 옮기는 경로를 검증했습니다.",
-      "LVDT 설정과 Fmax 변경처럼 센서 의미와 분석 조건이 결과 해석에 미치는 영향을 함께 추적했습니다."
+      "'진동' 과제라는 이유로 VNET-7000으로 해결 가능하다고 Top-Down으로 합의·계약됐으나, 실제 진동 발생 부위가 회전체가 아니어서 설계 괴리가 발생했습니다.",
+      "이미 납품이 확정된 하드웨어·소프트웨어 위에 용도에 맞지 않는 기능을 얹다 보니 산출 데이터의 품질과 사용성이 저하됐습니다.",
+      "요구 스펙은 충족했지만 결과적으로 실패한 프로젝트로 솔직하게 남기고, 원인을 다음 프로젝트의 체크리스트로 전환했습니다."
     ],
-    "technologies": ["Vibration", "OPC DA Reader", "Fast Reader", "Trend Import", "DB Export", "DB Import", "LVDT", "Fmax", "VibLowExplorer"],
+    "technologies": ["Vibration", "VNET-7000", "Data Export", "측정", "중앙연구원 전송"],
     "evidence": [
-      "VibLowExplorer 수정 11건",
-      "OPC DA Reader fast reader",
-      "전체 DB export 테스트와 분석"
+      "VNET-7000 기능 추가 및 진동 데이터 중앙연구원 전송 구현",
+      "진동 발생 부위와 측정 대상의 도메인 괴리 분석",
+      "요구 스펙 충족 vs 실제 사용성 저하의 원인 기록"
     ],
-    "tags": ["청송양수", "고진동", "진동 분석", "트렌드", "VibLowExplorer", "LVDT", "Fmax", "실패에서 배운 점"]
+    "tags": ["청송양수", "고진동", "진동 데이터", "VNET-7000", "Export", "도메인 괴리", "실패에서 배운 점", "요구사항 추출"]
   },
   {
     "id": "naval-report-automation",

@@ -50,7 +50,7 @@ const expansionMap: Record<string, string[]> = {
   "레이어": ["layer", "stack", "source", "ingestion", "api", "surface"],
   "모드버스": ["modbus", "mapping", "gateway", "주소", "레지스터", "skill", "t-dataserver"],
   "경주풍력": ["gjpp", "digital twin", "edge", "center", "viewer", "dtviewer"],
-  "청송": ["고진동", "vibration", "trend", "lvdt", "viblowexplorer", "fmax"],
+  "청송": ["고진동", "vibration", "vnet-7000", "export", "측정", "전송"],
   "해군": ["추진전동기", "보고서", "report", "pdf", "trend", "alarm"],
   "보고서": ["report", "pdf", "template", "chart", "trend", "automation"],
   "폐쇄망": ["closed network", "onlinetsi", "uwf", "dhcp", "golden image", "망분리"],
@@ -59,7 +59,7 @@ const expansionMap: Record<string, string[]> = {
   "opc": ["dcs", "plc", "연동", "industrial", "opc da", "opc ua"],
   "hsms": ["interface", "industrial", "integration", "protocol"],
   "펌웨어": ["firmware", "protocol", "c++", "c#", "binary", "timeout", "wire"],
-  "진동": ["vibration", "trend", "lvdt", "fmax", "viblowexplorer"],
+  "진동": ["vibration", "vnet-7000", "측정", "신호", "모니터링"],
   "문서": ["srs", "sdd", "manual", "v&v", "산출물", "report"]
 };
 

@@ -87,33 +87,34 @@ const projectDetails: Record<string, ProjectDetail> = {
   "cheongsong-high-vibration": {
     id: "project-cheongsong-high-vibration",
     problem:
-      "청송양수 고진동 분석은 실패한 프로젝트였지만, 그래서 더 많은 것을 남겼습니다. 데이터 이관, 트렌드 확인, 분석 조건 조정, 센서 설정, 분석 도구 UX가 한 번에 얽혀 있었습니다.",
+      "'진동' 과제라는 이유로 기존 VNET-7000으로 해결 가능하다고 합의되어 Top-Down으로 기획·계약된 프로젝트였습니다. 그러나 실제 진동 발생 부위가 '회전체'가 아니었고, 여기서부터 설계에 괴리가 생겼습니다. 이미 납품이 확정된 하드웨어·소프트웨어 위에 용도에 맞지 않는 기능을 얹다 보니, 산출 데이터의 품질과 사용성이 크게 떨어졌습니다.",
     role:
-      "분석 담당자가 실제로 써야 하는 흐름을 기준으로 데이터 경로와 도구 변경 요구를 정리했고, DB export/import와 VibLowExplorer 개선 항목을 주도했습니다.",
+      "고진동 원인 분석 과제에서 진동 데이터 측정·Export 부문을 담당했습니다. 현장에서 운영 중이던 VNET-7000에 기능을 추가해, 측정 데이터를 중앙연구원으로 전달하는 경로를 구현하고 검증했습니다.",
     actions: [
-      "현장 요구사항을 VibLowExplorer 기능/UX 수정 항목으로 분해",
-      "Trend import와 전체 DB export/import 검증",
-      "OPC DA Reader fast reader와 분석 데이터 조회 흐름 확인",
-      "LVDT 설정과 Fmax 변경처럼 분석 조건에 영향을 주는 값을 함께 추적",
-      "실패 원인을 숨기지 않고, 데이터 경로와 분석 도구 요구를 다음 프로젝트의 체크리스트로 정리"
+      "'진동' 범위로 합의된 요구를 VNET-7000 기능 추가 항목으로 분해",
+      "진동 데이터 측정과 중앙연구원 전송(Export) 경로 구현 및 검증",
+      "진동 발생 부위가 회전체가 아니라는 설계 괴리를 식별하고, 데이터 품질이 저하되는 지점을 추적",
+      "요구 스펙은 충족시키되, 용도 불일치의 원인과 한계를 숨기지 않고 기록",
+      "최종 사용자·타 부서와의 이해도 격차를 회고로 정리해 다음 프로젝트의 체크리스트로 전환"
     ],
     outcomes: [
-      "VibLowExplorer 수정 11건과 전체 DB export 테스트 기록을 남김",
-      "분석 도구는 화면이 아니라 데이터 이관, 조건, 센서 의미가 맞아야 작동한다는 교훈을 체득",
-      "Enhans 관점에서는 실패 경험까지 근거화해 고객 요구와 데이터 모델의 어긋남을 빠르게 찾는 역량으로 연결"
+      "요구 스펙상으로는 완료했지만, 용도에 맞지 않는 플랫폼 탓에 사용성이 떨어진 '실패한 프로젝트'로 솔직하게 남김",
+      "같은 도메인이라도 직군·개인별 이해도 차이가 크다 — 관련된다면 설계 단계부터 반드시 관여해야 더 큰 사고를 막는다는 점을 체득",
+      "최종 사용자조차 요구를 추상적으로만 아는 경우가 많아, 빠른 MVP로 '생각한 것이 맞는지' 확인시켜야 한다는 교훈",
+      "현장 실무자와 쌓은 신뢰 관계가 곤란한 상황에서 실제로 큰 도움이 된다는 것을 경험"
     ],
     dataFlow: [
-      { label: "현장 운전/진동 데이터", meta: "Vibration, LVDT, turbine context" },
-      { label: "수집/조회", meta: "OPC DA Reader, fast reader" },
-      { label: "이관/정규화", meta: "Trend import, DB export/import" },
-      { label: "분석 조건", meta: "Fmax, sensor setting" },
-      { label: "분석 도구", meta: "VibLowExplorer, report evidence" }
+      { label: "현장 진동 데이터", meta: "측정 대상 설비" },
+      { label: "측정/수집", meta: "VNET-7000" },
+      { label: "기능 추가", meta: "Export 기능 개발" },
+      { label: "전송", meta: "중앙연구원 전달" },
+      { label: "원인 분석", meta: "고진동 분석 지원" }
     ],
     layers: [
-      { layer: "Source", tech: ["Vibration", "LVDT", "Turbine data"] },
-      { layer: "Ingestion", tech: ["OPC DA Reader", "Fast Reader"] },
-      { layer: "Data Ops", tech: ["DB Export", "DB Import", "Trend Import"] },
-      { layer: "Analysis", tech: ["Fmax", "VibLowExplorer", "UX 개선"] }
+      { layer: "Field", tech: ["Vibration", "측정 설비"] },
+      { layer: "Device", tech: ["VNET-7000", "측정/수집"] },
+      { layer: "Feature", tech: ["Export 기능", "기능 추가"] },
+      { layer: "Delivery", tech: ["중앙연구원 전송", "데이터 전달"] }
     ]
   },
   "naval-report-automation": {
@@ -421,6 +422,80 @@ const promptChips = [
   ["펌웨어 디버깅", "펌웨어/프로토콜 디버깅 경험을 설명해줘"]
 ];
 
+const aboutSummary =
+  "산업 현장의 모호한 요구를 데이터 흐름으로 번역해, 센서·펌웨어부터 서버·DB·운영 화면까지 솔루션 전반을 개발하고 유지보수해온 엔지니어입니다. 진동 모니터링 솔루션의 개발·운영과 이기종 시스템 간 데이터 인터페이스가 핵심 경험이며, 실패한 프로젝트의 원인까지 근거로 남기는 방식으로 일합니다.";
+
+const aboutFacts = [
+  "1993년생 · 수원 거주",
+  "한신대학교 컴퓨터공학부",
+  "NADA 주임연구원 (2020 ~ 현재)",
+  "정보처리기사"
+];
+
+type CareerEntry = {
+  company: string;
+  period: string;
+  role: string;
+  points: string[];
+  stack: string[];
+};
+
+const careerEntries: CareerEntry[] = [
+  {
+    company: "NADA",
+    period: "2020 ~ 현재",
+    role: "주임연구원",
+    points: [
+      "진동 모니터링 솔루션 VNET-7000 / VNET-7300의 개발·유지보수 및 요구 기능 추가",
+      "경주풍력 Digital Twin 등 국책 연구과제에서 전체 솔루션 개발 참여",
+      "타사 시스템과의 데이터 인터페이스 설계·검증, 솔루션 네트워크/DB 이중화 수행",
+      "센서·펌웨어부터 응용프로그램까지 전 레이어를 다루며 진동 같은 대용량 신호 데이터 처리"
+    ],
+    stack: ["C++(펌웨어)", ".NET Framework", "WinForm", "WPF", "MSSQL", "RTDB"]
+  },
+  {
+    company: "웨어밸리",
+    period: "2019",
+    role: "인턴",
+    points: [
+      "이기종 DB 간 데이터 연동·마이그레이션 QA 수행 (제품: Parrot)"
+    ],
+    stack: ["DB Migration", "QA"]
+  }
+];
+
+type BackgroundBlock = {
+  label: string;
+  items: string[];
+};
+
+const backgroundBlocks: BackgroundBlock[] = [
+  {
+    label: "EDUCATION",
+    items: [
+      "한신대학교 컴퓨터공학부 (2012 입학 · 2019 졸업)",
+      "평촌고등학교 졸업 (2012)"
+    ]
+  },
+  {
+    label: "CERTIFICATION",
+    items: ["정보처리기사"]
+  },
+  {
+    label: "MILITARY",
+    items: ["육군 병장 만기전역 (신병교육대대 조교)"]
+  },
+  {
+    label: "ACTIVITY · INTEREST",
+    items: [
+      "몽골 해외봉사단",
+      "학부 부학생회장 (3학년)",
+      "밴드 · 사진 동아리",
+      "취미: 캠핑, 바이크(오토바이)"
+    ]
+  }
+];
+
 function projectAnchor(id: string) {
   return id === "enhans-positioning" ? "requirements" : `project-${id}`;
 }
@@ -546,8 +621,9 @@ export default function App() {
 
   const navItems = useMemo(
     () => [
-      ["requirements", "요구사항"],
-      ["data", "데이터"],
+      ["about", "소개"],
+      ["career", "경력"],
+      ["background", "이력"],
       ["fit", "직무 매핑"],
       ["work", "현장 기록"]
     ],
@@ -590,7 +666,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const observedIds = ["requirements", "data", "flow", "fit", "work"];
+    const observedIds = ["requirements", "data", "flow", "about", "career", "background", "fit", "work"];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -837,6 +913,10 @@ export default function App() {
           ))}
         </div>
 
+        <AboutSection />
+        <CareerSection />
+        <BackgroundSection />
+
         <section className="fit" id="fit">
           <div className="wrap">
             <SectionHead
@@ -980,6 +1060,102 @@ function SectionHead({ idBase, tag, title, desc }: { idBase: string; tag: string
       <Editable as="h2" id={`${idBase}.title`} value={title} />
       <Editable as="p" id={`${idBase}.desc`} value={desc} />
     </div>
+  );
+}
+
+function CollapsibleSection({
+  id,
+  eyebrow,
+  title,
+  defaultOpen = true,
+  children
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className={`csec ${open ? "open" : ""}`} id={id}>
+      <div className="wrap">
+        <div className="csec-head" role="button" tabIndex={0} onClick={() => setOpen((value) => !value)}>
+          <span className="csec-head-text">
+            <span className="eyebrow">{eyebrow}</span>
+            <h2>{title}</h2>
+          </span>
+          <span className="csec-toggle" aria-hidden="true">+</span>
+        </div>
+        <div className="csec-body">
+          <div className="csec-body-inner">
+            <div className="csec-body-pad">{children}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AboutSection() {
+  return (
+    <CollapsibleSection id="about" eyebrow="About" title="김가람 · Forward Deployed Engineer">
+      <Editable as="p" className="about-summary" id="about.summary" value={aboutSummary} />
+      <div className="about-facts">
+        {aboutFacts.map((fact, index) => (
+          <Editable as="span" key={index} id={`about.fact.${index}`} value={fact} />
+        ))}
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function CareerSection() {
+  return (
+    <CollapsibleSection id="career" eyebrow="Career" title="경력">
+      <div className="career">
+        {careerEntries.map((entry, index) => (
+          <div className="career-item" key={entry.company}>
+            <div className="career-when">
+              <Editable as="span" className="career-period" id={`career.${index}.period`} value={entry.period} />
+              <Editable as="span" className="career-co" id={`career.${index}.company`} value={entry.company} />
+              <Editable as="span" className="career-role" id={`career.${index}.role`} value={entry.role} />
+            </div>
+            <div>
+              <ul className="career-points">
+                {entry.points.map((point, pointIndex) => (
+                  <Editable as="li" key={pointIndex} id={`career.${index}.point.${pointIndex}`} value={point} />
+                ))}
+              </ul>
+              <div className="career-stack">
+                {entry.stack.map((tech, techIndex) => (
+                  <Editable as="em" key={techIndex} id={`career.${index}.stack.${techIndex}`} value={tech} />
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function BackgroundSection() {
+  return (
+    <CollapsibleSection id="background" eyebrow="Background" title="학력 · 자격 · 병역">
+      <div className="bg-grid">
+        {backgroundBlocks.map((block, index) => (
+          <div className="bg-block" key={block.label}>
+            <div className="dh">{block.label}</div>
+            <ul>
+              {block.items.map((item, itemIndex) => (
+                <Editable as="li" key={itemIndex} id={`bg.${index}.item.${itemIndex}`} value={item} />
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </CollapsibleSection>
   );
 }
 
