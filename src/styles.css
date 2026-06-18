@@ -380,15 +380,15 @@ em {
     font-size: clamp(22px, 3vw, 30px) !important;
   }
 
-  /* 페이지 브레이크 방지: 항목 단위로 끊지 말 것 */
-  section,
-  .proj,
+  /* 페이지 브레이크 방지: 한 페이지에 들어갈 만한 작은 항목 단위만 유지.
+     section / .proj / .proj-detail 같은 큰 블록에 avoid를 걸면 통째로 다음
+     페이지로 밀려나면서 빈 공간이 생긴다. */
   .stack-cat,
   .career-item,
   .layer-card,
   .flow-stage,
-  .proj-detail,
   .detail-block,
+  .flow-step-wrap,
   .colophon-steps li,
   .colophon-strengths li,
   .bg-block {
@@ -396,8 +396,10 @@ em {
     page-break-inside: avoid;
   }
 
-  /* 프로젝트 헤더와 본문이 분리되지 않도록 */
-  .proj-head {
+  /* 헤더가 본문과 분리되지 않도록 */
+  .proj-head,
+  .section-head,
+  .csec-head {
     break-after: avoid;
     page-break-after: avoid;
   }
