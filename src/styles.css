@@ -394,6 +394,10 @@ section {
   color: var(--text-faint);
 }
 
+.story-quote {
+  font-style: italic;
+}
+
 .act-title {
   display: grid;
   gap: 4px;
@@ -1639,7 +1643,7 @@ section {
 }
 
 .colophon-inner {
-  max-width: 720px;
+  max-width: none;
 }
 
 .colophon-title {

@@ -84,9 +84,9 @@ const kb = knowledge as KnowledgeEntry[];
 const projectOrder = [
   "expense-approval-skill",
   "modbus-mapping-skill",
+  "cheongsong-high-vibration",
   "gjpp-digital-twin",
-  "naval-report-automation",
-  "cheongsong-high-vibration"
+  "naval-report-automation"
 ];
 const projects = kb
   .filter((entry) => entry.id !== "enhans-positioning")
@@ -349,7 +349,7 @@ const aboutFacts = [
   "1993년생 · 수원 거주",
   "한신대학교 컴퓨터공학부",
   "NADA 주임연구원 (2020 ~ 현재)",
-  "정보처리기사"
+  ".NET 개발자"
 ];
 
 type CareerEntry = {
@@ -901,7 +901,7 @@ export default function App() {
                       as="p"
                       id={`story.${act.id}.body.${index}`}
                       value={line}
-                      display={(text) => highlightKeywords(text)}
+                      display={(text) => renderStoryBody(text)}
                     />
                   ))}
                 </div>
@@ -1061,6 +1061,27 @@ function highlightKeywords(text: string) {
     ) : (
       <span key={`${part}-${index}`}>{part}</span>
     )
+  );
+}
+
+function renderStoryBody(text: string): ReactNode {
+  const match = text.match(/^(.*?)('[^']*')(.*)$/);
+  if (!match) {
+    return highlightKeywords(text);
+  }
+  const [, before, quote, after] = match;
+  return (
+    <>
+      {highlightKeywords(before.replace(/\s+$/, ""))}
+      <br />
+      <span className="story-quote">{quote}</span>
+      {after.trim() ? (
+        <>
+          <br />
+          {highlightKeywords(after.replace(/^\s+/, ""))}
+        </>
+      ) : null}
+    </>
   );
 }
 
