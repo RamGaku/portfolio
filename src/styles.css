@@ -1852,7 +1852,7 @@ section {
   }
 
   .act-title {
-    font-size: clamp(42px, 14vw, 72px);
+    font-size: clamp(28px, 6.4vw, 46px);
   }
 
   .flow-diagram {
@@ -1948,9 +1948,9 @@ section {
   }
 
   .act-title {
-    font-size: clamp(38px, 12vw, 58px);
+    font-size: clamp(24px, 7.5vw, 36px);
     letter-spacing: -0.035em;
-    line-height: 1.02;
+    line-height: 1.05;
   }
 
   .fit,
