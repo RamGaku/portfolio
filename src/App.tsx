@@ -1174,6 +1174,7 @@ function FlowDiagram() {
           title="VDPM System Data Flow"
           loading="lazy"
         />
+        <img className="vdpm-print" src="/assets/vdpm-flow.png" alt="VDPM System Data Flow" />
       </div>
       <Editable
         as="p"

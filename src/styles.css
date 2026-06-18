@@ -216,6 +216,15 @@ em {
     margin: 14mm;
   }
 
+  /* 동적 요소 정지: 모든 애니메이션/트랜지션을 멈춰 정착된 정적 스냅샷으로 인쇄 */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
   body {
     background: #ffffff;
   }
@@ -227,8 +236,7 @@ em {
   .scroll-cue,
   .bgm,
   .modal-back,
-  .nav-pdf,
-  .vdpm-embed-wrap {
+  .nav-pdf {
     display: none !important;
   }
 
@@ -257,6 +265,23 @@ em {
   .csec-toggle,
   .proj-toggle {
     display: none !important;
+  }
+
+  /* VDPM: print the static snapshot instead of the live (animated) iframe */
+  .vdpm-embed-wrap {
+    aspect-ratio: auto !important;
+    height: auto !important;
+  }
+
+  .vdpm-embed {
+    display: none !important;
+  }
+
+  .vdpm-print {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
   }
 
   .motivation,
@@ -494,6 +519,10 @@ section {
      overflows and is clipped by the wrap, instead of showing a scrollbar */
   height: calc(100% + 28px);
   border: 0;
+}
+
+.vdpm-print {
+  display: none;
 }
 
 @media (max-width: 900px) {
