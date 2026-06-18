@@ -1073,7 +1073,7 @@ function CollapsibleSection({
 
 function AboutSection() {
   return (
-    <CollapsibleSection id="about" eyebrow="About" title="김가람 · Forward Deployed Engineer">
+    <CollapsibleSection id="about" eyebrow="About" title="김가람 · Forward Deployed Engineer 지원">
       <Editable as="p" className="about-summary" id="about.summary" value={aboutSummary} />
       <div className="about-facts">
         {aboutFacts.map((fact, index) => (
