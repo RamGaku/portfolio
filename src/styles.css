@@ -519,7 +519,7 @@ section {
 .project-embed-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1200 / 800;
+  aspect-ratio: 1200 / 540;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
   background: #eef2f7;

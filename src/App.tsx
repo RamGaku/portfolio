@@ -195,8 +195,7 @@ const projectDetails: Record<string, ProjectDetail> = {
   },
   "gjpp-digital-twin": {
     id: "project-gjpp-digital-twin",
-    problem:
-      "경주풍력 Digital Twin은 현장 데이터가 Edge를 거쳐 센터 시스템과 3D Viewer까지 도달해야 했습니다. 값이 보이지 않으면 장비, Edge, API, Viewer 중 어느 층의 문제인지 분리해야 했습니다.",
+    problem: "CMS의 개발부터 배포까지 전 주기를 경험하였습니다.",
     actions: [
       "DtEdgeServer 서비스 배포와 시작 상태 확인",
       "Edge에서 센터 시스템으로 넘어가는 상태/API 경로 검증",
@@ -211,10 +210,9 @@ const projectDetails: Record<string, ProjectDetail> = {
     ],
     dataFlow: [
       { label: "현장 설비/SCADA", meta: "wind turbine, sensor data" },
-      { label: "Edge 수집", meta: "DtEdgeServer, Windows Service" },
-      { label: "센터 연동", meta: "CenterServer, REST/status API" },
-      { label: "시계열/상태 데이터", meta: "RTDB, operation state" },
-      { label: "3D Viewer", meta: "Digital Twin operation UI" }
+      { label: "Edge 수집", meta: "진동 데이터 처리 후 RTDB 저장, 거동 센서, 열화상 카메라 연결" },
+      { label: "센터 연동", meta: "각 Edge 데이터 MUX 처리, RTDB 중앙 복제 후 Grafana 서비스" },
+      { label: "3D Viewer", meta: "Operation UI → Viewer 프로그램" }
     ],
     layers: [
       { layer: "Field", tech: ["SCADA", "Sensor data", "OPC UA"] },
@@ -1167,7 +1165,10 @@ function ProjectItem({
           ) : null}
           <div className="project-flow-panel">
             <div className="dh">DATA FLOW</div>
-            <div className="project-flow">
+            <div
+              className="project-flow"
+              style={{ gridTemplateColumns: `repeat(${detail.dataFlow.length}, minmax(0, 1fr))` }}
+            >
               {detail.dataFlow.map((node, nodeIndex) => (
                 <div className="flow-step-wrap" key={`${project.id}-${nodeIndex}`}>
                   <div className="flow-step">
@@ -1192,7 +1193,7 @@ function ProjectItem({
           </div>
           <div className="proj-detail">
             <div className="detail-block span2 problem">
-              <div className="dh">PROBLEM</div>
+              <div className="dh">{project.id === "gjpp-digital-twin" ? "OVERVIEW" : "PROBLEM"}</div>
               <Editable as="p" id={`project.${project.id}.problem`} value={detail.problem} />
             </div>
             <div className="detail-block approach-block">
