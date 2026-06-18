@@ -103,7 +103,6 @@ em {
 .nav-wrap,
 .brand,
 .nav-links,
-.nav-right,
 .act-meta,
 .eyebrow,
 .flow-diagram,
@@ -162,8 +161,7 @@ em {
   gap: 2px;
 }
 
-.nav-links a,
-.lang {
+.nav-links a {
   border: 0;
   border-radius: 9px;
   background: transparent;
@@ -287,7 +285,6 @@ em {
   .motivation,
   .fit,
   .work,
-  .stack,
   .contact,
   .csec {
     padding: 28px 0 !important;
@@ -309,30 +306,6 @@ em {
     color: inherit;
     text-decoration: none;
   }
-}
-
-.nav-right {
-  gap: 4px;
-  padding: 3px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-1);
-}
-
-.lang {
-  min-width: 34px;
-  height: 28px;
-}
-
-.lang.on {
-  background: #ffffff;
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.lang:disabled {
-  cursor: default;
-  opacity: 0.55;
 }
 
 main {
@@ -1732,18 +1705,6 @@ section {
 
 /* --- Tech Stack --------------------------------------------------------- */
 
-.stack {
-  padding: 96px 0;
-  border-top: 1px solid var(--border);
-}
-
-.stack-title {
-  margin-top: 18px;
-  font-size: clamp(24px, 3vw, 36px);
-  font-weight: 680;
-  letter-spacing: -0.03em;
-}
-
 .stack-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1807,13 +1768,6 @@ em.term:hover {
   border-top: 1px solid var(--border);
 }
 
-.contact-title {
-  margin-top: 18px;
-  font-size: clamp(24px, 3vw, 36px);
-  font-weight: 680;
-  letter-spacing: -0.03em;
-}
-
 .contact-links {
   margin-top: 24px;
 }
@@ -1849,27 +1803,6 @@ em.term:hover {
 }
 
 /* --- Inline content editing --------------------------------------------- */
-
-.nav-end {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.admin-btn {
-  padding: 7px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-1);
-  color: var(--text-dim);
-  cursor: pointer;
-  font-size: 12.5px;
-}
-
-.admin-btn:hover {
-  border-color: var(--orange-line);
-  color: var(--orange);
-}
 
 .editable {
   cursor: text;
@@ -2149,10 +2082,6 @@ em.term:hover {
 @media (max-width: 520px) {
   .wrap {
     padding: 0 18px;
-  }
-
-  .nav-right {
-    display: none;
   }
 
   .act-meta {
