@@ -1317,7 +1317,7 @@ function ColophonSection() {
     <section className="colophon" id="colophon">
       <div className="wrap">
         <div className="colophon-inner">
-          <span className="eyebrow">Colophon</span>
+          <span className="eyebrow">마치며</span>
           <Editable as="h2" className="colophon-title" id="colophon.title" value={colophonTitle} />
           <Editable as="p" className="colophon-note" id="colophon.note" value={colophonNote} />
 
