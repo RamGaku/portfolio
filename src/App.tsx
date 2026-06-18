@@ -273,10 +273,10 @@ const storyActs = [
     id: "requirements",
     n: "01",
     tag: "한마디로 - 요구사항 추출",
-    title: "고객의 언어를\n제품 요구로\n번역합니다",
+    title: "고객의 생각을 추출하여\n제품으로 가공합니다",
     body: [
-      "현장의 요청은 처음부터 완성된 요구사항으로 오지 않습니다. 운영 방식, 데이터 위치, 검증 기준, 실제 사용 화면이 섞인 말로 전달됩니다.",
-      "그래서 제 일은 코드보다 질문에서 시작합니다. 고객의 표현을 존중하되, 그 안의 운영 맥락을 제품 요구와 데이터 흐름으로 바꾸는 과정을 요구사항 추출이라고 봅니다."
+      "요구는 대부분 추상적입니다. 그렇지만 FDE 엔지니어는 그것을 구체적으로 바꿀 수 있어야 합니다.",
+      "그래서 저는 질문으로 대답합니다. 고객의 표현을 존중하면서도 정확한 실마리를 잡아, 그것을 깎아내는 것. 결국 중요한 건 요구사항 추출입니다."
     ],
     hero: true
   },
@@ -284,20 +284,13 @@ const storyActs = [
     id: "flow",
     n: "02",
     tag: "결국 - 데이터 흐름을 잇는다",
-    title: "장비에서 화면까지,\n끊긴 곳을 찾는다",
+    title: "장비에서 화면까지,\n데이터는 흐른다",
     body: [
       "수많은 요구를 따라가다 보면 결국 한 문장으로 모입니다. '이 데이터를, 이렇게, 보고 싶다.' 화면도, 알람도, 리포트도 그 변형일 뿐입니다.",
-      "데이터는 장비에서 출발해 프로토콜, 서버, DB, 운영 화면까지 여러 층을 지납니다. 제 일의 절반은 그 끊긴 지점을 한 층씩 따라가 찾아내고, 다시 잇는 것입니다."
+      "마치 물줄기처럼, 데이터는 흘러갑니다. 솔루션 구축에서 할 일은 이 지류들을 적절히 모아 한 화면에 잘 가공해 뿌려주는 것이라고 생각합니다. 제가 주로 해온 일이기도 해서, Enhans의 FDE 직무에 적합하다고 생각합니다."
     ],
     flow: true
   }
-];
-
-const flowStages = [
-  { key: "장비 · 센서", items: ["Vibration", "Turbine", "SCADA"] },
-  { key: "프로토콜", items: ["OPC DA/UA", "Modbus TCP", "HSMS"] },
-  { key: "운영 데이터 레이어", items: ["Edge Server", "RTDB", "REST API"] },
-  { key: "화면 · 산출물", items: ["3D Viewer", "Grafana", "Report PDF"] }
 ];
 
 const fitLenses = [
@@ -587,7 +580,7 @@ function Editable({
 
 export default function App() {
   const [navScrolled, setNavScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("requirements");
+  const [activeSection, setActiveSection] = useState("about");
   const [openProjects, setOpenProjects] = useState<Set<string>>(
     () => new Set(projects[0] ? [projects[0].id] : [])
   );
@@ -635,24 +628,18 @@ export default function App() {
 
   useEffect(() => {
     const observedIds = ["about", "motivation", "fit", "work"];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target.id) {
-          setActiveSection(visible.target.id);
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: [0.1, 0.3, 0.6] }
-    );
-
-    observedIds.forEach((id) => {
-      const target = document.getElementById(id);
-      if (target) observer.observe(target);
-    });
-
-    return () => observer.disconnect();
+    const onScroll = () => {
+      const line = window.innerHeight * 0.3;
+      let current = observedIds[0];
+      for (const id of observedIds) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) current = id;
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -941,8 +928,8 @@ export default function App() {
             <SectionHead
               idBase="section.work"
               tag="현장 기록"
-              title="프로젝트로 보는 데이터 흐름"
-              desc="각 프로젝트를 문제 · 데이터 플로우 · 레이어별 기술 스택 · 내 역할 · 결과로 분리했습니다. 기술 담당자가 장비에서 화면까지 이어지는 흐름을 바로 확인할 수 있게 구성했습니다."
+              title="FDE 관련 수행 프로젝트"
+              desc="각 프로젝트를 문제 · 데이터 플로우 · 내 역할 · 결과로 정리했습니다. 장비에서 화면까지 이어지는 흐름을 바로 확인할 수 있게 구성했습니다."
             />
             <div className="proj-list">
               {projects.map((project, index) => (
@@ -1183,33 +1170,6 @@ function BackgroundBlock() {
 function FlowDiagram() {
   return (
     <>
-      <div className="flow-diagram">
-        {flowStages.map((stage, index) => (
-          <div className="flow-part" key={stage.key}>
-            <div className="flow-stage">
-              <Editable as="div" className="fs-k" id={`flow.stage.${index}.key`} value={stage.key} />
-              <ul>
-                {stage.items.map((item, itemIndex) => (
-                  <Editable
-                    as="li"
-                    key={itemIndex}
-                    id={`flow.stage.${index}.item.${itemIndex}`}
-                    value={item}
-                    term
-                  />
-                ))}
-              </ul>
-            </div>
-            {index < flowStages.length - 1 ? <div className="flow-arrow">→</div> : null}
-          </div>
-        ))}
-      </div>
-      <Editable
-        as="p"
-        className="flow-caption"
-        id="flow.caption"
-        value="데이터가 끊기면, 이 길을 한 층씩 되짚습니다."
-      />
       <div className="vdpm-embed-wrap">
         <iframe
           className="vdpm-embed"
@@ -1289,31 +1249,6 @@ function ProjectItem({
                   {nodeIndex < detail.dataFlow.length - 1 ? (
                     <span className="project-flow-arrow" aria-hidden="true">→</span>
                   ) : null}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="layer-panel">
-            <div className="dh">LAYER STACK</div>
-            <div className="layer-grid">
-              {detail.layers.map((layer, layerIndex) => (
-                <div className="layer-card" key={`${project.id}-${layerIndex}`}>
-                  <Editable
-                    as="span"
-                    id={`project.${project.id}.layer.${layerIndex}.name`}
-                    value={layer.layer}
-                  />
-                  <div>
-                    {layer.tech.map((tech, techIndex) => (
-                      <Editable
-                        as="em"
-                        key={techIndex}
-                        id={`project.${project.id}.layer.${layerIndex}.tech.${techIndex}`}
-                        value={tech}
-                        term
-                      />
-                    ))}
-                  </div>
                 </div>
               ))}
             </div>
@@ -1409,6 +1344,7 @@ function MotivationSection() {
         <div className="motivation-inner">
           <span className="eyebrow">Why Enhans</span>
           <Editable as="h2" className="motivation-title" id="motivation.title" value="지원 동기" />
+          <Editable as="p" className="motivation-note" id="motivation.note" value="* 이 섹션은 AI의 도움 없이 작성되었습니다." />
           <div className="motivation-body">
             {motivationBody.map((paragraph, index) => (
               <Editable
@@ -1442,6 +1378,21 @@ function ColophonSection({ onExplainTech }: { onExplainTech: (term: string) => v
           </ol>
           <Editable as="p" className="colophon-p" id="colophon.after" value={colophonAfter} />
 
+          <Editable as="h3" className="colophon-sub" id="colophon.subtitle" value={colophonSubtitle} />
+          <ol className="colophon-strengths">
+            {colophonStrengths.map((item, index) => (
+              <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
+            ))}
+          </ol>
+          <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
+
+          <div className="colophon-links">
+            <a href="https://github.com/RamGaku/portfolio" target="_blank" rel="noreferrer">
+              <Github size={16} aria-hidden="true" />
+              이 사이트 소스 코드
+            </a>
+          </div>
+
           <Editable as="h3" className="colophon-sub" id="colophon.stacktitle" value="이 사이트를 만든 기술 스택" />
           <div className="stack-grid">
             {techStack.map((category) => (
@@ -1462,21 +1413,6 @@ function ColophonSection({ onExplainTech }: { onExplainTech: (term: string) => v
                 </div>
               </div>
             ))}
-          </div>
-
-          <Editable as="h3" className="colophon-sub" id="colophon.subtitle" value={colophonSubtitle} />
-          <ol className="colophon-strengths">
-            {colophonStrengths.map((item, index) => (
-              <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
-            ))}
-          </ol>
-          <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
-
-          <div className="colophon-links">
-            <a href="https://github.com/RamGaku/portfolio" target="_blank" rel="noreferrer">
-              <Github size={16} aria-hidden="true" />
-              이 사이트 소스 코드
-            </a>
           </div>
         </div>
       </div>
