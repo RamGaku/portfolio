@@ -428,9 +428,57 @@ em {
   /* 헤더가 본문과 분리되지 않도록 */
   .proj-head,
   .section-head,
-  .csec-head {
+  .csec-head,
+  .colophon-sub,
+  .colophon-stack-title {
     break-after: avoid;
     page-break-after: avoid;
+  }
+
+  /* 콜로폰의 기술스택을 5컬럼 가로 한 줄로 압축해 한 페이지에 들어가게 한다. */
+  .stack-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .stack-cat .dh {
+    font-size: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .tech-chip {
+    padding: 3px 7px !important;
+    font-size: 10.5px !important;
+  }
+
+  /* 마치며 본문도 인쇄에서는 더 타이트하게 */
+  .colophon-steps li,
+  .colophon-strengths li {
+    padding: 8px 0 !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  .colophon-p {
+    font-size: 13px !important;
+    margin-top: 12px !important;
+  }
+
+  /* Contact는 콜로폰 페이지에 같이 올라타도록 break 강제 해제 */
+  .contact {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    padding: 16px 0 !important;
+  }
+
+  .contact-links {
+    margin-top: 8px !important;
+    gap: 8px !important;
+  }
+
+  .contact-links a {
+    padding: 6px 12px !important;
+    font-size: 11.5px !important;
   }
 
   a {
