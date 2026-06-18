@@ -1354,7 +1354,6 @@ function ContactSection() {
     <section className="contact" id="contact">
       <div className="wrap">
         <span className="eyebrow">Contact</span>
-        <h2 className="contact-title">연락처</h2>
         <div className="contact-links">
           <a href="https://github.com/RamGaku" target="_blank" rel="noreferrer">
             <Github size={16} aria-hidden="true" />
