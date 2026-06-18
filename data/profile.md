@@ -158,3 +158,11 @@
   - 물리적으로 센서를 원하는 위치에 설치할 수 없어 데이터가 부정확한 경우가 있다.
 - 그래서 현장의 '암묵지(tacit knowledge)'를 녹여내는 것이 중요하다는 점에 깊이 공감했다.
 - 암묵지는 현재 AI가 접근하기 어려운 노하우 같은 것인데, 대표님이 그 중요성을 짚는 부분에서 특히 공감했다.
+
+## 이 사이트(포트폴리오)의 기술 스택
+- Frontend: React, TypeScript, Vite (CSS 프레임워크 없이 순수 CSS)
+- Backend (API): Node.js, Express, Google Cloud Run
+- AI / LLM: Vertex AI (Gemini 생성 + 다국어 임베딩 text-multilingual-embedding-002), 벡터(코사인) 시맨틱 검색 기반 RAG이며 실패 시 키워드 검색으로 폴백
+- Hosting: Firebase Hosting (정적 프론트 + SSL)
+- Domain / DNS: Cloudflare (portfolio.ramga.dev, CNAME, DNS only)
+- 참고: 백엔드(챗봇 API)는 Firebase가 아니라 Cloud Run + Express이고, Firebase는 호스팅 역할이다.

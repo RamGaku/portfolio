@@ -152,7 +152,7 @@ em {
 
 .who span {
   color: var(--text-faint);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -254,7 +254,7 @@ section {
 .act-meta {
   gap: 14px;
   margin-bottom: 34px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 16px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -297,7 +297,7 @@ section {
   gap: 12px;
   margin-top: 70px;
   color: var(--text-faint);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -338,7 +338,7 @@ section {
 .fs-k {
   margin-bottom: 18px;
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -419,7 +419,7 @@ section {
 .eyebrow {
   gap: 9px;
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -476,7 +476,7 @@ section {
 
 .fit-card span {
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 780;
   letter-spacing: 0.12em;
@@ -524,7 +524,7 @@ section {
 .proj-num {
   width: 48px;
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 700;
 }
@@ -538,7 +538,7 @@ section {
 
 .proj-cat {
   color: var(--text-faint);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 13.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -638,7 +638,7 @@ section {
 
 .flow-step-index {
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 11px;
   font-weight: 780;
 }
@@ -682,7 +682,7 @@ section {
 
 .layer-card > span {
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 780;
   letter-spacing: 0.12em;
@@ -725,7 +725,7 @@ section {
 .dh {
   margin-bottom: 16px;
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 780;
   letter-spacing: 0.14em;
@@ -1238,7 +1238,7 @@ section {
 
 .career-period {
   color: var(--orange);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 700;
 }
@@ -1290,7 +1290,7 @@ section {
   border-radius: 999px;
   background: var(--surface-1);
   color: var(--text-dim);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 11.5px;
   font-style: normal;
 }
@@ -1478,7 +1478,7 @@ section {
   border-radius: 999px;
   background: var(--surface-1);
   color: var(--text-dim);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 12px;
   font-style: normal;
 }
@@ -1601,7 +1601,7 @@ section {
 .edit-status {
   margin-right: 4px;
   color: var(--text-dim);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: inherit;
   font-size: 12.5px;
   white-space: nowrap;
 }
