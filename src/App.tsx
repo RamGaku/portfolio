@@ -13,7 +13,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type ReactNode
 } from "react";
-import { Github, Mail, Send, X } from "lucide-react";
+import { Download, Github, Mail, Send, X } from "lucide-react";
 import knowledge from "../data/public-kb.json";
 
 type LangText = {
@@ -67,6 +67,7 @@ type ChatMessage = {
     anchor: string;
     label: string;
   };
+  pdf?: boolean;
   sources?: ChatSource[];
   mode?: string;
 };
@@ -337,6 +338,7 @@ const promptChips = [
   ["경주풍력 DT", "경주풍력 Digital Twin 프로젝트를 설명해줘"],
   ["Modbus Skill", "Modbus Mapping Skill 프로젝트를 설명해줘"],
   ["청송양수", "청송양수 고진동 프로젝트 설명해줘"],
+  ["PDF 저장", "이력서를 PDF로 저장하고 싶어"],
   ["데이터 플로우", "프로젝트별 데이터 플로우와 레이어 스택을 설명해줘"]
 ];
 
@@ -812,20 +814,26 @@ export default function App() {
               {brandInner}
             </a>
           )}
-          <div className="nav-links">
-            {navItems.map(([id, label]) => (
-              <a
-                className={activeSection === id ? "active" : ""}
-                href={`#${id}`}
-                key={id}
-                onClick={(event) => {
-                  event.preventDefault();
-                  scrollToAnchor(id);
-                }}
-              >
-                {label}
-              </a>
-            ))}
+          <div className="nav-actions">
+            <div className="nav-links">
+              {navItems.map(([id, label]) => (
+                <a
+                  className={activeSection === id ? "active" : ""}
+                  href={`#${id}`}
+                  key={id}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToAnchor(id);
+                  }}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+            <button className="nav-pdf" type="button" onClick={() => window.print()} aria-label="PDF로 저장">
+              <Download size={15} aria-hidden="true" />
+              PDF
+            </button>
           </div>
         </div>
       </nav>
@@ -954,6 +962,7 @@ export default function App() {
         open={chatOpen}
         onClose={() => setChatOpen(false)}
         onJump={jumpToProject}
+        onDownloadPdf={() => window.print()}
       />
 
       {loginOpen ? (
@@ -1451,10 +1460,12 @@ function BgmSection() {
 function PortfolioChat({
   onClose,
   onJump,
+  onDownloadPdf,
   open
 }: {
   onClose: () => void;
   onJump: (anchor: string) => void;
+  onDownloadPdf: () => void;
   open: boolean;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -1478,6 +1489,35 @@ function PortfolioChat({
     setQuestion("");
     setLoading(true);
     setMessages((current) => [...current, { role: "user", content: trimmed }]);
+
+    if (
+      hasKeyword(trimmed, [
+        "pdf",
+        "피디에프",
+        "다운로드",
+        "내려받",
+        "인쇄",
+        "출력",
+        "이력서 받",
+        "이력서 저장",
+        "이력서 다운",
+        "이력서로 저장"
+      ])
+    ) {
+      window.setTimeout(() => {
+        setMessages((current) => [
+          ...current,
+          {
+            role: "bot",
+            content:
+              "이 포트폴리오를 PDF로 저장할 수 있어요. 아래 버튼을 누르면 인쇄 창이 열립니다 — 대상(목적지)을 'PDF로 저장'으로 선택하면 됩니다. 우상단의 PDF 버튼으로도 가능합니다.",
+            pdf: true
+          }
+        ]);
+        setLoading(false);
+      }, 320);
+      return;
+    }
 
     const scripted = scriptedIntents.find((intent) => hasKeyword(trimmed, intent.keys));
     if (scripted) {
@@ -1559,6 +1599,11 @@ function PortfolioChat({
             {message.jump ? (
               <button className="jump" type="button" onClick={() => onJump(message.jump!.anchor)}>
                 {message.jump.label}
+              </button>
+            ) : null}
+            {message.pdf ? (
+              <button className="jump" type="button" onClick={onDownloadPdf}>
+                PDF로 저장
               </button>
             ) : null}
             {message.sources?.length ? (
