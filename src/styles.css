@@ -1083,6 +1083,37 @@ section {
   }
 }
 
+/* --- Motivation (opening section) --------------------------------------- */
+
+.motivation {
+  padding: 120px 0 96px;
+  border-bottom: 1px solid var(--border);
+}
+
+.motivation-inner {
+  max-width: 760px;
+}
+
+.motivation-title {
+  margin-top: 18px;
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 680;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.motivation-body {
+  display: grid;
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.motivation-body p {
+  color: var(--text-dim);
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.75;
+}
+
 /* --- Resume sections (collapsible) -------------------------------------- */
 
 .csec {

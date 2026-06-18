@@ -414,6 +414,12 @@ const backgroundBlocks: BackgroundBlock[] = [
   }
 ];
 
+const motivationBody = [
+  "이승현 대표님의 인터뷰 영상을 우연히 보게 되었는데, 말씀하시는 것이 평소 저의 생각과 많이 비슷해서 공감이 되었습니다. 그러자 Enhans가 궁금해졌고, 홈페이지 블로그를 읽으며 배우기도 하고 흥미롭다고 느꼈습니다.",
+  "채용 페이지를 보니 FDE라는, 제겐 처음 보는 직무가 있었습니다. 그런데 그 일이 제가 회사에서 평소 해오던 일들이었습니다.",
+  "궁극적으로는 OS 기업이 되고 싶다고 하셨는데, 저 또한 현재 AI의 궁극적인 목표는 OS라고 생각하고 있었습니다. 그래서 Enhans에 직접 몸담아 보고 싶어 지원하게 되었습니다."
+];
+
 const colophonTitle = "이 사이트는 이렇게 만들었습니다";
 const colophonNote = "AI의 도움 없이 작성된 섹션입니다.";
 const colophonSteps = [
@@ -558,6 +564,7 @@ export default function App() {
 
   const navItems = useMemo(
     () => [
+      ["motivation", "지원 동기"],
       ["about", "소개"],
       ["career", "경력"],
       ["background", "이력"],
@@ -599,7 +606,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const observedIds = ["requirements", "flow", "about", "career", "background", "fit", "work"];
+    const observedIds = ["motivation", "requirements", "flow", "about", "career", "background", "fit", "work"];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -788,10 +795,10 @@ export default function App() {
           ) : (
             <a
               className="brand"
-              href="#requirements"
+              href="#motivation"
               onClick={(event) => {
                 event.preventDefault();
-                scrollToAnchor("requirements");
+                scrollToAnchor("motivation");
               }}
             >
               {brandInner}
@@ -816,6 +823,7 @@ export default function App() {
       </nav>
 
       <main id="top">
+        <MotivationSection />
         <div id="story">
           {storyActs.map((act) => (
             <section className={`act ${act.hero ? "act-hero" : ""}`} id={act.id} key={act.id}>
@@ -1311,6 +1319,24 @@ function ProjectItem({
         </div>
       </div>
     </article>
+  );
+}
+
+function MotivationSection() {
+  return (
+    <section className="motivation" id="motivation">
+      <div className="wrap">
+        <div className="motivation-inner">
+          <span className="eyebrow">Why Enhans</span>
+          <Editable as="h2" className="motivation-title" id="motivation.title" value="지원 동기" />
+          <div className="motivation-body">
+            {motivationBody.map((paragraph, index) => (
+              <Editable key={index} as="p" id={`motivation.body.${index}`} value={paragraph} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
