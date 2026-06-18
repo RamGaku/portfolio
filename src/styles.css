@@ -118,7 +118,6 @@ em {
 .eyebrow,
 .flow-diagram,
 .flow-part,
-.fit-grid,
 .proj-head,
 .tags,
 .chat-head,
@@ -321,7 +320,6 @@ em {
   }
 
   .motivation,
-  .fit,
   .work,
   .contact,
   .csec {
@@ -330,7 +328,6 @@ em {
 
   section,
   .proj,
-  .fit-card,
   .stack-cat,
   .career-item,
   .layer-card,
@@ -539,14 +536,9 @@ section {
   }
 }
 
-.fit,
 .work {
   padding: var(--s-6) 0;
   border-top: 1px solid var(--border);
-}
-
-.fit {
-  background: var(--band);
 }
 
 .section-head {
@@ -584,71 +576,6 @@ section {
   color: var(--text-dim);
   font-size: clamp(15px, 1.5vw, 18px);
   line-height: 1.65;
-}
-
-.fit-grid {
-  align-items: stretch;
-  gap: 1px;
-  overflow: hidden;
-  border-top: 1px solid var(--border-strong);
-  border-bottom: 1px solid var(--border-strong);
-  background: var(--border);
-}
-
-.fit-card {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  padding: 28px 24px 26px;
-  border: 0;
-  background: #ffffff;
-  cursor: pointer;
-  text-align: left;
-  transition:
-    background 0.25s var(--ease),
-    color 0.25s var(--ease);
-}
-
-.fit-card::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 3px;
-  height: 0;
-  background: var(--orange);
-  transition: height 0.3s var(--ease);
-}
-
-.fit-card:hover::before {
-  height: 100%;
-}
-
-.fit-card:hover {
-  background: var(--surface-1);
-}
-
-.fit-card span {
-  color: var(--ink-mute);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.fit-card h3 {
-  margin-top: 18px;
-  font-size: 21px;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
-}
-
-.fit-card p {
-  margin-top: 16px;
-  color: var(--text-dim);
-  font-size: 15px;
-  line-height: 1.68;
 }
 
 .proj-list {
@@ -2161,7 +2088,6 @@ em.term:hover {
     display: none;
   }
 
-  .fit,
   .work {
     padding: 84px 0;
   }
@@ -2177,14 +2103,6 @@ em.term:hover {
 
   .flow-diagram {
     display: grid;
-  }
-
-  .fit-grid {
-    display: grid;
-  }
-
-  .fit-card h3 {
-    margin-top: 32px;
   }
 
   .flow-part {
@@ -2269,7 +2187,6 @@ em.term:hover {
     line-height: 1.05;
   }
 
-  .fit,
   .work {
     padding: 84px 0;
   }

@@ -97,7 +97,6 @@ const CHAT_INTRO =
 const navItems: Array<[string, string]> = [
   ["about", "소개"],
   ["motivation", "지원 동기"],
-  ["fit", "직무 매핑"],
   ["work", "현장 기록"]
 ];
 
@@ -268,27 +267,6 @@ const storyActs = [
       "결국 솔루션 일은 데이터가 흐르는 경로를 짜는 일입니다. 장비에서 서버, 화면까지의 흐름을 직접 만들어 본 게 제가 해온 일이고, Enhans의 FDE도 같은 일이라고 봅니다."
     ],
     flow: true
-  }
-];
-
-const fitLenses = [
-  {
-    term: "AI Workflow",
-    title: "반복 업무를 AI 에이전트 워크플로우로 자동화",
-    text: "영수증 OCR(병렬 에이전트)부터 전자결재 입력·제출까지 Playwright MCP로 자동화해 사내에 배포했습니다.",
-    anchor: "project-expense-approval-skill"
-  },
-  {
-    term: "Solution Lifecycle",
-    title: "진동 모니터링 솔루션 전 주기 개발 보조·유지보수",
-    text: "진동 도메인의 전반에서, 모니터링 솔루션의 전 주기를 직접 다루며 경험을 쌓아왔습니다.",
-    anchor: "project-cheongsong-high-vibration"
-  },
-  {
-    term: "Protocol Integration",
-    title: "OPC·Modbus·REST 등 산업 프로토콜 인터페이싱 경험",
-    text: "OPC DA/UA, Modbus TCP, REST, gRPC, HSMS 등 서로 다른 산업 인터페이스를 경험하며, 데이터의 특성에 따라 프로토콜을 비교/선택하여 서로다른 시스템을 연결하였습니다.",
-    anchor: "project-modbus-mapping-skill"
   }
 ];
 
@@ -607,7 +585,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const observedIds = ["about", "motivation", "fit", "work"];
+    const observedIds = ["about", "motivation", "work"];
     const onScroll = () => {
       const line = window.innerHeight * 0.3;
       let current = observedIds[0];
@@ -860,42 +838,6 @@ export default function App() {
             </section>
           ))}
         </div>
-
-        <section className="fit" id="fit">
-          <div className="wrap">
-            <SectionHead
-              idBase="section.fit"
-              tag="Enhans Fit"
-              title="Enhans FDE에 적합한 이유"
-              desc="현장에서 쌓은 경험 중 Enhans FDE 역할과 가장 맞닿는 부분을 정리했습니다."
-            />
-            <div className="fit-grid">
-              {fitLenses.map((lens, index) => {
-                const inner = (
-                  <>
-                    <Editable as="span" id={`fit.${index}.term`} value={lens.term} stop />
-                    <Editable as="h3" id={`fit.${index}.title`} value={lens.title} stop />
-                    <Editable as="p" id={`fit.${index}.text`} value={lens.text} stop />
-                  </>
-                );
-                return admin ? (
-                  <div className="fit-card" key={lens.anchor}>
-                    {inner}
-                  </div>
-                ) : (
-                  <button
-                    className="fit-card"
-                    key={lens.anchor}
-                    type="button"
-                    onClick={() => jumpToProject(lens.anchor)}
-                  >
-                    {inner}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
 
         <section className="work" id="work">
           <div className="wrap">
