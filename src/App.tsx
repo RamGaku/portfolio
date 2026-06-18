@@ -414,7 +414,7 @@ const backgroundBlocks: BackgroundBlock[] = [
   }
 ];
 
-const colophonTitle = "이 포트폴리오 자체가 제 답변입니다";
+const colophonTitle = "이 사이트는 이렇게 만들었습니다";
 const colophonNote = "AI의 도움 없이 작성된 섹션입니다.";
 const colophonSteps = [
   "모든 daily md 및 프로젝트 md를 AI에게 입력 (md 자체도 매일 AI가 정리해 만들고 있어서 가능했습니다)",
