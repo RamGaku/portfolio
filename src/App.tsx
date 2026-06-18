@@ -940,7 +940,6 @@ export default function App() {
         </section>
 
         <ColophonSection />
-        <TechStackSection />
         <ContactSection />
         <BgmSection />
       </main>
@@ -1358,29 +1357,6 @@ function MotivationSection() {
   );
 }
 
-function TechStackSection() {
-  return (
-    <section className="stack" id="stack">
-      <div className="wrap">
-        <span className="eyebrow">Tech Stack</span>
-        <Editable as="h2" className="stack-title" id="stack.title" value="기술 스택" />
-        <div className="stack-grid">
-          {techStack.map((category) => (
-            <div className="stack-cat" key={category.label}>
-              <div className="dh">{category.label}</div>
-              <div className="stack-chips">
-                {category.items.map((item) => (
-                  <em key={item}>{item}</em>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ColophonSection() {
   return (
     <section className="colophon" id="colophon">
@@ -1396,6 +1372,20 @@ function ColophonSection() {
             ))}
           </ol>
           <Editable as="p" className="colophon-p" id="colophon.after" value={colophonAfter} />
+
+          <Editable as="h3" className="colophon-sub" id="colophon.stacktitle" value="이 사이트를 만든 기술 스택" />
+          <div className="stack-grid">
+            {techStack.map((category) => (
+              <div className="stack-cat" key={category.label}>
+                <div className="dh">{category.label}</div>
+                <div className="stack-chips">
+                  {category.items.map((item) => (
+                    <em key={item}>{item}</em>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
 
           <Editable as="h3" className="colophon-sub" id="colophon.subtitle" value={colophonSubtitle} />
           <ol className="colophon-strengths">

@@ -501,12 +501,10 @@ section {
 .vdpm-embed-wrap {
   position: relative;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 32px;
   aspect-ratio: 1600 / 720;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #eef2f7;
+  background: transparent;
 }
 
 .vdpm-embed {
@@ -1596,16 +1594,14 @@ section {
 .stack-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1px;
-  margin-top: 32px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--border);
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .stack-cat {
-  padding: 22px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   background: #ffffff;
 }
 
