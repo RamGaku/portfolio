@@ -1436,6 +1436,53 @@ section {
   color: var(--orange);
 }
 
+/* --- Tech Stack --------------------------------------------------------- */
+
+.stack {
+  padding: 96px 0;
+  border-top: 1px solid var(--border);
+}
+
+.stack-title {
+  margin-top: 18px;
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  margin-top: 32px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--border);
+}
+
+.stack-cat {
+  padding: 22px;
+  background: #ffffff;
+}
+
+.stack-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.stack-chips em {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--text-dim);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-style: normal;
+}
+
 /* --- Contact ------------------------------------------------------------ */
 
 .contact {

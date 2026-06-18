@@ -439,6 +439,14 @@ const colophonStrengths = [
 const colophonClosing =
   "이러한 이유로, Enhans가 궁극적으로 추구하는 'Agent' 구축에 도움이 될 것이라고 생각합니다.";
 
+const techStack = [
+  { label: "Frontend", items: ["React", "TypeScript", "Vite"] },
+  { label: "Backend (API)", items: ["Node.js", "Express", "Cloud Run"] },
+  { label: "AI / LLM", items: ["Vertex AI", "Gemini", "Embeddings (RAG)"] },
+  { label: "Hosting", items: ["Firebase Hosting"] },
+  { label: "Domain / DNS", items: ["Cloudflare"] }
+];
+
 function projectAnchor(id: string) {
   return id === "enhans-positioning" ? "requirements" : `project-${id}`;
 }
@@ -929,6 +937,7 @@ export default function App() {
         </section>
 
         <ColophonSection />
+        <TechStackSection />
         <ContactSection />
         <BgmSection />
       </main>
@@ -1334,6 +1343,29 @@ function MotivationSection() {
               <Editable key={index} as="p" id={`motivation.body.${index}`} value={paragraph} />
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TechStackSection() {
+  return (
+    <section className="stack" id="stack">
+      <div className="wrap">
+        <span className="eyebrow">Tech Stack</span>
+        <Editable as="h2" className="stack-title" id="stack.title" value="기술 스택" />
+        <div className="stack-grid">
+          {techStack.map((category) => (
+            <div className="stack-cat" key={category.label}>
+              <div className="dh">{category.label}</div>
+              <div className="stack-chips">
+                {category.items.map((item) => (
+                  <em key={item}>{item}</em>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
