@@ -371,16 +371,7 @@ section {
 }
 
 .act-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: 60%;
-  background: url("/assets/industrial-signal-hero.png") no-repeat right center;
-  background-size: contain;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 40%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 40%);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .act-hero .act-inner {
@@ -685,12 +676,17 @@ section {
 }
 
 .proj-num {
-  width: 48px;
   color: var(--ink-mute);
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.2em;
+}
+
+.proj-meta-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .proj-title-wrap {
@@ -1258,7 +1254,7 @@ section {
 }
 
 .motivation-inner {
-  max-width: 760px;
+  max-width: none;
 }
 
 .motivation-title {
@@ -1455,6 +1451,7 @@ section {
 /* --- Resume sections (collapsible) -------------------------------------- */
 
 .csec {
+  position: relative;
   border-top: 1px solid var(--border);
 }
 
@@ -1463,10 +1460,7 @@ section {
 }
 
 .csec-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  display: block;
   width: 100%;
   padding: var(--s-4) 0;
   border: 0;
@@ -1489,6 +1483,10 @@ section {
 }
 
 .csec-toggle {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-3);
+  z-index: 2;
   display: grid;
   place-items: center;
   width: 34px;
@@ -1496,6 +1494,7 @@ section {
   flex: 0 0 auto;
   border: 1px solid var(--border);
   border-radius: 999px;
+  background: #ffffff;
   color: var(--text-dim);
   font-size: 22px;
   line-height: 1;
@@ -1528,7 +1527,7 @@ section {
 
 /* About */
 .about-summary {
-  max-width: 760px;
+  max-width: none;
   color: var(--text-dim);
   font-size: clamp(17px, 1.6vw, 21px);
   line-height: 1.7;
@@ -1536,6 +1535,20 @@ section {
   text-justify: inter-character;
   word-break: keep-all;
   hyphens: auto;
+}
+
+.about-llm-pov {
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--border);
+}
+
+.about-llm-pov .colophon-strengths {
+  margin-top: var(--s-3);
+}
+
+.about-llm-pov .colophon-p {
+  margin-top: var(--s-3);
 }
 
 #motivation\.body\.0,

@@ -364,7 +364,7 @@ const careerEntries: CareerEntry[] = [
     points: [
       "진동 모니터링 솔루션 VNET-7000 / VNET-7300의 개발·유지보수 및 요구 기능 추가",
       "경주풍력 Digital Twin 등 국책 연구과제에서 전체 솔루션 개발 참여",
-      "타사 시스템과의 데이터 인터페이스(OPC, Modbus, REST 등) 설계·검증 및 운영 환경 안정화",
+      "타사 시스템과의 데이터 인터페이스(OPC, Modbus, REST 등) 경험 다수",
       "센서·펌웨어부터 응용프로그램까지 전 레이어를 다루며 진동 같은 대용량 신호 데이터 처리"
     ],
     stack: ["C++(펌웨어)", ".NET Framework", "WinForm", "WPF", "MSSQL", "RTDB"]
@@ -421,12 +421,12 @@ const motivationBody = [
 const colophonTitle = "이 사이트는 이렇게 만들었습니다";
 const colophonNote = "AI의 도움 없이 작성된 섹션입니다.";
 const colophonSteps = [
-  "클로드 디자인의 오버레이 코멘트 시스템을 차용해, 이 사이트 자체를 AI에게 손쉽게 수정 지시하는 사례로 만들었습니다",
   "모든 daily md 및 프로젝트 md를 AI에게 입력 (md 자체도 매일 AI가 정리해 만들고 있어서 가능했습니다)",
   "NotebookLM으로 Enhans의 유튜브 채널, 홈페이지 블로그·채용공고를 지식화한 뒤 포트폴리오 뼈대 md 생성",
   "뼈대 md를 Claude Design에 넣어 홈페이지 초안 작성",
   "로컬 웹서버에서 테스트 및 내용 수정 반복",
   "Cloudflare에서 도메인 구매, Firebase 호스팅 + Vertex AI 연동",
+  "클로드 디자인의 오버레이 코멘트 시스템을 차용해, 이 사이트 자체를 AI에게 손쉽게 수정 지시하는 사례로 만들었습니다",
   "Firebase 임베딩 모델로 RAG화하고 Vertex AI의 LLM을 붙여 챗봇 형태의 KB 구축 (Playwright MCP로 AI가 직접 진행)"
 ];
 const colophonAfter = "일련의 과정을 거치며 지금의 페이지가 만들어졌습니다.";
@@ -930,7 +930,7 @@ export default function App() {
               idBase="section.work"
               tag="현장 기록"
               title="FDE 관련 수행 프로젝트"
-              desc="각 프로젝트를 문제 · 데이터 플로우 · 내 역할 · 결과로 정리했습니다. 장비에서 화면까지 이어지는 흐름을 바로 확인할 수 있게 구성했습니다."
+              desc="각 프로젝트를 문제 · 데이터 플로우 · 내 역할 · 결과로 정리했습니다."
             />
             <div className="proj-list">
               {projects.map((project, index) => (
@@ -1111,6 +1111,15 @@ function AboutSection() {
           <Editable as="span" key={index} id={`about.fact.${index}`} value={fact} />
         ))}
       </div>
+      <div className="about-llm-pov">
+        <Editable as="h3" className="about-sub-title" id="colophon.subtitle" value={colophonSubtitle} />
+        <ol className="colophon-strengths">
+          {colophonStrengths.map((item, index) => (
+            <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
+          ))}
+        </ol>
+        <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
+      </div>
       <CareerBlock />
       <BackgroundBlock />
     </CollapsibleSection>
@@ -1207,9 +1216,11 @@ function ProjectItem({
   const num = String(index + 1).padStart(2, "0");
   const headInner = (
     <>
-      <span className="proj-num">{num}</span>
       <span className="proj-title-wrap">
-        <Editable as="span" className="proj-cat" id={`kb.${project.id}.category`} value={project.category} stop />
+        <span className="proj-meta-row">
+          <span className="proj-num">{num}</span>
+          <Editable as="span" className="proj-cat" id={`kb.${project.id}.category`} value={project.category} stop />
+        </span>
         <Editable as="span" className="proj-title" id={`kb.${project.id}.title`} value={project.title} stop />
         <Editable as="span" className="proj-short" id={`kb.${project.id}.summary`} value={project.summary} stop />
       </span>
@@ -1378,14 +1389,6 @@ function ColophonSection({ onExplainTech }: { onExplainTech: (term: string) => v
             ))}
           </ol>
           <Editable as="p" className="colophon-p" id="colophon.after" value={colophonAfter} />
-
-          <Editable as="h3" className="colophon-sub" id="colophon.subtitle" value={colophonSubtitle} />
-          <ol className="colophon-strengths">
-            {colophonStrengths.map((item, index) => (
-              <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
-            ))}
-          </ol>
-          <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
 
           <div className="colophon-links">
             <a href="https://github.com/RamGaku/portfolio" target="_blank" rel="noreferrer">
