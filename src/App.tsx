@@ -78,7 +78,22 @@ type ChatResponse = {
 };
 
 const kb = knowledge as KnowledgeEntry[];
-const projects = kb.filter((entry) => entry.id !== "enhans-positioning");
+// 카드 표시 순서: AI 스킬(전자결재·Modbus) → 플랫폼 → 보고서 자동화 → 실패 사례(마지막).
+// 목록에 없는 id는 뒤로 보내 새 프로젝트가 추가돼도 누락되지 않게 한다.
+const projectOrder = [
+  "expense-approval-skill",
+  "modbus-mapping-skill",
+  "gjpp-digital-twin",
+  "naval-report-automation",
+  "cheongsong-high-vibration"
+];
+const projects = kb
+  .filter((entry) => entry.id !== "enhans-positioning")
+  .sort((a, b) => {
+    const ia = projectOrder.indexOf(a.id);
+    const ib = projectOrder.indexOf(b.id);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+  });
 
 const CHAT_INTRO =
   "안녕하세요. 김가람의 포트폴리오 KB 가이드입니다. Vertex AI와 공개 경력 KB를 기준으로 답하고, 관련 프로젝트 섹션으로 안내합니다. 요구사항 추출, Enhans Fit, 데이터 흐름, 현장 배포, 산업용 통신, Edge 데이터, 펌웨어 디버깅, 문서화 경험을 물어보세요.";
@@ -283,6 +298,12 @@ const flowStages = [
 
 const fitLenses = [
   {
+    term: "AI Workflow",
+    title: "반복 업무를 AI 에이전트 워크플로우로 자동화",
+    text: "영수증 OCR(병렬 에이전트)부터 전자결재 입력·제출까지 Playwright MCP로 자동화해 사내에 배포했습니다.",
+    anchor: "project-expense-approval-skill"
+  },
+  {
     term: "Solution Lifecycle",
     title: "진동 모니터링 솔루션의 전체적인 개발 및 유지보수 경험",
     text: "현장 요구 정리부터 데이터 이관·분석 조건 검증, 기능 추가, 유지보수까지 진동 모니터링 솔루션의 전 주기를 직접 다뤘습니다.",
@@ -320,7 +341,7 @@ const promptChips = [
 ];
 
 const aboutSummary =
-  "산업 현장의 모호한 요구를 데이터 흐름으로 번역해, 센서·임베디드 환경부터 서버·운영 화면까지 솔루션 전반을 다뤄온 엔지니어입니다. 진동 모니터링 솔루션의 개발·운영과 이기종 시스템 간 데이터 인터페이스가 핵심 경험이며, 실패한 프로젝트의 원인까지 근거로 남기는 방식으로 일합니다.";
+  "산업 현장의 모호한 요구를 데이터 흐름으로 번역해, 센서·임베디드 환경부터 서버·운영 화면까지 솔루션 전반을 다뤄온 엔지니어입니다. 진동 모니터링 솔루션의 개발·운영과 이기종 시스템 간 데이터 인터페이스가 핵심 경험이고, 최근에는 반복 업무를 AI 에이전트 워크플로우로 자동화해 사내에 배포하는 일까지 확장했습니다. 실패한 프로젝트의 원인까지 근거로 남기는 방식으로 일합니다.";
 
 const aboutFacts = [
   "1993년생 · 수원 거주",
