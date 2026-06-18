@@ -108,7 +108,7 @@ const projectDetails: Record<string, ProjectDetail> = {
     problem:
       "매월 반복되는 경비 청구 결재는 사람마다 다른 양식의 영수증을 수동으로 합산·정리해야 했습니다. 영수증 양식이 일관되지 않아 합산 과정에서 휴먼 에러가 발생하고, 같은 청구를 매번 동일한 절차로 반복해야 하는 구조였습니다.",
     role:
-      "반복 결재 업무를 AI Skill로 가공해, 영수증 OCR부터 전자결재 페이지 입력·첨부 제출까지 단일 자연어 명령으로 끝나도록 설계하고 사내에 배포했습니다.",
+      "반복 결재 업무를 AI Skill로 가공해, 영수증 OCR부터 전자결재 페이지 입력·첨부 제출까지 단일 자연어 명령으로 끝나도록 설계하고 사내에 배포했습니다.\n*\"2월 경비청구서 작성해줘\"*",
     actions: [
       "영수증 1장당 1 에이전트의 병렬 OCR 구조로, 처리 시간이 영수증 수량과 무관해지도록 설계",
       "메인 에이전트의 컨텍스트 오염을 피하기 위해 OCR·정보 추출을 서브 에이전트로 격리",
@@ -292,13 +292,13 @@ const fitLenses = [
   {
     term: "Solution Lifecycle",
     title: "진동 모니터링 솔루션 전 주기 개발 보조·유지보수",
-    text: "현장 요구 정리부터 데이터 이관·분석 조건 검증, 기능 추가, 유지보수까지 진동 모니터링 솔루션의 전 주기를 직접 다뤘습니다.",
+    text: "진동 도메인의 전반에서, 모니터링 솔루션의 전 주기를 직접 다루며 경험을 쌓아왔습니다.",
     anchor: "project-cheongsong-high-vibration"
   },
   {
     term: "Protocol Integration",
     title: "OPC·Modbus·REST 등 산업 프로토콜 인터페이싱 경험",
-    text: "OPC DA/UA, Modbus TCP, REST, gRPC, HSMS 등 서로 다른 산업 인터페이스를 장비-서버-운영 화면 흐름으로 연결했습니다.",
+    text: "OPC DA/UA, Modbus TCP, REST, gRPC, HSMS 등 서로 다른 산업 인터페이스를 경험하며, 데이터의 특성에 따라 프로토콜을 비교/선택하여 서로다른 시스템을 연결하였습니다.",
     anchor: "project-modbus-mapping-skill"
   }
 ];
@@ -1020,6 +1020,20 @@ function highlightKeywords(text: string) {
   );
 }
 
+function renderProjectRole(text: string): ReactNode {
+  const lines = text.split("\n");
+  return lines.flatMap((line, index) => {
+    const italicMatch = line.trim().match(/^\*(.+)\*$/);
+    const sep = index > 0 ? [<br key={`br-${index}`} />] : [];
+    const content = italicMatch ? (
+      <em key={`em-${index}`} className="role-example">{italicMatch[1]}</em>
+    ) : (
+      <span key={`s-${index}`}>{line}</span>
+    );
+    return [...sep, content];
+  });
+}
+
 function renderStoryBody(text: string): ReactNode {
   const match = text.match(/^(.*?)('[^']*')(.*)$/);
   if (!match) {
@@ -1178,7 +1192,7 @@ function FlowDiagram() {
         as="p"
         className="flow-caption"
         id="flow.vdpm.caption"
-        value="실제 사례 — VDPM 시스템의 데이터 흐름 (장비 → 수집 → 서버 → 운영 화면)."
+        value="실제 솔루션 사례 — VDPM 시스템의 데이터 흐름 (장비 → 수집 → 서버 → 운영 화면)."
       />
     </>
   );
@@ -1257,7 +1271,13 @@ function ProjectItem({
             </div>
             <div className="detail-block role">
               <div className="dh">ROLE</div>
-              <Editable as="p" id={`project.${project.id}.role`} value={detail.role} />
+              <Editable
+                as="p"
+                id={`project.${project.id}.role`}
+                value={detail.role}
+                multiline
+                display={renderProjectRole}
+              />
             </div>
             <div className="detail-block approach-block">
               <div className="dh">APPROACH</div>
@@ -1285,19 +1305,8 @@ function ProjectItem({
                 ))}
               </ul>
             </div>
-            <div className="detail-block span2 evidence">
-              <div className="dh">EVIDENCE</div>
-              <ul>
-                {project.evidence.map((item, itemIndex) => (
-                  <Editable
-                    as="li"
-                    key={itemIndex}
-                    id={`kb.${project.id}.evidence.${itemIndex}`}
-                    value={item}
-                  />
-                ))}
-              </ul>
-              <div className="dh stack-dh">STACK</div>
+            <div className="detail-block span2 stack">
+              <div className="dh">STACK</div>
               <div className="tags">
                 {project.technologies.map((tech, techIndex) => (
                   <Editable
