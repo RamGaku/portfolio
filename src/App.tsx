@@ -1181,6 +1181,14 @@ function ProjectItem({
               </a>
             </div>
           ) : null}
+          {project.id === "gjpp-digital-twin" ? (
+            <div className="project-flow-panel project-lesson-panel">
+              <div className="dh">배운 점</div>
+              <p className="project-lesson">
+                <strong>기술 선정의 중요성:</strong> 팀에서는 프로젝트 시작 전에 어떤 기술 스택을 사용할지, 통신 프로토콜은 무엇을 쓸지 시장 조사에 아주 많은 시간을 사용했고, 결과적으로는 그 덕분에 제시간 안에 끝낼 수 있었습니다.
+              </p>
+            </div>
+          ) : (
           <div className="project-flow-panel">
             <div className="dh">DATA FLOW</div>
             <div
@@ -1209,6 +1217,7 @@ function ProjectItem({
               ))}
             </div>
           </div>
+          )}
           <div className="proj-detail">
             {project.id !== "gjpp-digital-twin" ? (
               <>

@@ -416,7 +416,7 @@ section {
 .act-body {
   display: grid;
   gap: 18px;
-  max-width: 760px;
+  max-width: none;
   margin-top: 42px;
 }
 
@@ -523,6 +523,25 @@ section {
   overflow: hidden;
   border-bottom: 1px solid var(--border);
   background: #eef2f7;
+}
+
+.project-lesson-panel {
+  padding: 24px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+}
+
+.project-lesson {
+  margin-top: 12px;
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.project-lesson strong {
+  color: var(--text);
+  font-weight: 660;
 }
 
 .project-store-links {
