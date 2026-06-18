@@ -1155,6 +1155,16 @@ function ProjectItem({
       )}
       <div className="proj-body">
         <div className="proj-body-inner">
+          {project.id === "gjpp-digital-twin" ? (
+            <div className="project-embed-wrap">
+              <iframe
+                className="project-embed"
+                src="/digital-twin-flow.html"
+                title="경주풍력 Digital Twin Data Flow"
+                loading="lazy"
+              />
+            </div>
+          ) : null}
           <div className="project-flow-panel">
             <div className="dh">DATA FLOW</div>
             <div className="project-flow">
