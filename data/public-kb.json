@@ -76,23 +76,24 @@
     "tags": ["Modbus", "mapping_modbus", "AI Skill", "Codex Skill", "Modpoll", "HTML Report", "자연어 테스트", "레거시 자동화", "T-DataServer", "OnlineTSI"]
   },
   {
-    "id": "naval-report-automation",
-    "title": "추진전동기 자동 보고서 프로그램",
-    "period": "NADA",
-    "category": "Report Automation",
-    "summary": "운전/알람/트렌드 데이터를 파싱하고, No Data 처리, 그래프 생성, 문서 템플릿 반영, PDF 출력까지 이어지는 반복 보고서 업무를 자동화 흐름으로 정리했습니다.",
+    "id": "frog-ai",
+    "title": "FrogAI — 냉장고 식재료 관리 앱 (Vibe Coding)",
+    "period": "2024",
+    "category": "Vibe Coding",
+    "summary": "냉장고에 남은 식재료를 잊고 버리는 일을 줄이려고, 정형화하기 어려운 '냉장고 내용물'을 LLM에 맡기는 가설을 모바일 앱으로 직접 만들어 출시한 사례입니다. 200k context 한계와 문서 파편화를 멀티 에이전트 + SSOT로 풀어낸 바이브 코딩 워크플로우 경험이 핵심입니다.",
     "highlights": [
-      "수동 보고서 작성에서 생길 수 있는 누락과 형식 오류를 줄이기 위해 입력 데이터와 템플릿 규칙 중심의 산출 구조로 바꿨습니다.",
-      "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식을 설계했습니다.",
-      "운영자가 결과를 검토할 수 있도록 그래프, 표, 문서 섹션의 생성 기준을 분리했습니다."
+      "사람도 정형화하기 힘든 '냉장고 안 식재료'를 LLM의 비정형 → 정형 가공 능력으로 다루는 가설을 앱 형태로 검증·출시했습니다.",
+      "기획·기술 선정 단계부터 세세히 설계하고, TDD를 강제해 구현 실수를 줄이도록 에이전트에 지시했습니다.",
+      "당시 200k context가 자주 꽉 차서, main 에이전트 하나로 가지 않고 개발·테스트·디자인 등 역할별 에이전트로 분업하고 각자 md로 기억을 관리하도록 규칙화했습니다.",
+      "에이전트별 md가 늘어 파편화되자 main 에이전트에 SSOT(단일 진실 출처) 도입을 강제해 모든 문서를 한 곳에서 정렬되도록 정리했습니다."
     ],
-    "technologies": ["Report Automation", "Trend Data", "Alarm Data", "Parser", "No Data Handling", "Chart Rendering", "PDF", "Template"],
+    "technologies": ["Vibe Coding", "AI Agent Orchestration", "Multi-Agent", "TDD", "SSOT", "LLM Vision", "Mobile App"],
     "evidence": [
-      "추진전동기 자동 보고서 프로그램 작업 기록",
-      "No Data 처리와 그래프/문서 출력 흐름 정리",
-      "운영 보고서 산출 기준 문서화"
+      "냉장고 식재료 관리 앱 직접 개발 및 출시 (github.com/RamGaku/FrogAI)",
+      "역할별 에이전트 + 에이전트별 md 메모리로 200k context 한계 우회",
+      "main 에이전트 SSOT 도입으로 문서 파편화 해소"
     ],
-    "tags": ["해군", "방산", "추진전동기", "자동 보고서", "PDF", "Workflow", "리포트 자동화"]
+    "tags": ["FrogAI", "Vibe Coding", "AI Agent", "Multi-Agent", "TDD", "SSOT", "냉장고", "식재료", "앱 출시", "200k context", "비정형 데이터"]
   },
   {
     "id": "cheongsong-high-vibration",

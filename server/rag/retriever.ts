@@ -54,8 +54,11 @@ const expansionMap: Record<string, string[]> = {
   "모드버스": ["modbus", "mapping", "gateway", "주소", "레지스터", "skill", "t-dataserver"],
   "경주풍력": ["gjpp", "digital twin", "edge", "center", "viewer", "dtviewer"],
   "청송": ["고진동", "vibration", "vnet-7000", "export", "측정", "전송"],
-  "해군": ["추진전동기", "보고서", "report", "pdf", "trend", "alarm"],
   "보고서": ["report", "pdf", "template", "chart", "trend", "automation"],
+  "frogai": ["frog", "냉장고", "식재료", "vibe coding", "ssot", "multi-agent", "tdd", "앱"],
+  "냉장고": ["frogai", "frog", "식재료", "비정형", "vision", "앱"],
+  "vibe coding": ["frogai", "ssot", "tdd", "multi-agent", "에이전트"],
+  "ssot": ["frogai", "vibe coding", "단일 진실 출처", "문서 파편화"],
   "폐쇄망": ["closed network", "onlinetsi", "uwf", "dhcp", "golden image", "망분리"],
   "onlinetsi": ["폐쇄망", "closed network", "uwf", "dhcp", "운영 환경"],
   "edge": ["dtedgeserver", "edge computing", "rtDB", "rest", "grafana", "influxdb"],
@@ -220,7 +223,7 @@ export function answerLocally(question: string, results: SearchResult[]): ChatRe
     return {
       mode: "local",
       answer:
-        "공개 경력 KB에서 바로 연결되는 근거를 찾지 못했습니다. 질문을 Enhans 적합성, 청송양수 고진동, 추진전동기 보고서, 경주풍력 Digital Twin, Modbus Mapping Skill, 폐쇄망 OnlineTSI, 산업용 인터페이스, Edge Computing, 펌웨어 디버깅 중 하나로 좁혀 주면 더 정확하게 답할 수 있습니다.",
+        "공개 경력 KB에서 바로 연결되는 근거를 찾지 못했습니다. 질문을 Enhans 적합성, 청송양수 고진동, 경주풍력 Digital Twin, Modbus Mapping Skill, FrogAI 바이브 코딩, 사내 전자결재 AI Skill, 폐쇄망 OnlineTSI, 산업용 인터페이스, Edge Computing, 펌웨어 디버깅 중 하나로 좁혀 주면 더 정확하게 답할 수 있습니다.",
       sources: []
     };
   }

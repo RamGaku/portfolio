@@ -79,9 +79,9 @@ const kb = knowledge as KnowledgeEntry[];
 const projectOrder = [
   "expense-approval-skill",
   "modbus-mapping-skill",
+  "frog-ai",
   "cheongsong-high-vibration",
-  "gjpp-digital-twin",
-  "naval-report-automation"
+  "gjpp-digital-twin"
 ];
 const projects = kb
   .filter((entry) => entry.id !== "enhans-positioning")
@@ -163,34 +163,34 @@ const projectDetails: Record<string, ProjectDetail> = {
       { layer: "Delivery", tech: ["중앙연구원 전송", "데이터 전달"] }
     ]
   },
-  "naval-report-automation": {
-    id: "project-naval-report-automation",
+  "frog-ai": {
+    id: "project-frog-ai",
     problem:
-      "추진전동기 보고서는 데이터 확인, 그래프 생성, 템플릿 반영, PDF 산출이 반복되는 업무였습니다. 사람이 매번 수동으로 정리하면 누락과 형식 오류가 생기기 쉬웠습니다.",
+      "집에서 냉장고에 남은 식재료를 잊고 버리는 일이 반복됐습니다. 냉장고 내용물은 정형화하기 매우 어려운 데이터인데, 사람은 곧잘 파악합니다. LLM이라면 같은 일을 할 수 있을 거라는 가설을 검증하려고 모바일 앱으로 만들어 출시했습니다.",
     actions: [
-      "원천 데이터, 알람/트렌드, 그래프, 보고서 템플릿의 책임 분리",
-      "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식 설계",
-      "반복 생성되는 차트와 표를 프로그램 산출물로 전환",
-      "배포 시 필요한 런타임과 실행 환경 조건 확인",
-      "운영자가 결과를 검토할 수 있도록 보고서 흐름과 산출 기준을 문서화"
+      "기획을 먼저 세세하게 작성해 어떤 기술·구조로 갈지 미리 결정",
+      "구현 실수를 줄이기 위해 TDD를 강제하도록 에이전트에 지시",
+      "당시 200k context가 자주 꽉 차서 main 에이전트 하나로는 한계 — 개발·테스트·디자인 등 역할별 에이전트로 분업",
+      "각 에이전트의 '기억력'을 md 파일로 구현하도록 규칙화 (역할별 md 자동 관리)",
+      "에이전트별 md가 늘어 파편화되자 main 에이전트에 SSOT(단일 진실 출처) 도입을 강하게 지시 — 모든 문서를 한 곳에서 정렬"
     ],
     outcomes: [
-      "반복 보고서 작성 업무를 데이터 기반 자동 산출 흐름으로 재구성",
-      "보고서 품질을 개인 수작업이 아니라 입력 데이터와 템플릿 규칙에 의존하게 만듦",
-      "운영자가 결과를 재검토할 수 있도록 산출 기준을 분리·문서화해 운영팀이 인계받을 수 있는 워크플로우로 정착"
+      "정형화 불가능한 영역(냉장고 내용물)을 LLM이 풀 수 있다는 가설을 앱 형태로 검증·출시",
+      "200k context 한계를 멀티 에이전트 분업 + 역할별 md 메모리로 우회한 패턴 확보",
+      "문서 파편화 → SSOT라는 흐름을 직접 겪으며 바이브 코딩의 운영 규칙을 본인 안에 정립"
     ],
     dataFlow: [
-      { label: "운전/알람/트렌드 데이터", meta: "raw operation records" },
-      { label: "파싱/예외 처리", meta: "No Data, validation" },
-      { label: "시각화 생성", meta: "trend plot, chart assets" },
-      { label: "문서 템플릿", meta: "section, table, narrative" },
-      { label: "보고서 출력", meta: "PDF/package delivery" }
+      { label: "기획", meta: "기술·구조 사전 선정" },
+      { label: "TDD 강제", meta: "구현 실수 최소화" },
+      { label: "에이전트 분업", meta: "Dev · QA · Design" },
+      { label: "에이전트별 md", meta: "역할별 기억력 구현" },
+      { label: "SSOT 도입", meta: "문서 파편화 해소" }
     ],
     layers: [
-      { layer: "Input", tech: ["Trend data", "Alarm data", "Raw files"] },
-      { layer: "Processing", tech: ["Parser", "No Data handling", "Validation"] },
-      { layer: "Rendering", tech: ["Chart", "Template", "PDF"] },
-      { layer: "Ops", tech: ["Runtime packaging", "User review", "Report workflow"] }
+      { layer: "Strategy", tech: ["기획 우선", "기술 사전 선정"] },
+      { layer: "Quality", tech: ["TDD", "Agent 지시 체계"] },
+      { layer: "Orchestration", tech: ["Multi-Agent", "Dev/QA/Design 분리"] },
+      { layer: "Discipline", tech: ["Per-agent md", "SSOT"] }
     ]
   },
   "gjpp-digital-twin": {
@@ -283,11 +283,11 @@ const promptChips = [
   ["Enhans Fit", "Enhans FDE에 적합한 이유가 뭐야?"],
   ["경력", "어떤 회사에서 무슨 일을 했어?"],
   ["전자결재 AI", "사내 전자결재 AI Skill 프로젝트를 설명해줘"],
+  ["FrogAI", "FrogAI 프로젝트 설명해줘"],
   ["경주풍력 DT", "경주풍력 Digital Twin 프로젝트를 설명해줘"],
   ["Modbus Skill", "Modbus Mapping Skill 프로젝트를 설명해줘"],
   ["청송양수", "청송양수 고진동 프로젝트 설명해줘"],
-  ["PDF 저장", "이력서를 PDF로 저장하고 싶어"],
-  ["데이터 플로우", "프로젝트별 데이터 플로우와 레이어 스택을 설명해줘"]
+  ["PDF 저장", "이력서를 PDF로 저장하고 싶어"]
 ];
 
 const aboutSummary = `진동 모니터링 통합 솔루션 전문 회사에서 6년 차로 재직 중인 개발자입니다.
