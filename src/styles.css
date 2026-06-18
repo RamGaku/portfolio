@@ -1611,15 +1611,24 @@ section {
   gap: 7px;
 }
 
-.stack-chips em {
-  padding: 6px 10px;
+.tech-chip {
+  padding: 6px 11px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface-1);
   color: var(--text-dim);
-  font-family: inherit;
   font-size: 12px;
-  font-style: normal;
+  cursor: pointer;
+  transition:
+    border-color 0.18s var(--ease),
+    color 0.18s var(--ease),
+    background 0.18s var(--ease);
+}
+
+.tech-chip:hover {
+  border-color: var(--orange-line);
+  color: var(--orange);
+  background: var(--orange-soft);
 }
 
 /* --- Contact ------------------------------------------------------------ */

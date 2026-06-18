@@ -560,6 +560,8 @@ export default function App() {
     () => new Set(projects[0] ? [projects[0].id] : [])
   );
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatSeed, setChatSeed] = useState<{ term: string; nonce: number } | null>(null);
+  const techSeedRef = useRef(0);
 
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -776,6 +778,12 @@ export default function App() {
     });
   };
 
+  const explainTech = (term: string) => {
+    techSeedRef.current += 1;
+    setChatSeed({ term, nonce: techSeedRef.current });
+    setChatOpen(true);
+  };
+
   const jumpToProject = (anchor: string) => {
     const projectId = anchor.replace(/^project-/, "");
     if (anchor.startsWith("project-")) {
@@ -939,7 +947,7 @@ export default function App() {
           </div>
         </section>
 
-        <ColophonSection />
+        <ColophonSection onExplainTech={explainTech} />
         <ContactSection />
         <BgmSection />
       </main>
@@ -957,6 +965,7 @@ export default function App() {
         onClose={() => setChatOpen(false)}
         onJump={jumpToProject}
         onDownloadPdf={() => window.print()}
+        seed={chatSeed}
       />
 
       {loginOpen ? (
@@ -1357,7 +1366,7 @@ function MotivationSection() {
   );
 }
 
-function ColophonSection() {
+function ColophonSection({ onExplainTech }: { onExplainTech: (term: string) => void }) {
   return (
     <section className="colophon" id="colophon">
       <div className="wrap">
@@ -1380,7 +1389,15 @@ function ColophonSection() {
                 <div className="dh">{category.label}</div>
                 <div className="stack-chips">
                   {category.items.map((item) => (
-                    <em key={item}>{item}</em>
+                    <button
+                      key={item}
+                      type="button"
+                      className="tech-chip"
+                      title={`${item} 설명`}
+                      onClick={() => onExplainTech(item)}
+                    >
+                      {item}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -1451,12 +1468,14 @@ function PortfolioChat({
   onClose,
   onJump,
   onDownloadPdf,
-  open
+  open,
+  seed
 }: {
   onClose: () => void;
   onJump: (anchor: string) => void;
   onDownloadPdf: () => void;
   open: boolean;
+  seed: { term: string; nonce: number } | null;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -1467,6 +1486,7 @@ function PortfolioChat({
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const bodyRef = useRef<HTMLDivElement | null>(null);
+  const seedRef = useRef(0);
 
   useEffect(() => {
     bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: "smooth" });
@@ -1560,6 +1580,13 @@ function PortfolioChat({
     event.preventDefault();
     void ask(question);
   };
+
+  // 기술 스택 칩을 누르면 해당 용어를 챗봇(AI)에게 물어본다.
+  useEffect(() => {
+    if (!seed || seed.nonce === seedRef.current) return;
+    seedRef.current = seed.nonce;
+    void ask(`${seed.term}가 뭐야? 이 사이트에서 어떤 역할인지 간단히 설명해줘`);
+  }, [seed]);
 
   return (
     <aside className={`chat ${open ? "open" : ""}`} aria-live="polite">
