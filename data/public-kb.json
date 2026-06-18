@@ -42,7 +42,7 @@
     "title": "경주풍력 Digital Twin 데이터 플랫폼",
     "period": "NADA",
     "category": "Digital Twin",
-    "summary": "현장 설비 데이터가 Edge, CenterServer, REST/status API, RTDB, 3D Viewer까지 이어지는지 검증한 Edge-Center-Viewer 통합 경험입니다.",
+    "summary": "현장 설비 데이터가 Edge, CenterServer, REST/status API, RTDB, 3D Viewer까지 이어지는 전반에 걸친 진동 모니터링 제품의 개발 주기 경험입니다.",
     "highlights": [
       "DtEdgeServer 서비스 배포와 시작 상태를 확인하고, 센터 시스템으로 넘어가는 데이터 경로를 검증했습니다.",
       "3D Viewer와 운영 화면에서 실제 데이터가 반영되는지 확인하며 장비, Edge, API, Viewer 계층을 분리해 원인을 좁혔습니다.",

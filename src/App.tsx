@@ -1192,36 +1192,40 @@ function ProjectItem({
             </div>
           </div>
           <div className="proj-detail">
-            <div className="detail-block span2 problem">
-              <div className="dh">{project.id === "gjpp-digital-twin" ? "OVERVIEW" : "PROBLEM"}</div>
-              <Editable as="p" id={`project.${project.id}.problem`} value={detail.problem} />
-            </div>
-            <div className="detail-block approach-block">
-              <div className="dh">APPROACH</div>
-              <ul>
-                {detail.actions.map((action, actionIndex) => (
-                  <Editable
-                    as="li"
-                    key={actionIndex}
-                    id={`project.${project.id}.action.${actionIndex}`}
-                    value={action}
-                  />
-                ))}
-              </ul>
-            </div>
-            <div className="detail-block result-block">
-              <div className="dh">RESULT</div>
-              <ul>
-                {detail.outcomes.map((outcome, outcomeIndex) => (
-                  <Editable
-                    as="li"
-                    key={outcomeIndex}
-                    id={`project.${project.id}.outcome.${outcomeIndex}`}
-                    value={outcome}
-                  />
-                ))}
-              </ul>
-            </div>
+            {project.id !== "gjpp-digital-twin" ? (
+              <>
+                <div className="detail-block span2 problem">
+                  <div className="dh">PROBLEM</div>
+                  <Editable as="p" id={`project.${project.id}.problem`} value={detail.problem} />
+                </div>
+                <div className="detail-block approach-block">
+                  <div className="dh">APPROACH</div>
+                  <ul>
+                    {detail.actions.map((action, actionIndex) => (
+                      <Editable
+                        as="li"
+                        key={actionIndex}
+                        id={`project.${project.id}.action.${actionIndex}`}
+                        value={action}
+                      />
+                    ))}
+                  </ul>
+                </div>
+                <div className="detail-block result-block">
+                  <div className="dh">RESULT</div>
+                  <ul>
+                    {detail.outcomes.map((outcome, outcomeIndex) => (
+                      <Editable
+                        as="li"
+                        key={outcomeIndex}
+                        id={`project.${project.id}.outcome.${outcomeIndex}`}
+                        value={outcome}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : null}
             <div className="detail-block span2 stack">
               <div className="dh">STACK</div>
               <div className="tags">
