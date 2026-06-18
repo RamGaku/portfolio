@@ -270,24 +270,13 @@ const projectDetails: Record<string, ProjectDetail> = {
 
 const storyActs = [
   {
-    id: "requirements",
-    n: "01",
-    tag: "한마디로 - 요구사항 추출",
-    title: "고객의 생각을 추출하여\n제품으로 가공합니다",
-    body: [
-      "요구는 대부분 추상적입니다. 그렇지만 FDE 엔지니어는 그것을 구체적으로 바꿀 수 있어야 합니다.",
-      "그래서 저는 질문으로 대답합니다. 고객의 표현을 존중하면서도 정확한 실마리를 잡아, 그것을 깎아내는 것. 결국 중요한 건 요구사항 추출입니다."
-    ],
-    hero: true
-  },
-  {
     id: "flow",
-    n: "02",
-    tag: "결국 - 데이터 흐름을 잇는다",
+    n: "",
+    tag: "한마디로 - 데이터 흐름을 잇는다",
     title: "장비에서 화면까지,\n데이터는 흐른다",
     body: [
-      "수많은 요구를 따라가다 보면 결국 한 문장으로 모입니다. '이 데이터를, 이렇게, 보고 싶다.' 화면도, 알람도, 리포트도 그 변형일 뿐입니다.",
-      "마치 물줄기처럼, 데이터는 흘러갑니다. 솔루션 구축에서 할 일은 이 지류들을 적절히 모아 한 화면에 잘 가공해 뿌려주는 것이라고 생각합니다. 제가 주로 해온 일이기도 해서, Enhans의 FDE 직무에 적합하다고 생각합니다."
+      "수많은 요구를 따라가다 보면 결국 한 문장으로 모입니다. '이 데이터를, 이렇게, 보고 싶다.' 화면도, 알람도, 리포트도 결국 같은 데이터의 다른 모양입니다.",
+      "결국 솔루션 일은 데이터가 흐르는 경로를 짜는 일입니다. 장비에서 서버, 화면까지의 흐름을 직접 만들어 본 게 제가 해온 일이고, Enhans의 FDE도 같은 일이라고 봅니다."
     ],
     flow: true
   }
@@ -302,27 +291,25 @@ const fitLenses = [
   },
   {
     term: "Solution Lifecycle",
-    title: "진동 모니터링 솔루션의 전체적인 개발 및 유지보수 경험",
+    title: "진동 모니터링 솔루션 전 주기 개발 보조·유지보수",
     text: "현장 요구 정리부터 데이터 이관·분석 조건 검증, 기능 추가, 유지보수까지 진동 모니터링 솔루션의 전 주기를 직접 다뤘습니다.",
     anchor: "project-cheongsong-high-vibration"
   },
   {
     term: "Protocol Integration",
-    title: "여러 프로토콜 데이터 인터페이싱 경험",
+    title: "OPC·Modbus·REST 등 산업 프로토콜 인터페이싱 경험",
     text: "OPC DA/UA, Modbus TCP, REST, gRPC, HSMS 등 서로 다른 산업 인터페이스를 장비-서버-운영 화면 흐름으로 연결했습니다.",
     anchor: "project-modbus-mapping-skill"
   }
 ];
 
-// 사이트 고유 개념(요구사항 추출)만 즉답 + 섹션 점프로 처리하고,
+// 사이트 고유 개념(요구사항 추출)만 본인 voice로 즉답하고,
 // 나머지 질문은 모두 서버 RAG(/api/chat)로 보낸다.
-const scriptedIntents = [
+const scriptedIntents: { keys: string[]; reply: string }[] = [
   {
     keys: ["요구사항 추출"],
     reply:
-      "제가 생각하는 프로젝트의 가장 중요한 키워드는 '요구사항 추출'입니다. 고객이 진정으로 원하는 바를 이끌어내야 합니다.",
-    jump: "requirements",
-    label: "요구사항 추출 보기"
+      "제가 생각하는 프로젝트의 가장 중요한 키워드는 '요구사항 추출'입니다. 고객이 진정으로 원하는 바를 이끌어내야 합니다."
   }
 ];
 
@@ -440,7 +427,7 @@ const colophonStrengths = [
   "사람처럼 추론하며, 컴퓨터에서 사람이 일하는 방식을 그대로 지시할 수 있다는 것."
 ];
 const colophonClosing =
-  "이러한 이유로, Enhans가 궁극적으로 추구하는 'Agent' 구축에 도움이 될 것이라고 생각합니다.";
+  "그래서 Enhans의 'Agent' 구축에 보탬이 될 수 있다고 봅니다.";
 
 const techStack = [
   { label: "Frontend", items: ["React", "TypeScript", "Vite"] },
@@ -451,7 +438,7 @@ const techStack = [
 ];
 
 function projectAnchor(id: string) {
-  return id === "enhans-positioning" ? "requirements" : `project-${id}`;
+  return `project-${id}`;
 }
 
 function getProjectDetail(id: string) {
@@ -853,10 +840,10 @@ export default function App() {
         <MotivationSection />
         <div id="story">
           {storyActs.map((act) => (
-            <section className={`act ${act.hero ? "act-hero" : ""}`} id={act.id} key={act.id}>
+            <section className="act" id={act.id} key={act.id}>
               <div className="wrap act-inner">
                 <div className="act-meta">
-                  <span className="act-n">{act.n}</span>
+                  {act.n ? <span className="act-n">{act.n}</span> : null}
                   <Editable as="span" className="act-tag" id={`story.${act.id}.tag`} value={act.tag} />
                 </div>
                 <Editable
@@ -881,12 +868,6 @@ export default function App() {
                   ))}
                 </div>
                 {act.flow ? <FlowDiagram /> : null}
-                {act.hero ? (
-                  <div className="scroll-cue">
-                    <span className="line" />
-                    <span>Scroll</span>
-                  </div>
-                ) : null}
               </div>
             </section>
           ))}
@@ -1540,8 +1521,7 @@ function PortfolioChat({
           ...current,
           {
             role: "bot",
-            content: scripted.reply,
-            jump: { anchor: scripted.jump, label: scripted.label }
+            content: scripted.reply
           }
         ]);
         setLoading(false);
