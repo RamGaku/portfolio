@@ -1394,7 +1394,7 @@ function ColophonSection({ onExplainTech }: { onExplainTech: (term: string) => v
             </a>
           </div>
 
-          <Editable as="h3" className="colophon-sub" id="colophon.stacktitle" value="이 사이트를 만든 기술 스택" />
+          <Editable as="h3" className="colophon-sub colophon-stack-title" id="colophon.stacktitle" value="이 사이트를 만든 기술 스택" />
           <div className="stack-grid">
             {techStack.map((category) => (
               <div className="stack-cat" key={category.label}>
@@ -1446,17 +1446,16 @@ function BgmSection() {
     <section className="bgm" id="bgm">
       <div className="wrap">
         <span className="eyebrow">BGM</span>
-        <a
-          className="bgm-card"
-          href="https://www.youtube.com/watch?v=sOS9aOIXPEk"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span className="bgm-card-meta">NOW PLAYING</span>
-          <span className="bgm-card-title">Something About Us</span>
-          <span className="bgm-card-artist">Daft Punk · 2001</span>
-          <span className="bgm-card-cta">Play on YouTube →</span>
-        </a>
+        <div className="bgm-frame">
+          <iframe
+            src="https://www.youtube.com/embed/sOS9aOIXPEk?list=RDsOS9aOIXPEk"
+            title="Daft Punk - Something About Us"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
+        <p className="bgm-cap">Daft Punk — Something About Us</p>
       </div>
     </section>
   );

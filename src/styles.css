@@ -1773,6 +1773,10 @@ section {
   letter-spacing: -0.01em;
 }
 
+.colophon-stack-title {
+  text-align: center;
+}
+
 .colophon-p {
   margin-top: 20px;
   color: var(--text-dim);
@@ -1818,21 +1822,39 @@ section {
 
 .stack-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
-  margin-top: 18px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin-top: var(--s-3);
 }
 
 .stack-cat {
-  padding: 18px 0;
-  border-top: 1px solid var(--border);
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--s-2);
+  padding: 0;
+  border: 0;
   background: transparent;
+  text-align: center;
 }
 
 .stack-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
+  display: grid;
+  grid-auto-flow: row;
+  justify-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .stack-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .stack-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .tech-chip {
@@ -1872,74 +1894,71 @@ em.term:hover {
 /* --- Contact ------------------------------------------------------------ */
 
 .contact {
-  padding: var(--s-5) 0;
+  padding: var(--s-6) 0;
   border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.contact .eyebrow,
+.bgm .eyebrow {
+  justify-content: center;
+}
+
+.contact .eyebrow::after,
+.bgm .eyebrow::after {
+  width: 22px;
+  height: 1px;
+  background: var(--border-strong);
+  content: "";
 }
 
 .contact-links {
-  margin-top: 24px;
+  justify-content: center;
+  margin-top: var(--s-3);
+  gap: var(--s-2);
+}
+
+.contact-links a {
+  padding: 12px 22px;
+  font-size: 15.5px;
+}
+
+.contact-links a svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* --- BGM embed ---------------------------------------------------------- */
 
 .bgm {
   padding: 0 0 var(--s-6);
+  text-align: center;
 }
 
-.bgm-card {
-  display: grid;
-  gap: 4px;
+.bgm-frame {
   width: 100%;
-  max-width: 460px;
-  margin: var(--s-3) 0 0;
-  padding: 28px 28px 22px;
-  border: 1px solid var(--border-strong);
+  max-width: 640px;
+  margin: var(--s-3) auto 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--border);
   border-radius: 2px;
-  background: #ffffff;
-  text-decoration: none;
-  color: inherit;
-  transition:
-    border-color 0.2s var(--ease),
-    transform 0.2s var(--ease);
+  background: #000000;
 }
 
-.bgm-card:hover {
-  border-color: var(--text);
-  transform: translateY(-1px);
+.bgm-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
-.bgm-card-meta {
-  color: var(--ink-mute);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.bgm-card-title {
-  margin-top: 6px;
-  color: var(--text);
-  font-size: 24px;
-  font-weight: 660;
-  letter-spacing: -0.02em;
-}
-
-.bgm-card-artist {
-  color: var(--text-dim);
-  font-size: 14px;
-}
-
-.bgm-card-cta {
-  margin-top: 16px;
-  color: var(--ink-mute);
+.bgm-cap {
+  margin-top: 12px;
+  color: var(--text-faint);
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.06em;
-}
-
-.bgm-card:hover .bgm-card-cta {
-  color: var(--orange);
 }
 
 /* --- Inline content editing --------------------------------------------- */
