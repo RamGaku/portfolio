@@ -402,6 +402,14 @@ em {
     page-break-inside: avoid;
   }
 
+  /* 각 프로젝트와 마치며·Contact 섹션은 새 페이지에서 시작 */
+  .proj,
+  .colophon,
+  .contact {
+    break-before: page;
+    page-break-before: always;
+  }
+
   /* 헤더가 본문과 분리되지 않도록 */
   .proj-head,
   .section-head,
