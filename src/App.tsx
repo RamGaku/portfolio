@@ -921,6 +921,7 @@ export default function App() {
         </section>
 
         <ColophonSection />
+        <ContactSection />
       </main>
 
       {!chatOpen ? (
@@ -1339,13 +1340,30 @@ function ColophonSection() {
           <div className="colophon-links">
             <a href="https://github.com/RamGaku/portfolio" target="_blank" rel="noreferrer">
               <Github size={16} aria-hidden="true" />
-              GitHub
-            </a>
-            <a href="mailto:rkfka0419@gmail.com">
-              <Mail size={16} aria-hidden="true" />
-              rkfka0419@gmail.com
+              이 사이트 소스 코드
             </a>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  return (
+    <section className="contact" id="contact">
+      <div className="wrap">
+        <span className="eyebrow">Contact</span>
+        <h2 className="contact-title">연락처</h2>
+        <div className="contact-links">
+          <a href="https://github.com/RamGaku" target="_blank" rel="noreferrer">
+            <Github size={16} aria-hidden="true" />
+            github.com/RamGaku
+          </a>
+          <a href="mailto:rkfka0419@gmail.com">
+            <Mail size={16} aria-hidden="true" />
+            rkfka0419@gmail.com
+          </a>
         </div>
       </div>
     </section>

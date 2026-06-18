@@ -1373,13 +1373,18 @@ section {
 }
 
 .colophon-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
   margin-top: 40px;
 }
 
-.colophon-links a {
+.colophon-links,
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.colophon-links a,
+.contact-links a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1394,9 +1399,28 @@ section {
     color 0.2s var(--ease);
 }
 
-.colophon-links a:hover {
+.colophon-links a:hover,
+.contact-links a:hover {
   border-color: var(--orange-line);
   color: var(--orange);
+}
+
+/* --- Contact ------------------------------------------------------------ */
+
+.contact {
+  padding: 88px 0;
+  border-top: 1px solid var(--border);
+}
+
+.contact-title {
+  margin-top: 18px;
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.contact-links {
+  margin-top: 24px;
 }
 
 /* --- Inline content editing --------------------------------------------- */
