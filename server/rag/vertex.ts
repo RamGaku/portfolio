@@ -10,9 +10,11 @@ export function isVertexConfigured() {
 
 export async function answerWithVertex(
   question: string,
-  results: SearchResult[]
+  results: SearchResult[],
+  options: { term?: boolean } = {}
 ): Promise<ChatResponse | null> {
-  if (!isVertexConfigured() || isSensitiveQuestion(question)) {
+  const term = options.term === true;
+  if (!isVertexConfigured() || (!term && isSensitiveQuestion(question))) {
     return null;
   }
 
@@ -44,7 +46,18 @@ Evidence: ${result.evidence.join(", ")}
     )
     .join("\n");
 
-  const prompt = `
+  const prompt = term
+    ? `다음 질문에 답하세요.
+
+규칙:
+- 한국어, 최대 2문장, 서론 없이.
+- 질문에 나온 기술/산업 용어의 뜻을 일반 지식으로 정확히 정의하세요.
+- 이 웹사이트, 포트폴리오, 소유자, 챗봇에 대해서는 설명하지 마세요.
+
+질문:
+${question}
+`
+    : `
 You are a portfolio assistant. Answer the question — nothing more.
 
 Hard rules:

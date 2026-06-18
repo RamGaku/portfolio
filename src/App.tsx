@@ -494,6 +494,7 @@ type EditState = {
   resolve: (id: string, fallback: string) => string;
   setDraft: (id: string, value: string, fallback: string) => void;
   dirtyCount: number;
+  explainTech: (term: string) => void;
 };
 
 const EditCtx = createContext<EditState | null>(null);
@@ -505,7 +506,8 @@ function Editable({
   className,
   display,
   multiline = false,
-  stop = false
+  stop = false,
+  term = false
 }: {
   id: string;
   value: string;
@@ -514,13 +516,39 @@ function Editable({
   display?: (text: string) => ReactNode;
   multiline?: boolean;
   stop?: boolean;
+  term?: boolean;
 }) {
   const ctx = useContext(EditCtx);
   const text = ctx ? ctx.resolve(id, value) : value;
   const Tag = as;
 
   if (!ctx?.admin) {
-    return <Tag className={className}>{display ? display(text) : text}</Tag>;
+    if (term && ctx?.explainTech) {
+      const explain = ctx.explainTech;
+      return (
+        <Tag
+          className={["term", className].filter(Boolean).join(" ")}
+          id={id}
+          role="button"
+          tabIndex={0}
+          title={`${text} 설명 보기`}
+          onClick={() => explain(text)}
+          onKeyDown={(event: ReactKeyboardEvent<HTMLElement>) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              explain(text);
+            }
+          }}
+        >
+          {display ? display(text) : text}
+        </Tag>
+      );
+    }
+    return (
+      <Tag className={className} id={id}>
+        {display ? display(text) : text}
+      </Tag>
+    );
   }
 
   const classes = ["editable", multiline ? "editable-ml" : "", className]
@@ -530,6 +558,8 @@ function Editable({
   return (
     <Tag
       className={classes}
+      id={id}
+      title={id}
       contentEditable
       suppressContentEditableWarning
       spellCheck={false}
@@ -562,6 +592,11 @@ export default function App() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatSeed, setChatSeed] = useState<{ term: string; nonce: number } | null>(null);
   const techSeedRef = useRef(0);
+  const explainTech = useCallback((term: string) => {
+    techSeedRef.current += 1;
+    setChatSeed({ term, nonce: techSeedRef.current });
+    setChatOpen(true);
+  }, []);
 
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -696,8 +731,8 @@ export default function App() {
   const dirtyCount = Object.keys(draft).length;
 
   const editValue = useMemo<EditState>(
-    () => ({ admin, resolve, setDraft: stageDraft, dirtyCount }),
-    [admin, resolve, stageDraft, dirtyCount]
+    () => ({ admin, resolve, setDraft: stageDraft, dirtyCount, explainTech }),
+    [admin, resolve, stageDraft, dirtyCount, explainTech]
   );
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
@@ -776,12 +811,6 @@ export default function App() {
       else next.add(id);
       return next;
     });
-  };
-
-  const explainTech = (term: string) => {
-    techSeedRef.current += 1;
-    setChatSeed({ term, nonce: techSeedRef.current });
-    setChatOpen(true);
   };
 
   const jumpToProject = (anchor: string) => {
@@ -1114,7 +1143,7 @@ function CareerBlock() {
               </ul>
               <div className="career-stack">
                 {entry.stack.map((tech, techIndex) => (
-                  <Editable as="em" key={techIndex} id={`career.${index}.stack.${techIndex}`} value={tech} />
+                  <Editable as="em" key={techIndex} id={`career.${index}.stack.${techIndex}`} value={tech} term />
                 ))}
               </div>
             </div>
@@ -1160,6 +1189,7 @@ function FlowDiagram() {
                     key={itemIndex}
                     id={`flow.stage.${index}.item.${itemIndex}`}
                     value={item}
+                    term
                   />
                 ))}
               </ul>
@@ -1274,6 +1304,7 @@ function ProjectItem({
                         key={techIndex}
                         id={`project.${project.id}.layer.${layerIndex}.tech.${techIndex}`}
                         value={tech}
+                        term
                       />
                     ))}
                   </div>
@@ -1348,6 +1379,23 @@ function ProjectItem({
   );
 }
 
+function linkifyInterview(text: string): ReactNode {
+  const target = "인터뷰 영상";
+  const index = text.indexOf(target);
+  if (index === -1) {
+    return text;
+  }
+  return (
+    <>
+      {text.slice(0, index)}
+      <a className="ilink" href="https://youtu.be/w1QD28jkeAg" target="_blank" rel="noreferrer">
+        {target}
+      </a>
+      {text.slice(index + target.length)}
+    </>
+  );
+}
+
 function MotivationSection() {
   return (
     <section className="motivation" id="motivation">
@@ -1357,7 +1405,13 @@ function MotivationSection() {
           <Editable as="h2" className="motivation-title" id="motivation.title" value="지원 동기" />
           <div className="motivation-body">
             {motivationBody.map((paragraph, index) => (
-              <Editable key={index} as="p" id={`motivation.body.${index}`} value={paragraph} />
+              <Editable
+                key={index}
+                as="p"
+                id={`motivation.body.${index}`}
+                value={paragraph}
+                display={linkifyInterview}
+              />
             ))}
           </div>
         </div>
@@ -1492,7 +1546,7 @@ function PortfolioChat({
     bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, open]);
 
-  const ask = async (value: string) => {
+  const ask = async (value: string, isTerm = false) => {
     const trimmed = value.trim();
     if (!trimmed || loading) return;
 
@@ -1549,7 +1603,7 @@ function PortfolioChat({
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: trimmed })
+        body: JSON.stringify({ question: trimmed, term: isTerm })
       });
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -1585,7 +1639,7 @@ function PortfolioChat({
   useEffect(() => {
     if (!seed || seed.nonce === seedRef.current) return;
     seedRef.current = seed.nonce;
-    void ask(`${seed.term}가 뭐야? 이 사이트에서 어떤 역할인지 간단히 설명해줘`);
+    void ask(`${seed.term}가 뭐야? 간단히 설명해줘`, true);
   }, [seed]);
 
   return (

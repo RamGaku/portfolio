@@ -1242,6 +1242,16 @@ section {
   line-height: 1.75;
 }
 
+.ilink {
+  color: var(--orange);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ilink:hover {
+  text-decoration: none;
+}
+
 .about-sub {
   margin-top: 40px;
   padding-top: 32px;
@@ -1629,6 +1639,22 @@ section {
   border-color: var(--orange-line);
   color: var(--orange);
   background: var(--orange-soft);
+}
+
+/* 클릭하면 챗봇이 설명해주는 용어 컨트롤 (비-admin) */
+.term {
+  cursor: pointer;
+  transition:
+    color 0.15s var(--ease),
+    border-color 0.15s var(--ease);
+}
+
+.term:hover {
+  color: var(--orange);
+}
+
+em.term:hover {
+  border-color: var(--orange-line);
 }
 
 /* --- Contact ------------------------------------------------------------ */

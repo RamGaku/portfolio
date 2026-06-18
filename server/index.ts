@@ -19,7 +19,8 @@ const ADMIN_PW = process.env.ADMIN_PW ?? "0909";
 const sessions = new Set<string>();
 
 const chatSchema = z.object({
-  question: z.string().trim().min(2).max(500)
+  question: z.string().trim().min(2).max(500),
+  term: z.boolean().optional()
 });
 
 const loginSchema = z.object({
@@ -67,8 +68,9 @@ app.post("/api/chat", async (req, res) => {
   }
 
   const question = parsed.data.question;
+  const term = parsed.data.term === true;
   const results = await retrieveSemantic(question);
-  const vertexAnswer = await answerWithVertex(question, results);
+  const vertexAnswer = await answerWithVertex(question, results, { term });
   res.json(vertexAnswer ?? answerLocally(question, results));
 });
 
