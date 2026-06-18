@@ -42,7 +42,6 @@ type StackLayer = {
 type ProjectDetail = {
   id: string;
   problem: string;
-  role: string;
   actions: string[];
   outcomes: string[];
   dataFlow: FlowNode[];
@@ -107,8 +106,6 @@ const projectDetails: Record<string, ProjectDetail> = {
     id: "project-expense-approval-skill",
     problem:
       "매월 반복되는 경비 청구 결재는 사람마다 다른 양식의 영수증을 수동으로 합산·정리해야 했습니다. 영수증 양식이 일관되지 않아 합산 과정에서 휴먼 에러가 발생하고, 같은 청구를 매번 동일한 절차로 반복해야 하는 구조였습니다.",
-    role:
-      "반복 결재 업무를 AI Skill로 가공해, 영수증 OCR부터 전자결재 페이지 입력·첨부 제출까지 단일 자연어 명령으로 끝나도록 설계하고 사내에 배포했습니다.\n*\"2월 경비청구서 작성해줘\"*",
     actions: [
       "영수증 1장당 1 에이전트의 병렬 OCR 구조로, 처리 시간이 영수증 수량과 무관해지도록 설계",
       "메인 에이전트의 컨텍스트 오염을 피하기 위해 OCR·정보 추출을 서브 에이전트로 격리",
@@ -140,8 +137,6 @@ const projectDetails: Record<string, ProjectDetail> = {
     id: "project-cheongsong-high-vibration",
     problem:
       "'진동' 과제라는 이유로 기존 VNET-7000으로 해결 가능하다고 합의되어 Top-Down으로 기획·계약된 프로젝트였습니다. 그러나 실제 진동 발생 부위가 '회전체'가 아니었고, 여기서부터 설계에 괴리가 생겼습니다. 이미 납품이 확정된 하드웨어·소프트웨어 위에 용도에 맞지 않는 기능을 얹다 보니, 산출 데이터의 품질과 사용성이 크게 떨어졌습니다.",
-    role:
-      "고진동 원인 분석 과제에서 진동 데이터 측정·Export 부문을 담당했습니다. 현장에서 운영 중이던 VNET-7000에 기능을 추가해, 측정 데이터를 중앙연구원으로 전달하는 경로를 구현하고 검증했습니다.",
     actions: [
       "'진동' 범위로 합의된 요구를 VNET-7000 기능 추가 항목으로 분해",
       "진동 데이터 측정과 중앙연구원 전송(Export) 경로 구현 및 검증",
@@ -173,8 +168,6 @@ const projectDetails: Record<string, ProjectDetail> = {
     id: "project-naval-report-automation",
     problem:
       "추진전동기 보고서는 데이터 확인, 그래프 생성, 템플릿 반영, PDF 산출이 반복되는 업무였습니다. 사람이 매번 수동으로 정리하면 누락과 형식 오류가 생기기 쉬웠습니다.",
-    role:
-      "운영 데이터가 보고서 산출물로 변환되는 단계를 정의하고, No Data 처리와 그래프/문서 출력을 자동화 가능한 흐름으로 묶었습니다.",
     actions: [
       "원천 데이터, 알람/트렌드, 그래프, 보고서 템플릿의 책임 분리",
       "No Data와 예외 케이스를 보고서에 안전하게 반영하는 방식 설계",
@@ -205,8 +198,6 @@ const projectDetails: Record<string, ProjectDetail> = {
     id: "project-gjpp-digital-twin",
     problem:
       "경주풍력 Digital Twin은 현장 데이터가 Edge를 거쳐 센터 시스템과 3D Viewer까지 도달해야 했습니다. 값이 보이지 않으면 장비, Edge, API, Viewer 중 어느 층의 문제인지 분리해야 했습니다.",
-    role:
-      "Edge - Center - Viewer 통합 솔루션의 데이터 흐름을 검증하고, 운영자가 보는 3D 화면까지 실제 데이터가 이어지는지 확인했습니다.",
     actions: [
       "DtEdgeServer 서비스 배포와 시작 상태 확인",
       "Edge에서 센터 시스템으로 넘어가는 상태/API 경로 검증",
@@ -237,8 +228,6 @@ const projectDetails: Record<string, ProjectDetail> = {
     id: "project-modbus-mapping-skill",
     problem:
       "레거시 솔루션의 Modbus 설정은 IO Map, 채널 DB, 주소 offset, 레지스터 제한을 동시에 맞춰야 합니다. 수동 매핑은 반복적이고 실수가 잦았으며, 설정한 Node에 실제 값이 나오는지 확인하기 위해 매번 별도 Modbus 테스트 도구를 띄워야 했습니다.",
-    role:
-      "반복 설정 업무를 AI가 호출 가능한 Skill로 가공하고, 매핑부터 결과 보고·실값 테스트까지 한 자리에서 끝나도록 통합했습니다.",
     actions: [
       "IO Map Excel과 OnlineTSI DB 채널을 매칭하는 입력/출력 정의",
       "주소 offset, register type, 125 register read limit 같은 프로토콜 제약 반영",
@@ -445,7 +434,6 @@ function getProjectDetail(id: string) {
   return projectDetails[id] ?? {
     id: projectAnchor(id),
     problem: "",
-    role: "",
     actions: [],
     outcomes: [],
     dataFlow: [],
@@ -1020,20 +1008,6 @@ function highlightKeywords(text: string) {
   );
 }
 
-function renderProjectRole(text: string): ReactNode {
-  const lines = text.split("\n");
-  return lines.flatMap((line, index) => {
-    const italicMatch = line.trim().match(/^\*(.+)\*$/);
-    const sep = index > 0 ? [<br key={`br-${index}`} />] : [];
-    const content = italicMatch ? (
-      <em key={`em-${index}`} className="role-example">{italicMatch[1]}</em>
-    ) : (
-      <span key={`s-${index}`}>{line}</span>
-    );
-    return [...sep, content];
-  });
-}
-
 function renderStoryBody(text: string): ReactNode {
   const match = text.match(/^(.*?)('[^']*')(.*)$/);
   if (!match) {
@@ -1265,19 +1239,9 @@ function ProjectItem({
             </div>
           </div>
           <div className="proj-detail">
-            <div className="detail-block problem">
+            <div className="detail-block span2 problem">
               <div className="dh">PROBLEM</div>
               <Editable as="p" id={`project.${project.id}.problem`} value={detail.problem} />
-            </div>
-            <div className="detail-block role">
-              <div className="dh">ROLE</div>
-              <Editable
-                as="p"
-                id={`project.${project.id}.role`}
-                value={detail.role}
-                multiline
-                display={renderProjectRole}
-              />
             </div>
             <div className="detail-block approach-block">
               <div className="dh">APPROACH</div>

@@ -901,16 +901,6 @@ section {
   line-height: 1.72;
 }
 
-.role-example {
-  display: inline-block;
-  margin-top: 10px;
-  color: var(--text-faint);
-  font-family: var(--font-mono);
-  font-size: 13.5px;
-  font-style: italic;
-  letter-spacing: 0.02em;
-}
-
 .detail-block li + li {
   margin-top: 8px;
 }
