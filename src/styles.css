@@ -396,6 +396,12 @@ em {
     page-break-inside: avoid;
   }
 
+  /* 스토리 액트는 한 페이지 안에 들어갈 만한 크기라 통째로 묶어준다. */
+  .act-inner {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   /* 헤더가 본문과 분리되지 않도록 */
   .proj-head,
   .section-head,
