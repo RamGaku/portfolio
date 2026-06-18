@@ -1542,9 +1542,10 @@ function BgmSection() {
 }
 
 function cmCssPath(el: Element): string {
+  const stop = el.ownerDocument?.body ?? null;
   const parts: string[] = [];
   let node: Element | null = el;
-  while (node && node !== document.body && parts.length < 4) {
+  while (node && node !== stop && parts.length < 4) {
     if (node.id) {
       parts.unshift(`#${node.id}`);
       break;
@@ -1562,8 +1563,9 @@ function cmCssPath(el: Element): string {
 }
 
 function resolveElementId(el: Element | null): { el: Element; id: string } | null {
+  const stop = el?.ownerDocument?.body ?? null;
   let node: Element | null = el;
-  while (node && node !== document.body) {
+  while (node && node !== stop) {
     const id = node.getAttribute("id") || node.getAttribute("data-eid");
     if (id) return { el: node, id };
     node = node.parentElement;
@@ -1583,9 +1585,13 @@ function CommentMode() {
       setHover(null);
       return;
     }
-    const onMove = (event: MouseEvent) => {
+
+    const frameLabel = (frame: HTMLIFrameElement) =>
+      (frame.getAttribute("src") || "iframe").split("/").pop()?.split("?")[0] || "iframe";
+
+    const onMove = (frame: HTMLIFrameElement | null) => (event: MouseEvent) => {
       const target = event.target as Element | null;
-      if (!target || target.closest(".cm-ui")) {
+      if (!target || (target.closest && target.closest(".cm-ui"))) {
         setHover(null);
         return;
       }
@@ -1595,29 +1601,59 @@ function CommentMode() {
         return;
       }
       const rect = resolved.el.getBoundingClientRect();
-      setHover({ top: rect.top, left: rect.left, width: rect.width, height: rect.height, label: resolved.id });
+      let top = rect.top;
+      let left = rect.left;
+      if (frame) {
+        const fr = frame.getBoundingClientRect();
+        top += fr.top;
+        left += fr.left;
+      }
+      const prefix = frame ? `${frameLabel(frame)} ▸ ` : "";
+      setHover({ top, left, width: rect.width, height: rect.height, label: prefix + resolved.id });
     };
-    const onClick = (event: MouseEvent) => {
+
+    const onClick = (frame: HTMLIFrameElement | null) => (event: MouseEvent) => {
       const target = event.target as Element | null;
-      if (!target || target.closest(".cm-ui")) return;
+      if (!target || (target.closest && target.closest(".cm-ui"))) return;
       event.preventDefault();
       event.stopPropagation();
       const resolved = resolveElementId(target);
       if (!resolved) return;
       const text = (resolved.el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 60);
-      setItems((current) => [...current, { id: resolved.id, text, comment: "" }]);
+      const prefix = frame ? `${frameLabel(frame)} ▸ ` : "";
+      setItems((current) => [...current, { id: prefix + resolved.id, text, comment: "" }]);
     };
+
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setActive(false);
     };
-    document.addEventListener("mousemove", onMove, true);
-    document.addEventListener("click", onClick, true);
-    document.addEventListener("keydown", onKey, true);
-    return () => {
-      document.removeEventListener("mousemove", onMove, true);
-      document.removeEventListener("click", onClick, true);
-      document.removeEventListener("keydown", onKey, true);
-    };
+
+    // 메인 문서 + 접근 가능한(same-origin) iframe 문서에 모두 리스너를 붙인다.
+    const targets: Array<{ doc: Document; frame: HTMLIFrameElement | null }> = [{ doc: document, frame: null }];
+    document.querySelectorAll("iframe").forEach((frame) => {
+      try {
+        const innerDoc = frame.contentDocument;
+        if (innerDoc && innerDoc.body) targets.push({ doc: innerDoc, frame });
+      } catch {
+        /* cross-origin iframe: 접근 불가 */
+      }
+    });
+
+    const cleanups: Array<() => void> = [];
+    targets.forEach(({ doc, frame }) => {
+      const move = onMove(frame);
+      const click = onClick(frame);
+      doc.addEventListener("mousemove", move, true);
+      doc.addEventListener("click", click, true);
+      doc.addEventListener("keydown", onKey, true);
+      cleanups.push(() => {
+        doc.removeEventListener("mousemove", move, true);
+        doc.removeEventListener("click", click, true);
+        doc.removeEventListener("keydown", onKey, true);
+      });
+    });
+
+    return () => cleanups.forEach((fn) => fn());
   }, [active]);
 
   const copyAll = async () => {
