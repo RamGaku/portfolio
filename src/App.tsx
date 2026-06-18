@@ -144,7 +144,7 @@ const projectDetails: Record<string, ProjectDetail> = {
       "최종 사용자·타 부서와의 이해도 격차를 회고로 정리해 다음 프로젝트의 체크리스트로 전환"
     ],
     outcomes: [
-      "요구 스펙상으로는 완료했지만, 용도에 맞지 않는 플랫폼 탓에 사용성이 떨어진 '실패한 프로젝트'로 솔직하게 남김",
+      "요구 스펙상으로는 완료했지만, 잘못된 기획에서부터 만들어져 '실패한 프로젝트' 로 평가",
       "같은 도메인이라도 직군·개인별 이해도 차이가 크다 — 관련된다면 설계 단계부터 반드시 관여해야 더 큰 사고를 막는다는 점을 체득",
       "최종 사용자조차 요구를 추상적으로만 아는 경우가 많다 — 이후 프로젝트는 빠른 MVP로 '생각한 것이 맞는지' 먼저 확인시키는 방식으로 전환",
       "현장 실무자와 쌓은 신뢰 관계가 곤란한 상황에서 실제로 큰 도움이 된다는 것을 경험"
@@ -1160,6 +1160,11 @@ function ProjectItem({
                 src="/digital-twin-flow.html"
                 title="경주풍력 Digital Twin Data Flow"
                 loading="lazy"
+              />
+              <img
+                className="project-embed-print"
+                src="/assets/digital-twin-flow.png"
+                alt="경주풍력 Digital Twin Data Flow"
               />
             </div>
           ) : null}
