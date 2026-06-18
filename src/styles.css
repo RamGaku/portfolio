@@ -1309,6 +1309,69 @@ section {
   }
 }
 
+/* --- Colophon (closing article) ----------------------------------------- */
+
+.colophon {
+  padding: 104px 0;
+  border-top: 1px solid var(--border);
+  background: var(--band);
+}
+
+.colophon-inner {
+  max-width: 720px;
+}
+
+.colophon-title {
+  margin-top: 18px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 680;
+  letter-spacing: -0.03em;
+  line-height: 1.18;
+}
+
+.colophon-note {
+  margin-top: 12px;
+  color: var(--text-faint);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.colophon-steps,
+.colophon-strengths {
+  margin: 26px 0 0;
+  padding-left: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.colophon-steps li,
+.colophon-strengths li {
+  padding-left: 6px;
+  color: var(--text-dim);
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.7;
+}
+
+.colophon-steps li::marker,
+.colophon-strengths li::marker {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.colophon-sub {
+  margin-top: 44px;
+  font-size: 18px;
+  font-weight: 660;
+  letter-spacing: -0.01em;
+}
+
+.colophon-p {
+  margin-top: 20px;
+  color: var(--text-dim);
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.75;
+}
+
 /* --- Inline content editing --------------------------------------------- */
 
 .nav-end {

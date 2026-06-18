@@ -414,6 +414,25 @@ const backgroundBlocks: BackgroundBlock[] = [
   }
 ];
 
+const colophonTitle = "이 포트폴리오 자체가 제 답변입니다";
+const colophonNote = "AI의 도움 없이 작성된 섹션입니다.";
+const colophonSteps = [
+  "모든 daily md 및 프로젝트 md를 AI에게 입력 (md 자체도 매일 AI가 정리해 만들고 있어서 가능했습니다)",
+  "NotebookLM으로 Enhans의 유튜브 채널, 홈페이지 블로그·채용공고를 지식화한 뒤 포트폴리오 뼈대 md 생성",
+  "뼈대 md를 Claude Design에 넣어 홈페이지 초안 작성",
+  "로컬 웹서버에서 테스트 및 내용 수정 반복",
+  "Cloudflare에서 도메인 구매, Firebase 호스팅 + Vertex AI 연동",
+  "Firebase 임베딩 모델로 RAG화하고 Vertex AI의 LLM을 붙여 챗봇 형태의 KB 구축 (Playwright MCP로 AI가 직접 진행)"
+];
+const colophonAfter = "일련의 과정을 거치며 지금의 페이지가 만들어졌습니다.";
+const colophonSubtitle = "제가 생각하는 현재 AI(LLM)의 특장점";
+const colophonStrengths = [
+  "비정형 데이터를 정형 데이터로 가공해줄 수 있다는 것.",
+  "사람처럼 추론하며, 컴퓨터에서 사람이 일하는 방식을 그대로 지시할 수 있다는 것."
+];
+const colophonClosing =
+  "이러한 이유로, Enhans가 궁극적으로 추구하는 'Agent' 구축에 도움이 될 것이라고 생각합니다.";
+
 function projectAnchor(id: string) {
   return id === "enhans-positioning" ? "requirements" : `project-${id}`;
 }
@@ -900,6 +919,8 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        <ColophonSection />
       </main>
 
       {!chatOpen ? (
@@ -1288,6 +1309,35 @@ function ProjectItem({
         </div>
       </div>
     </article>
+  );
+}
+
+function ColophonSection() {
+  return (
+    <section className="colophon" id="colophon">
+      <div className="wrap">
+        <div className="colophon-inner">
+          <span className="eyebrow">Colophon</span>
+          <Editable as="h2" className="colophon-title" id="colophon.title" value={colophonTitle} />
+          <Editable as="p" className="colophon-note" id="colophon.note" value={colophonNote} />
+
+          <ol className="colophon-steps">
+            {colophonSteps.map((step, index) => (
+              <Editable key={index} as="li" id={`colophon.step.${index}`} value={step} />
+            ))}
+          </ol>
+          <Editable as="p" className="colophon-p" id="colophon.after" value={colophonAfter} />
+
+          <Editable as="h3" className="colophon-sub" id="colophon.subtitle" value={colophonSubtitle} />
+          <ol className="colophon-strengths">
+            {colophonStrengths.map((item, index) => (
+              <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
+            ))}
+          </ol>
+          <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
+        </div>
+      </div>
+    </section>
   );
 }
 
