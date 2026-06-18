@@ -752,7 +752,7 @@ export default function App() {
       <span className="dot" aria-hidden="true" />
       <span className="who">
         <Editable as="b" id="nav.name" value="김가람" stop />
-        <Editable as="span" id="nav.role" value="Forward Deployed Engineer" stop />
+        <Editable as="span" id="nav.role" value="Forward Deployed Engineer 지원 포트폴리오 페이지" stop />
       </span>
     </>
   );

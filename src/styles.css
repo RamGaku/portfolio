@@ -163,8 +163,7 @@ em {
   color: var(--text-faint);
   font-family: inherit;
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .nav-links {
@@ -402,8 +401,11 @@ em {
     page-break-inside: avoid;
   }
 
-  /* 각 프로젝트와 마치며·Contact 섹션은 새 페이지에서 시작 */
-  .proj,
+  /* work 섹션은 새 페이지에서 시작 (section head + 첫 프로젝트 함께 묶임).
+     첫 프로젝트는 section head 다음에 바로 붙어 가고, 그 이후의 프로젝트와
+     마치며·Contact 섹션은 각각 새 페이지에서 시작한다. */
+  .work,
+  .proj + .proj,
   .colophon,
   .contact {
     break-before: page;
