@@ -338,8 +338,12 @@ const promptChips = [
   ["데이터 플로우", "프로젝트별 데이터 플로우와 레이어 스택을 설명해줘"]
 ];
 
-const aboutSummary =
-  "산업 현장의 모호한 요구를 데이터 흐름으로 번역해, 센서·임베디드 환경부터 서버·운영 화면까지 솔루션 전반을 다뤄온 엔지니어입니다. 진동 모니터링 솔루션의 개발·운영과 이기종 시스템 간 데이터 인터페이스가 핵심 경험이고, 최근에는 반복 업무를 AI 에이전트 워크플로우로 자동화해 사내에 배포하는 일까지 확장했습니다. 실패한 프로젝트의 원인까지 근거로 남기는 방식으로 일합니다.";
+const aboutSummary = `진동 모니터링 통합 솔루션 전문 회사에서 6년 차로 재직 중인 개발자입니다.
+센서·펌웨어부터 서버, 운영 화면, 분석기 개발 및 유지보수까지 솔루션 전반을 다루며 진동 도메인 전문지식을 쌓아왔습니다.
+데이터 생산자로서 타사와의 데이터 인터페이스 작업도 다수 수행했습니다.
+최근에는 AI를 적극적으로 활용하며 실무 최전선에서 경험을 쌓고 있고, 분석 솔루션의 AI 전환도 준비 중입니다.
+
+한 도메인에서 쌓은 전반적인 경험, 고객 요구사항을 추출하는 능력, AI를 실무에서 직접 써 본 경험. 이 세 가지가 Enhans의 Agent 솔루션 구축에 기여할 수 있다고 생각합니다.`;
 
 const aboutFacts = [
   "1993년생 · 수원 거주",
@@ -1105,7 +1109,7 @@ function CollapsibleSection({
 function AboutSection() {
   return (
     <CollapsibleSection id="about" eyebrow="About" title="김가람 · Forward Deployed Engineer 지원">
-      <Editable as="p" className="about-summary" id="about.summary" value={aboutSummary} />
+      <Editable as="p" className="about-summary" id="about.summary" value={aboutSummary} multiline />
       <div className="about-facts">
         {aboutFacts.map((fact, index) => (
           <Editable as="span" key={index} id={`about.fact.${index}`} value={fact} />

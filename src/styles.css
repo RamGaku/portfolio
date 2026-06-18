@@ -1531,10 +1531,8 @@ section {
   color: var(--text-dim);
   font-size: clamp(17px, 1.6vw, 21px);
   line-height: 1.7;
-  text-align: justify;
-  text-justify: inter-character;
+  white-space: pre-line;
   word-break: keep-all;
-  hyphens: auto;
 }
 
 .about-llm-pov {
