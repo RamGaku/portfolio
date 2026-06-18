@@ -249,6 +249,7 @@ em {
 @media print {
   @page {
     margin: 14mm;
+    size: A4;
   }
 
   /* 동적 요소 정지: 모든 애니메이션/트랜지션을 멈춰 정착된 정적 스냅샷으로 인쇄 */
@@ -258,12 +259,20 @@ em {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html {
+    scrollbar-gutter: auto !important;
   }
 
   body {
     background: #ffffff;
+    overflow-x: visible !important;
   }
 
+  /* 화면용 UI는 전부 숨김 (네비/플롯/챗봇/편집바/스토어 링크 등) */
   .nav,
   .fab,
   .chat,
@@ -271,7 +280,11 @@ em {
   .scroll-cue,
   .bgm,
   .modal-back,
-  .nav-pdf {
+  .nav-pdf,
+  .cm-toggle,
+  .cm-panel,
+  .cm-hl,
+  .project-store-links {
     display: none !important;
   }
 
@@ -279,8 +292,10 @@ em {
     padding-top: 0 !important;
   }
 
+  /* 섹션 viewport-height 제약 제거 */
   .act,
-  .act-hero {
+  .act-hero,
+  section {
     min-height: 0 !important;
   }
 
@@ -289,12 +304,19 @@ em {
   }
 
   .act-inner {
-    padding: 24px 0 !important;
+    padding: 16px 0 !important;
   }
 
+  /* CollapsibleSection / Project: 인쇄에서는 항상 펼침 + 토글 숨김 */
   .csec-body,
   .proj-body {
+    display: block !important;
     grid-template-rows: 1fr !important;
+  }
+
+  .csec-body-inner,
+  .proj-body-inner {
+    overflow: visible !important;
   }
 
   .csec-toggle,
@@ -302,7 +324,7 @@ em {
     display: none !important;
   }
 
-  /* VDPM: print the static snapshot instead of the live (animated) iframe */
+  /* VDPM: 정적 스냅샷 이미지로 대체 */
   .vdpm-embed-wrap {
     aspect-ratio: auto !important;
     height: auto !important;
@@ -319,13 +341,46 @@ em {
     height: auto !important;
   }
 
+  /* Digital Twin embed iframe — 인쇄용 정적 이미지가 없으니 숨김 */
+  .project-embed-wrap {
+    display: none !important;
+  }
+
+  /* 섹션 패딩 줄여서 페이지 효율 ↑ */
   .motivation,
   .work,
   .contact,
+  .colophon,
   .csec {
-    padding: 28px 0 !important;
+    padding: 16px 0 !important;
+    background: #ffffff !important;
   }
 
+  .csec-head {
+    padding: 12px 0 !important;
+  }
+
+  .csec-body-pad {
+    padding-bottom: 12px !important;
+  }
+
+  /* 본문 가독 폰트 축소 */
+  .act-title {
+    font-size: clamp(22px, 4vw, 32px) !important;
+  }
+
+  .act-body p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .csec-head h2,
+  .section-head h2,
+  .motivation-title {
+    font-size: clamp(22px, 3vw, 30px) !important;
+  }
+
+  /* 페이지 브레이크 방지: 항목 단위로 끊지 말 것 */
   section,
   .proj,
   .stack-cat,
@@ -333,8 +388,18 @@ em {
   .layer-card,
   .flow-stage,
   .proj-detail,
-  .detail-block {
+  .detail-block,
+  .colophon-steps li,
+  .colophon-strengths li,
+  .bg-block {
     break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* 프로젝트 헤더와 본문이 분리되지 않도록 */
+  .proj-head {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 
   a {
