@@ -1163,6 +1163,24 @@ function ProjectItem({
               />
             </div>
           ) : null}
+          {project.id === "frog-ai" ? (
+            <div className="project-store-links">
+              <a
+                href="https://apps.apple.com/kr/app/프로그-ai-냉장고-관리/id6760898228"
+                target="_blank"
+                rel="noreferrer"
+              >
+                App Store ↗
+              </a>
+              <a
+                href="https://play.google.com/store/apps/details?id=com.ramga.frog&pcampaignid=web_share"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Google Play ↗
+              </a>
+            </div>
+          ) : null}
           <div className="project-flow-panel">
             <div className="dh">DATA FLOW</div>
             <div
@@ -1236,6 +1254,7 @@ function ProjectItem({
                     key={techIndex}
                     id={`kb.${project.id}.technologies.${techIndex}`}
                     value={tech}
+                    term
                   />
                 ))}
               </div>
