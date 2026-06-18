@@ -13,7 +13,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type ReactNode
 } from "react";
-import { Send, X } from "lucide-react";
+import { Github, Mail, Send, X } from "lucide-react";
 import knowledge from "../data/public-kb.json";
 
 type LangText = {
@@ -1335,6 +1335,17 @@ function ColophonSection() {
             ))}
           </ol>
           <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
+
+          <div className="colophon-links">
+            <a href="https://github.com/RamGaku/portfolio" target="_blank" rel="noreferrer">
+              <Github size={16} aria-hidden="true" />
+              GitHub
+            </a>
+            <a href="mailto:rkfka0419@gmail.com">
+              <Mail size={16} aria-hidden="true" />
+              rkfka0419@gmail.com
+            </a>
+          </div>
         </div>
       </div>
     </section>
