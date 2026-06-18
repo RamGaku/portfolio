@@ -272,10 +272,10 @@ section {
   display: grid;
   gap: 4px;
   max-width: 940px;
-  font-size: clamp(42px, 7.6vw, 96px);
+  font-size: clamp(32px, 5.4vw, 64px);
   font-weight: 680;
-  letter-spacing: -0.055em;
-  line-height: 0.98;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
 }
 
 .act-body {
