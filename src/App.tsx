@@ -320,7 +320,7 @@ const scriptedIntents = [
   {
     keys: ["요구사항 추출"],
     reply:
-      "김가람의 출발점은 요구사항 추출입니다. 현장의 요청을 그대로 받아 적는 것이 아니라, 운영 방식, 데이터 위치, 검증 기준, 실제 사용 화면을 함께 확인해 제품 요구와 데이터 흐름으로 바꿉니다.",
+      "제가 생각하는 프로젝트의 가장 중요한 키워드는 '요구사항 추출'입니다. 고객이 진정으로 원하는 바를 이끌어내야 합니다.",
     jump: "requirements",
     label: "요구사항 추출 보기"
   }
@@ -395,7 +395,7 @@ const backgroundBlocks: BackgroundBlock[] = [
   },
   {
     label: "CERTIFICATION",
-    items: ["정보처리기사"]
+    items: ["정보처리기사", "운전면허 1종 보통"]
   },
   {
     label: "MILITARY",
@@ -421,6 +421,7 @@ const motivationBody = [
 const colophonTitle = "이 사이트는 이렇게 만들었습니다";
 const colophonNote = "AI의 도움 없이 작성된 섹션입니다.";
 const colophonSteps = [
+  "클로드 디자인의 오버레이 코멘트 시스템을 차용해, 이 사이트 자체를 AI에게 손쉽게 수정 지시하는 사례로 만들었습니다",
   "모든 daily md 및 프로젝트 md를 AI에게 입력 (md 자체도 매일 AI가 정리해 만들고 있어서 가능했습니다)",
   "NotebookLM으로 Enhans의 유튜브 채널, 홈페이지 블로그·채용공고를 지식화한 뒤 포트폴리오 뼈대 md 생성",
   "뼈대 md를 Claude Design에 넣어 홈페이지 초안 작성",
@@ -1445,16 +1446,17 @@ function BgmSection() {
     <section className="bgm" id="bgm">
       <div className="wrap">
         <span className="eyebrow">BGM</span>
-        <div className="bgm-frame">
-          <iframe
-            src="https://www.youtube.com/embed/sOS9aOIXPEk?list=RDsOS9aOIXPEk"
-            title="Daft Punk - Something About Us (Official Video)"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
-        </div>
-        <p className="bgm-cap">Daft Punk — Something About Us</p>
+        <a
+          className="bgm-card"
+          href="https://www.youtube.com/watch?v=sOS9aOIXPEk"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="bgm-card-meta">NOW PLAYING</span>
+          <span className="bgm-card-title">Something About Us</span>
+          <span className="bgm-card-artist">Daft Punk · 2001</span>
+          <span className="bgm-card-cta">Play on YouTube →</span>
+        </a>
       </div>
     </section>
   );
