@@ -513,8 +513,6 @@ section {
   left: 0;
   display: block;
   width: 100%;
-  /* slightly taller than the frame so the artifact's trailing whitespace
-     overflows and is clipped by the wrap, instead of showing a scrollbar */
   height: calc(100% + 28px);
   border: 0;
 }
@@ -1250,6 +1248,147 @@ section {
 
 .ilink:hover {
   text-decoration: none;
+}
+
+/* --- Comment mode (local dev only) -------------------------------------- */
+
+.cm-hl {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+  border: 2px solid var(--orange);
+  background: rgba(239, 78, 21, 0.08);
+  border-radius: 4px;
+}
+
+.cm-hl-label {
+  position: absolute;
+  top: -19px;
+  left: 0;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--orange);
+  color: #ffffff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.cm-toggle {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 9100;
+  padding: 9px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cm-toggle.on {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #ffffff;
+}
+
+.cm-panel {
+  position: fixed;
+  left: 20px;
+  bottom: 64px;
+  z-index: 9100;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  max-height: 62vh;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+}
+
+.cm-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cm-panel-head strong {
+  margin-right: auto;
+  font-size: 13px;
+}
+
+.cm-panel-head button {
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-1);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+.cm-empty {
+  margin: 0;
+  padding: 8px;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+
+.cm-item {
+  position: relative;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.cm-item code {
+  display: block;
+  color: var(--orange);
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.cm-item-text {
+  display: block;
+  margin: 2px 24px 5px 0;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+
+.cm-item textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.cm-del {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .about-sub {
