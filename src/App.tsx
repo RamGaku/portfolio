@@ -922,6 +922,7 @@ export default function App() {
 
         <ColophonSection />
         <ContactSection />
+        <BgmSection />
       </main>
 
       {!chatOpen ? (
@@ -1364,6 +1365,26 @@ function ContactSection() {
             rkfka0419@gmail.com
           </a>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function BgmSection() {
+  return (
+    <section className="bgm" id="bgm">
+      <div className="wrap">
+        <span className="eyebrow">BGM</span>
+        <div className="bgm-frame">
+          <iframe
+            src="https://www.youtube.com/embed/sOS9aOIXPEk?list=RDsOS9aOIXPEk"
+            title="Daft Punk - Something About Us (Official Video)"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
+        <p className="bgm-cap">Daft Punk — Something About Us</p>
       </div>
     </section>
   );

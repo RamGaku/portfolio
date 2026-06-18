@@ -1423,6 +1423,36 @@ section {
   margin-top: 24px;
 }
 
+/* --- BGM embed ---------------------------------------------------------- */
+
+.bgm {
+  padding: 0 0 96px;
+}
+
+.bgm-frame {
+  width: 100%;
+  max-width: 640px;
+  margin-top: 16px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #000000;
+}
+
+.bgm-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.bgm-cap {
+  margin-top: 12px;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
 /* --- Inline content editing --------------------------------------------- */
 
 .nav-end {
