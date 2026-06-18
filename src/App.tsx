@@ -574,10 +574,8 @@ export default function App() {
 
   const navItems = useMemo(
     () => [
-      ["motivation", "지원 동기"],
       ["about", "소개"],
-      ["career", "경력"],
-      ["background", "이력"],
+      ["motivation", "지원 동기"],
       ["fit", "직무 매핑"],
       ["work", "현장 기록"]
     ],
@@ -616,7 +614,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const observedIds = ["motivation", "requirements", "flow", "about", "career", "background", "fit", "work"];
+    const observedIds = ["about", "motivation", "fit", "work"];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -805,10 +803,10 @@ export default function App() {
           ) : (
             <a
               className="brand"
-              href="#motivation"
+              href="#about"
               onClick={(event) => {
                 event.preventDefault();
-                scrollToAnchor("motivation");
+                scrollToAnchor("about");
               }}
             >
               {brandInner}
@@ -839,6 +837,7 @@ export default function App() {
       </nav>
 
       <main id="top">
+        <AboutSection />
         <MotivationSection />
         <div id="story">
           {storyActs.map((act) => (
@@ -880,10 +879,6 @@ export default function App() {
             </section>
           ))}
         </div>
-
-        <AboutSection />
-        <CareerSection />
-        <BackgroundSection />
 
         <section className="fit" id="fit">
           <div className="wrap">
@@ -1085,13 +1080,16 @@ function AboutSection() {
           <Editable as="span" key={index} id={`about.fact.${index}`} value={fact} />
         ))}
       </div>
+      <CareerBlock />
+      <BackgroundBlock />
     </CollapsibleSection>
   );
 }
 
-function CareerSection() {
+function CareerBlock() {
   return (
-    <CollapsibleSection id="career" eyebrow="Career" title="경력" tint>
+    <div className="about-sub" id="career">
+      <h3 className="about-sub-title">경력</h3>
       <div className="career">
         {careerEntries.map((entry, index) => (
           <div className="career-item" key={entry.company}>
@@ -1115,13 +1113,14 @@ function CareerSection() {
           </div>
         ))}
       </div>
-    </CollapsibleSection>
+    </div>
   );
 }
 
-function BackgroundSection() {
+function BackgroundBlock() {
   return (
-    <CollapsibleSection id="background" eyebrow="Background" title="학력 · 자격 · 병역">
+    <div className="about-sub" id="background">
+      <h3 className="about-sub-title">학력 · 자격 · 병역</h3>
       <div className="bg-grid">
         {backgroundBlocks.map((block, index) => (
           <div className="bg-block" key={block.label}>
@@ -1134,7 +1133,7 @@ function BackgroundSection() {
           </div>
         ))}
       </div>
-    </CollapsibleSection>
+    </div>
   );
 }
 

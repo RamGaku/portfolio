@@ -1244,6 +1244,19 @@ section {
   line-height: 1.75;
 }
 
+.about-sub {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.about-sub-title {
+  margin: 0 0 24px;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 680;
+  letter-spacing: -0.02em;
+}
+
 /* --- Resume sections (collapsible) -------------------------------------- */
 
 .csec {
