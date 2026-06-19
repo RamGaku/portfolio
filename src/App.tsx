@@ -1435,9 +1435,9 @@ function BgmLyrics() {
   }, []);
   return (
     <div className="bgm-lyrics" aria-hidden="true">
-      <div className="bgm-lyrics-strip" style={{ transform: `translateY(-${index * 64}px)` }}>
+      <div className="bgm-lyrics-strip" style={{ transform: `translateY(-${index * 56}px)` }}>
         {bgmLyrics.map(([en, ko], i) => (
-          <div className="bgm-lyric-line" key={i}>
+          <div className={`bgm-lyric-line ${i === index ? "active" : ""}`} key={i}>
             <p className="bgm-lyric-en">{en}</p>
             <p className="bgm-lyric-ko">{ko}</p>
           </div>
