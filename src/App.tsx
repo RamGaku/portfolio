@@ -1433,11 +1433,16 @@ function BgmLyrics() {
     }, 3400);
     return () => clearInterval(timer);
   }, []);
-  const [en, ko] = bgmLyrics[index];
   return (
     <div className="bgm-lyrics" aria-hidden="true">
-      <p className="bgm-lyric-en" key={`en-${index}`}>{en}</p>
-      <p className="bgm-lyric-ko" key={`ko-${index}`}>{ko}</p>
+      <div className="bgm-lyrics-strip" style={{ transform: `translateY(-${index * 64}px)` }}>
+        {bgmLyrics.map(([en, ko], i) => (
+          <div className="bgm-lyric-line" key={i}>
+            <p className="bgm-lyric-en">{en}</p>
+            <p className="bgm-lyric-ko">{ko}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1460,7 +1465,7 @@ function BgmSection({ onAsk }: { onAsk: (question: string, term?: boolean) => vo
         <BgmLyrics />
         <button
           type="button"
-          className="term bgm-why"
+          className="tech-chip bgm-why"
           onClick={() => onAsk("이 사이트 배경음악으로 Something About Us를 왜 넣었어?", false)}
         >
           왜 이걸 넣었나?
