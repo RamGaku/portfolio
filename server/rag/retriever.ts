@@ -19,7 +19,6 @@ const sensitiveTerms = [
   "아이디",
   "vpn",
   "anydesk",
-  "토큰",
   "secret",
   "credential",
   "키값",
