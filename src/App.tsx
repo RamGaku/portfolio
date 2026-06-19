@@ -539,13 +539,17 @@ export default function App() {
     () => new Set(projects[0] ? [projects[0].id] : [])
   );
   const [chatOpen, setChatOpen] = useState(false);
-  const [chatSeed, setChatSeed] = useState<{ term: string; nonce: number } | null>(null);
+  const [chatSeed, setChatSeed] = useState<{ question: string; term: boolean; nonce: number } | null>(null);
   const techSeedRef = useRef(0);
-  const explainTech = useCallback((term: string) => {
+  const askChat = useCallback((question: string, term = false) => {
     techSeedRef.current += 1;
-    setChatSeed({ term, nonce: techSeedRef.current });
+    setChatSeed({ question, term, nonce: techSeedRef.current });
     setChatOpen(true);
   }, []);
+  const explainTech = useCallback(
+    (term: string) => askChat(`${term}가 뭐야? 간단히 설명해줘`, true),
+    [askChat]
+  );
 
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -860,7 +864,7 @@ export default function App() {
 
         <ColophonSection onExplainTech={explainTech} />
         <ContactSection />
-        <BgmSection />
+        <BgmSection onAsk={askChat} />
       </main>
 
       {!chatOpen ? (
@@ -1412,7 +1416,33 @@ function ContactSection() {
   );
 }
 
-function BgmSection() {
+const bgmLyrics = [
+  ["It might not be the right time", "지금이 딱 맞는 시간은 아닐지도 모르지"],
+  ["I might not be the right one", "내가 딱 맞는 사람은 아닐지도 모르지"],
+  ["But there's something about us", "하지만 우리 둘에 대해 무언가"],
+  ["I want to say", "난 말하고 싶어"],
+  ["'Cause there's something", "어쨌든 우리 사이에는"],
+  ["Between us anyway", "무언가 있기 때문에"]
+];
+
+function BgmLyrics() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % bgmLyrics.length);
+    }, 3400);
+    return () => clearInterval(timer);
+  }, []);
+  const [en, ko] = bgmLyrics[index];
+  return (
+    <div className="bgm-lyrics" aria-hidden="true">
+      <p className="bgm-lyric-en" key={`en-${index}`}>{en}</p>
+      <p className="bgm-lyric-ko" key={`ko-${index}`}>{ko}</p>
+    </div>
+  );
+}
+
+function BgmSection({ onAsk }: { onAsk: (question: string, term?: boolean) => void }) {
   return (
     <section className="bgm" id="bgm">
       <div className="wrap">
@@ -1427,6 +1457,14 @@ function BgmSection() {
           />
         </div>
         <p className="bgm-cap">Daft Punk — Something About Us</p>
+        <BgmLyrics />
+        <button
+          type="button"
+          className="term bgm-why"
+          onClick={() => onAsk("이 사이트 배경음악으로 Something About Us를 왜 넣었어?", false)}
+        >
+          왜 이걸 넣었나?
+        </button>
       </div>
     </section>
   );
@@ -1443,7 +1481,7 @@ function PortfolioChat({
   onJump: (anchor: string) => void;
   onDownloadPdf: () => void;
   open: boolean;
-  seed: { term: string; nonce: number } | null;
+  seed: { question: string; term: boolean; nonce: number } | null;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -1548,11 +1586,11 @@ function PortfolioChat({
     void ask(question);
   };
 
-  // 기술 스택 칩을 누르면 해당 용어를 챗봇(AI)에게 물어본다.
+  // 기술 칩 / BGM 버튼 등에서 챗봇에 질문을 시드한다.
   useEffect(() => {
     if (!seed || seed.nonce === seedRef.current) return;
     seedRef.current = seed.nonce;
-    void ask(`${seed.term}가 뭐야? 간단히 설명해줘`, true);
+    void ask(seed.question, seed.term);
   }, [seed]);
 
   return (
