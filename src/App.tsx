@@ -1013,6 +1013,20 @@ function CollapsibleSection({
   );
 }
 
+const aboutHighlights = [
+  "반복되는 사내 경비결재를 프롬프트 한 줄로 끝내는 AI Skill을 만들어 사내 배포",
+  "Modbus 매핑·검증을 자연어 한 줄로 처리하는 AI Skill로 현장 설정 작업 자동화",
+  "경주풍력 Digital Twin을 6개월·4인으로 구축 — Edge·Center·3D Viewer 전 계층 참여"
+];
+
+const projectImpact: Record<string, string> = {
+  "expense-approval-skill": "프롬프트 한 줄로 경비결재 자동화 · 사내 배포",
+  "modbus-mapping-skill": "자연어 한 줄로 Modbus 매핑·검증 자동화",
+  "frog-ai": "200k 컨텍스트 한계를 멀티 에이전트로 돌파",
+  "gjpp-digital-twin": "6개월·4인으로 SCADA+진동 실시간 3D 트윈 구축",
+  "cheongsong-high-vibration": "실패에서 정립한 요구사항 추출·MVP 검증 원칙"
+};
+
 function AboutSection() {
   return (
     <CollapsibleSection id="about" eyebrow="About" title="김가람 · Forward Deployed Engineer 지원">
@@ -1022,14 +1036,13 @@ function AboutSection() {
           <Editable as="span" key={index} id={`about.fact.${index}`} value={fact} />
         ))}
       </div>
-      <div className="about-llm-pov">
-        <Editable as="h3" className="about-sub-title" id="colophon.subtitle" value={colophonSubtitle} />
-        <ol className="colophon-strengths">
-          {colophonStrengths.map((item, index) => (
-            <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
+      <div className="about-highlights">
+        <div className="dh">대표 성과</div>
+        <ul>
+          {aboutHighlights.map((item, index) => (
+            <Editable as="li" key={index} id={`about.highlight.${index}`} value={item} />
           ))}
-        </ol>
-        <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
+        </ul>
       </div>
       <CareerBlock />
       <BackgroundBlock />
@@ -1134,6 +1147,7 @@ function ProjectItem({
         </span>
         <Editable as="span" className="proj-title" id={`kb.${project.id}.title`} value={project.title} stop />
         <Editable as="span" className="proj-short" id={`kb.${project.id}.summary`} value={project.summary} stop />
+        {projectImpact[project.id] ? <span className="proj-impact">{projectImpact[project.id]}</span> : null}
       </span>
       <span className="proj-toggle" aria-hidden="true">+</span>
     </>
@@ -1335,6 +1349,14 @@ function ColophonSection({ onExplainTech }: { onExplainTech: (term: string) => v
             ))}
           </ol>
           <Editable as="p" className="colophon-p" id="colophon.after" value={colophonAfter} />
+
+          <Editable as="h3" className="colophon-sub" id="colophon.subtitle" value={colophonSubtitle} />
+          <ol className="colophon-strengths">
+            {colophonStrengths.map((item, index) => (
+              <Editable key={index} as="li" id={`colophon.strength.${index}`} value={item} />
+            ))}
+          </ol>
+          <Editable as="p" className="colophon-p" id="colophon.closing" value={colophonClosing} />
 
           <div className="colophon-links">
             <a href="https://github.com/RamGaku/portfolio" target="_blank" rel="noreferrer">
