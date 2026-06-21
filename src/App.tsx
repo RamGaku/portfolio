@@ -620,6 +620,17 @@ export default function App() {
     let sessionId: string | null = null;
     let heartbeatTimer: number | null = null;
     let cancelled = false;
+    let interacted = false;
+
+    const interactionEvents = ["mousemove", "scroll", "click", "keydown", "touchstart"] as const;
+    const onInteraction = () => {
+      if (interacted) return;
+      interacted = true;
+      interactionEvents.forEach((e) => window.removeEventListener(e, onInteraction));
+    };
+    interactionEvents.forEach((e) =>
+      window.addEventListener(e, onInteraction, { passive: true })
+    );
 
     const start = async () => {
       try {
@@ -640,7 +651,7 @@ export default function App() {
           fetch("/api/session/ping", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: sessionId }),
+            body: JSON.stringify({ id: sessionId, interacted }),
             keepalive: true
           }).catch(() => {});
         }, 30000);
@@ -651,7 +662,7 @@ export default function App() {
 
     const end = () => {
       if (!sessionId) return;
-      const body = JSON.stringify({ id: sessionId });
+      const body = JSON.stringify({ id: sessionId, interacted });
       if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
         const blob = new Blob([body], { type: "application/json" });
         navigator.sendBeacon("/api/session/end", blob);
@@ -679,6 +690,7 @@ export default function App() {
       if (heartbeatTimer !== null) window.clearInterval(heartbeatTimer);
       window.removeEventListener("pagehide", onPageHide);
       document.removeEventListener("visibilitychange", onVisibility);
+      interactionEvents.forEach((e) => window.removeEventListener(e, onInteraction));
       end();
     };
   }, []);

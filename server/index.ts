@@ -106,7 +106,8 @@ const sessionStartSchema = z.object({
 });
 
 const sessionIdSchema = z.object({
-  id: z.string().uuid()
+  id: z.string().uuid(),
+  interacted: z.boolean().optional()
 });
 
 function clientIp(req: express.Request): string {
@@ -136,13 +137,13 @@ app.post("/api/session/ping", (req, res) => {
     res.status(400).json({ ok: false });
     return;
   }
-  res.json({ ok: pingSession(parsed.data.id) });
+  res.json({ ok: pingSession(parsed.data.id, parsed.data.interacted) });
 });
 
 app.post("/api/session/end", (req, res) => {
   const parsed = sessionIdSchema.safeParse(req.body ?? {});
   if (parsed.success) {
-    endSession(parsed.data.id);
+    endSession(parsed.data.id, parsed.data.interacted);
   }
   res.json({ ok: true });
 });

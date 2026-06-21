@@ -9,6 +9,7 @@ type SessionEntry = {
   ip: string;
   referrer: string;
   path: string;
+  interacted: boolean;
   notified: boolean;
 };
 
@@ -90,6 +91,11 @@ async function notifyOwner(entry: SessionEntry) {
     return;
   }
 
+  if (!entry.interacted) {
+    console.log("[sessions] no interaction signal, skipping", { id: entry.id });
+    return;
+  }
+
   const durationMs = entry.lastPing - entry.startedAt;
   if (durationMs < MIN_DURATION_MS) {
     console.log("[sessions] duration under threshold, skipping", { id: entry.id, durationMs });
@@ -144,21 +150,24 @@ export function startSession(input: {
     ip: input.ip,
     referrer: input.referrer,
     path: input.path,
+    interacted: false,
     notified: false
   });
   return { id };
 }
 
-export function pingSession(id: string): boolean {
+export function pingSession(id: string, interacted?: boolean): boolean {
   const entry = entries.get(id);
   if (!entry) return false;
   entry.lastPing = Date.now();
+  if (interacted) entry.interacted = true;
   return true;
 }
 
-export function endSession(id: string): void {
+export function endSession(id: string, interacted?: boolean): void {
   const entry = entries.get(id);
   if (!entry || entry.notified) return;
+  if (interacted) entry.interacted = true;
   entry.notified = true;
   entry.lastPing = Date.now();
   void notifyOwner(entry);
