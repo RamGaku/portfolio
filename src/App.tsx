@@ -608,6 +608,80 @@ export default function App() {
     window.setTimeout(() => scrollToAnchor(window.location.hash.slice(1)), 80);
   }, []);
 
+  // 방문자 세션 추적: 페이지 진입 → /api/visit/start, 30초마다 heartbeat,
+  // 탭 닫힘·이탈 시 sendBeacon으로 /api/visit/end. 서버는 3분 idle 또는 end 시
+  // Resend로 알림 메일을 보낸다. dev 환경(127.0.0.1·localhost)에서는 비활성.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const host = window.location.hostname;
+    if (host === "127.0.0.1" || host === "localhost") return;
+
+    let sessionId: string | null = null;
+    let heartbeatTimer: number | null = null;
+    let cancelled = false;
+
+    const start = async () => {
+      try {
+        const res = await fetch("/api/visit/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            referrer: document.referrer,
+            path: window.location.pathname + window.location.search
+          })
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { ok: boolean; id?: string };
+        if (cancelled || !data.ok || !data.id) return;
+        sessionId = data.id;
+        heartbeatTimer = window.setInterval(() => {
+          if (!sessionId) return;
+          fetch("/api/visit/ping", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: sessionId }),
+            keepalive: true
+          }).catch(() => {});
+        }, 30000);
+      } catch {
+        // 무시 — 추적 실패가 사용자 경험에 영향을 주지 않도록
+      }
+    };
+
+    const end = () => {
+      if (!sessionId) return;
+      const body = JSON.stringify({ id: sessionId });
+      if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+        const blob = new Blob([body], { type: "application/json" });
+        navigator.sendBeacon("/api/visit/end", blob);
+      } else {
+        fetch("/api/visit/end", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      }
+    };
+
+    const onPageHide = () => end();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") end();
+    };
+
+    void start();
+    window.addEventListener("pagehide", onPageHide);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      cancelled = true;
+      if (heartbeatTimer !== null) window.clearInterval(heartbeatTimer);
+      window.removeEventListener("pagehide", onPageHide);
+      document.removeEventListener("visibilitychange", onVisibility);
+      end();
+    };
+  }, []);
+
   // 숨겨진 admin 진입: 입력칸 밖에서 "admin"을 순서대로 타이핑하면 로그인 모달이 열린다.
   useEffect(() => {
     let buffer = "";

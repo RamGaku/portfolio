@@ -8,6 +8,7 @@ import { z } from "zod";
 import { answerLocally, loadKnowledge, retrieveSemantic } from "./rag/retriever";
 import { answerWithVertex, isVertexConfigured } from "./rag/vertex";
 import { loadOverrides, saveOverrides } from "./content";
+import { endSession, pingSession, startSession } from "./visits";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
@@ -32,6 +33,27 @@ const contentSchema = z.record(z.string().max(200), z.string().max(5000));
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
+app.use((req, _res, next) => {
+  if (
+    req.method === "POST" &&
+    req.path.startsWith("/api/visit/") &&
+    req.headers["content-type"]?.includes("text/plain")
+  ) {
+    // sendBeacon은 종종 text/plain으로 보내서 JSON 파서가 비활성. raw body 파싱.
+    let raw = "";
+    req.on("data", (chunk) => (raw += chunk));
+    req.on("end", () => {
+      try {
+        req.body = raw ? JSON.parse(raw) : {};
+      } catch {
+        req.body = {};
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+});
 
 app.get("/api/health", (_req, res) => {
   res.json({
@@ -76,6 +98,53 @@ app.post("/api/chat", async (req, res) => {
 
 app.get("/api/content", (_req, res) => {
   res.json(loadOverrides());
+});
+
+const visitStartSchema = z.object({
+  referrer: z.string().max(2000).optional(),
+  path: z.string().max(500).optional()
+});
+
+const visitIdSchema = z.object({
+  id: z.string().uuid()
+});
+
+function clientIp(req: express.Request): string {
+  const fwd = req.headers["x-forwarded-for"];
+  if (typeof fwd === "string" && fwd.length > 0) {
+    return fwd.split(",")[0].trim();
+  }
+  return req.ip ?? "unknown";
+}
+
+app.post("/api/visit/start", (req, res) => {
+  const parsed = visitStartSchema.safeParse(req.body ?? {});
+  const referrer = parsed.success ? parsed.data.referrer ?? "" : "";
+  const path = parsed.success ? parsed.data.path ?? "/" : "/";
+  const ua = (req.headers["user-agent"] as string) ?? "";
+  const session = startSession({ ip: clientIp(req), ua, referrer, path });
+  if (!session) {
+    res.json({ ok: false, reason: "bot" });
+    return;
+  }
+  res.json({ ok: true, id: session.id });
+});
+
+app.post("/api/visit/ping", (req, res) => {
+  const parsed = visitIdSchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    res.status(400).json({ ok: false });
+    return;
+  }
+  res.json({ ok: pingSession(parsed.data.id) });
+});
+
+app.post("/api/visit/end", (req, res) => {
+  const parsed = visitIdSchema.safeParse(req.body ?? {});
+  if (parsed.success) {
+    endSession(parsed.data.id);
+  }
+  res.json({ ok: true });
 });
 
 app.post("/api/admin/login", (req, res) => {
