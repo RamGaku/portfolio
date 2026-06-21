@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 type Session = {
   id: string;
@@ -19,10 +19,18 @@ const MIN_DURATION_MS = 5 * 1000; // 5초 미만은 메일 안 보냄 (봇·실�
 const CLEANUP_AFTER_MS = 30 * 60 * 1000; // 30분 후 메모리에서 삭제
 
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM = process.env.RESEND_FROM ?? "Portfolio Visits <onboarding@resend.dev>";
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
 
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+const transporter =
+  GMAIL_USER && GMAIL_APP_PASSWORD
+    ? nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD }
+      })
+    : null;
 
 const BOT_PATTERNS = [
   /\bbot\b/i,
@@ -77,8 +85,8 @@ function formatKstTime(timestamp: number): string {
 }
 
 async function sendVisitEmail(session: Session) {
-  if (!resend || !NOTIFY_EMAIL) {
-    console.warn("[visits] RESEND_API_KEY 또는 NOTIFY_EMAIL 누락, 메일 발송 스킵");
+  if (!transporter || !NOTIFY_EMAIL) {
+    console.warn("[visits] GMAIL_USER/GMAIL_APP_PASSWORD/NOTIFY_EMAIL 누락, 메일 발송 스킵");
     return;
   }
 
@@ -93,8 +101,8 @@ async function sendVisitEmail(session: Session) {
   const referrer = session.referrer || "(직접 방문)";
 
   try {
-    await resend.emails.send({
-      from: RESEND_FROM,
+    await transporter.sendMail({
+      from: `Portfolio Visits <${GMAIL_USER}>`,
       to: NOTIFY_EMAIL,
       subject: `포트폴리오 방문 — ${duration} 체류`,
       text: [
