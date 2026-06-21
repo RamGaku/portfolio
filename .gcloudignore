@@ -8,6 +8,9 @@ dist
 .playwright-mcp
 *.tsbuildinfo
 *.png
+*.pdf
+data/FDE*
+data/이미지사진.png
 .env
 .env.*
 !.env.example
