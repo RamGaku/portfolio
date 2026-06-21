@@ -608,9 +608,10 @@ export default function App() {
     window.setTimeout(() => scrollToAnchor(window.location.hash.slice(1)), 80);
   }, []);
 
-  // 방문자 세션 추적: 페이지 진입 → /api/visit/start, 30초마다 heartbeat,
-  // 탭 닫힘·이탈 시 sendBeacon으로 /api/visit/end. 서버는 3분 idle 또는 end 시
-  // Resend로 알림 메일을 보낸다. dev 환경(127.0.0.1·localhost)에서는 비활성.
+  // Client session lifecycle: open on mount, heartbeat every 30s while the
+  // tab is visible, close on pagehide / visibilitychange-hidden via
+  // navigator.sendBeacon. No-op on 127.0.0.1 / localhost so dev does not
+  // write into the live store.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const host = window.location.hostname;
@@ -622,7 +623,7 @@ export default function App() {
 
     const start = async () => {
       try {
-        const res = await fetch("/api/visit/start", {
+        const res = await fetch("/api/session/start", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -636,7 +637,7 @@ export default function App() {
         sessionId = data.id;
         heartbeatTimer = window.setInterval(() => {
           if (!sessionId) return;
-          fetch("/api/visit/ping", {
+          fetch("/api/session/ping", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: sessionId }),
@@ -644,7 +645,7 @@ export default function App() {
           }).catch(() => {});
         }, 30000);
       } catch {
-        // 무시 — 추적 실패가 사용자 경험에 영향을 주지 않도록
+        // best-effort: failures must not affect UX
       }
     };
 
@@ -653,9 +654,9 @@ export default function App() {
       const body = JSON.stringify({ id: sessionId });
       if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
         const blob = new Blob([body], { type: "application/json" });
-        navigator.sendBeacon("/api/visit/end", blob);
+        navigator.sendBeacon("/api/session/end", blob);
       } else {
-        fetch("/api/visit/end", {
+        fetch("/api/session/end", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body,

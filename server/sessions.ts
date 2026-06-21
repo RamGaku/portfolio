@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import nodemailer from "nodemailer";
 
-type Session = {
+type SessionEntry = {
   id: string;
   startedAt: number;
   lastPing: number;
@@ -9,14 +9,14 @@ type Session = {
   ip: string;
   referrer: string;
   path: string;
-  emailSent: boolean;
+  notified: boolean;
 };
 
-const sessions = new Map<string, Session>();
+const entries = new Map<string, SessionEntry>();
 
-const SESSION_TIMEOUT_MS = 3 * 60 * 1000; // 3분 idle → 종료로 간주
-const MIN_DURATION_MS = 5 * 1000; // 5초 미만은 메일 안 보냄 (봇·실수 방지)
-const CLEANUP_AFTER_MS = 30 * 60 * 1000; // 30분 후 메모리에서 삭제
+const IDLE_TIMEOUT_MS = 3 * 60 * 1000;
+const MIN_DURATION_MS = 5 * 1000;
+const CLEANUP_AFTER_MS = 30 * 60 * 1000;
 
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
 const GMAIL_USER = process.env.GMAIL_USER;
@@ -32,7 +32,7 @@ const transporter =
       })
     : null;
 
-const BOT_PATTERNS = [
+const SKIP_UA_PATTERNS = [
   /\bbot\b/i,
   /crawler/i,
   /spider/i,
@@ -58,17 +58,17 @@ const BOT_PATTERNS = [
   /baiduspider/i
 ];
 
-function isBot(ua: string): boolean {
+function isSkipUa(ua: string): boolean {
   if (!ua) return true;
-  return BOT_PATTERNS.some((pattern) => pattern.test(ua));
+  return SKIP_UA_PATTERNS.some((pattern) => pattern.test(ua));
 }
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  if (minutes === 0) return `${seconds}초`;
-  return `${minutes}분 ${seconds}초`;
+  if (minutes === 0) return `${seconds}s`;
+  return `${minutes}m ${seconds}s`;
 }
 
 function formatKstTime(timestamp: number): string {
@@ -84,43 +84,43 @@ function formatKstTime(timestamp: number): string {
   });
 }
 
-async function sendVisitEmail(session: Session) {
+async function notifyOwner(entry: SessionEntry) {
   if (!transporter || !NOTIFY_EMAIL) {
-    console.warn("[visits] GMAIL_USER/GMAIL_APP_PASSWORD/NOTIFY_EMAIL 누락, 메일 발송 스킵");
+    console.warn("[sessions] mailer not configured (env), skipping");
     return;
   }
 
-  const durationMs = session.lastPing - session.startedAt;
+  const durationMs = entry.lastPing - entry.startedAt;
   if (durationMs < MIN_DURATION_MS) {
-    console.log("[visits] 체류시간 5초 미만, 메일 스킵", { id: session.id, durationMs });
+    console.log("[sessions] duration under threshold, skipping", { id: entry.id, durationMs });
     return;
   }
 
-  const startedAtKst = formatKstTime(session.startedAt);
+  const startedAtKst = formatKstTime(entry.startedAt);
   const duration = formatDuration(durationMs);
-  const referrer = session.referrer || "(직접 방문)";
+  const referrer = entry.referrer || "(direct)";
 
   try {
     await transporter.sendMail({
-      from: `Portfolio Visits <${GMAIL_USER}>`,
+      from: `Site Notes <${GMAIL_USER}>`,
       to: NOTIFY_EMAIL,
-      subject: `포트폴리오 방문 — ${duration} 체류`,
+      subject: `Site session — ${duration}`,
       text: [
-        `포트폴리오 사이트 방문이 감지됐습니다.`,
+        `Session summary:`,
         ``,
-        `시작 시각: ${startedAtKst} (KST)`,
-        `체류 시간: ${duration}`,
-        `진입 경로: ${session.path}`,
-        `유입처: ${referrer}`,
-        `IP: ${session.ip}`,
-        `User-Agent: ${session.ua}`,
+        `Started: ${startedAtKst} (KST)`,
+        `Duration: ${duration}`,
+        `Path: ${entry.path}`,
+        `Referrer: ${referrer}`,
+        `IP: ${entry.ip}`,
+        `User-Agent: ${entry.ua}`,
         ``,
-        `Session ID: ${session.id}`
+        `ID: ${entry.id}`
       ].join("\n")
     });
-    console.log("[visits] 메일 발송 완료", { id: session.id, duration });
+    console.log("[sessions] notified", { id: entry.id, duration });
   } catch (error) {
-    console.error("[visits] 메일 발송 실패", error);
+    console.error("[sessions] notify failed", error);
   }
 }
 
@@ -130,13 +130,13 @@ export function startSession(input: {
   referrer: string;
   path: string;
 }): { id: string } | null {
-  if (isBot(input.ua)) {
+  if (isSkipUa(input.ua)) {
     return null;
   }
 
   const id = randomUUID();
   const now = Date.now();
-  sessions.set(id, {
+  entries.set(id, {
     id,
     startedAt: now,
     lastPing: now,
@@ -144,36 +144,35 @@ export function startSession(input: {
     ip: input.ip,
     referrer: input.referrer,
     path: input.path,
-    emailSent: false
+    notified: false
   });
   return { id };
 }
 
 export function pingSession(id: string): boolean {
-  const session = sessions.get(id);
-  if (!session) return false;
-  session.lastPing = Date.now();
+  const entry = entries.get(id);
+  if (!entry) return false;
+  entry.lastPing = Date.now();
   return true;
 }
 
 export function endSession(id: string): void {
-  const session = sessions.get(id);
-  if (!session || session.emailSent) return;
-  session.emailSent = true;
-  session.lastPing = Date.now();
-  void sendVisitEmail(session);
+  const entry = entries.get(id);
+  if (!entry || entry.notified) return;
+  entry.notified = true;
+  entry.lastPing = Date.now();
+  void notifyOwner(entry);
 }
 
-// 주기적으로 idle 세션 정리 + 메일 발송
 setInterval(() => {
   const now = Date.now();
-  for (const [id, session] of sessions) {
-    if (!session.emailSent && now - session.lastPing > SESSION_TIMEOUT_MS) {
-      session.emailSent = true;
-      void sendVisitEmail(session);
+  for (const [id, entry] of entries) {
+    if (!entry.notified && now - entry.lastPing > IDLE_TIMEOUT_MS) {
+      entry.notified = true;
+      void notifyOwner(entry);
     }
-    if (now - session.lastPing > CLEANUP_AFTER_MS) {
-      sessions.delete(id);
+    if (now - entry.lastPing > CLEANUP_AFTER_MS) {
+      entries.delete(id);
     }
   }
 }, 60 * 1000).unref?.();
