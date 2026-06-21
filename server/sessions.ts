@@ -11,6 +11,8 @@ type SessionEntry = {
   path: string;
   interacted: boolean;
   notified: boolean;
+  sections: Record<string, number>;
+  chats: number;
 };
 
 const entries = new Map<string, SessionEntry>();
@@ -106,23 +108,38 @@ async function notifyOwner(entry: SessionEntry) {
   const duration = formatDuration(durationMs);
   const referrer = entry.referrer || "(direct)";
 
+  const dwellLines = Object.entries(entry.sections)
+    .filter(([, ms]) => ms >= 2000)
+    .sort(([, a], [, b]) => b - a)
+    .map(([label, ms]) => `  ${label.padEnd(28)} ${formatDuration(ms)}`);
+
+  const body: string[] = [
+    `Session summary:`,
+    ``,
+    `Started: ${startedAtKst} (KST)`,
+    `Duration: ${duration}`,
+    `Path: ${entry.path}`,
+    `Referrer: ${referrer}`,
+    `IP: ${entry.ip}`,
+    `User-Agent: ${entry.ua}`
+  ];
+
+  if (dwellLines.length > 0) {
+    body.push("", `Section dwell:`, ...dwellLines);
+  }
+
+  if (entry.chats > 0) {
+    body.push("", `Chat prompts sent: ${entry.chats}`);
+  }
+
+  body.push("", `ID: ${entry.id}`);
+
   try {
     await transporter.sendMail({
       from: `Site Notes <${GMAIL_USER}>`,
       to: NOTIFY_EMAIL,
       subject: `Site session — ${duration}`,
-      text: [
-        `Session summary:`,
-        ``,
-        `Started: ${startedAtKst} (KST)`,
-        `Duration: ${duration}`,
-        `Path: ${entry.path}`,
-        `Referrer: ${referrer}`,
-        `IP: ${entry.ip}`,
-        `User-Agent: ${entry.ua}`,
-        ``,
-        `ID: ${entry.id}`
-      ].join("\n")
+      text: body.join("\n")
     });
     console.log("[sessions] notified", { id: entry.id, duration });
   } catch (error) {
@@ -151,23 +168,45 @@ export function startSession(input: {
     referrer: input.referrer,
     path: input.path,
     interacted: false,
-    notified: false
+    notified: false,
+    sections: {},
+    chats: 0
   });
   return { id };
 }
 
-export function pingSession(id: string, interacted?: boolean): boolean {
+type SessionUpdate = {
+  interacted?: boolean;
+  sections?: Record<string, number>;
+  chats?: number;
+};
+
+function mergeUpdate(entry: SessionEntry, update: SessionUpdate) {
+  if (update.interacted) entry.interacted = true;
+  if (update.sections) {
+    for (const [key, value] of Object.entries(update.sections)) {
+      if (typeof value === "number" && value > (entry.sections[key] ?? 0)) {
+        entry.sections[key] = value;
+      }
+    }
+  }
+  if (typeof update.chats === "number" && update.chats > entry.chats) {
+    entry.chats = update.chats;
+  }
+}
+
+export function pingSession(id: string, update: SessionUpdate = {}): boolean {
   const entry = entries.get(id);
   if (!entry) return false;
   entry.lastPing = Date.now();
-  if (interacted) entry.interacted = true;
+  mergeUpdate(entry, update);
   return true;
 }
 
-export function endSession(id: string, interacted?: boolean): void {
+export function endSession(id: string, update: SessionUpdate = {}): void {
   const entry = entries.get(id);
   if (!entry || entry.notified) return;
-  if (interacted) entry.interacted = true;
+  mergeUpdate(entry, update);
   entry.notified = true;
   entry.lastPing = Date.now();
   void notifyOwner(entry);

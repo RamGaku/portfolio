@@ -608,10 +608,17 @@ export default function App() {
     window.setTimeout(() => scrollToAnchor(window.location.hash.slice(1)), 80);
   }, []);
 
+  // Track chat prompt submissions for the in-page scroll observer.
+  const chatPromptCountRef = useRef(0);
+  const onChatPrompt = useCallback(() => {
+    chatPromptCountRef.current += 1;
+  }, []);
+
   // Client session lifecycle: open on mount, heartbeat every 30s while the
   // tab is visible, close on pagehide / visibilitychange-hidden via
   // navigator.sendBeacon. No-op on 127.0.0.1 / localhost so dev does not
-  // write into the live store.
+  // write into the live store. Section / project dwell time is observed
+  // via IntersectionObserver and surfaced through the same lifecycle.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const host = window.location.hostname;
@@ -632,6 +639,83 @@ export default function App() {
       window.addEventListener(e, onInteraction, { passive: true })
     );
 
+    // Section / project dwell observation. Each tracked node accumulates
+    // total visible-time in milliseconds via IntersectionObserver.
+    const sectionLabels: Record<string, string> = {
+      about: "소개",
+      motivation: "지원 동기",
+      flow: "데이터 흐름",
+      work: "현장 기록",
+      colophon: "마치며",
+      contact: "Contact",
+      bgm: "BGM"
+    };
+    const projectTitleById = new Map<string, string>(
+      projects.map((p) => [`project-${p.id}`, p.title])
+    );
+    const dwellMs: Record<string, number> = {};
+    const enterAt: Record<string, number> = {};
+
+    const tracked: HTMLElement[] = [];
+    for (const id of Object.keys(sectionLabels)) {
+      const el = document.getElementById(id);
+      if (el) tracked.push(el);
+    }
+    for (const projId of projectTitleById.keys()) {
+      const el = document.getElementById(projId);
+      if (el) tracked.push(el);
+    }
+
+    const labelFor = (id: string) =>
+      sectionLabels[id] ?? projectTitleById.get(id) ?? id;
+
+    const flushDwell = (id: string, now: number) => {
+      const start = enterAt[id];
+      if (start === undefined) return;
+      const delta = now - start;
+      if (delta > 0) dwellMs[labelFor(id)] = (dwellMs[labelFor(id)] ?? 0) + delta;
+      delete enterAt[id];
+    };
+
+    const observer =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            (records) => {
+              const now = Date.now();
+              for (const record of records) {
+                const id = (record.target as HTMLElement).id;
+                if (!id) continue;
+                if (record.isIntersecting) {
+                  if (enterAt[id] === undefined) enterAt[id] = now;
+                } else {
+                  flushDwell(id, now);
+                }
+              }
+            },
+            { threshold: 0.3 }
+          )
+        : null;
+
+    tracked.forEach((el) => observer?.observe(el));
+
+    const snapshot = () => {
+      const now = Date.now();
+      const merged: Record<string, number> = { ...dwellMs };
+      for (const id of Object.keys(enterAt)) {
+        const label = labelFor(id);
+        const delta = now - enterAt[id];
+        if (delta > 0) merged[label] = (merged[label] ?? 0) + delta;
+      }
+      return merged;
+    };
+
+    const buildPayload = () => ({
+      id: sessionId,
+      interacted,
+      sections: snapshot(),
+      chats: chatPromptCountRef.current
+    });
+
     const start = async () => {
       try {
         const res = await fetch("/api/session/start", {
@@ -651,7 +735,7 @@ export default function App() {
           fetch("/api/session/ping", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: sessionId, interacted }),
+            body: JSON.stringify(buildPayload()),
             keepalive: true
           }).catch(() => {});
         }, 30000);
@@ -662,7 +746,9 @@ export default function App() {
 
     const end = () => {
       if (!sessionId) return;
-      const body = JSON.stringify({ id: sessionId, interacted });
+      const now = Date.now();
+      for (const id of Object.keys(enterAt)) flushDwell(id, now);
+      const body = JSON.stringify(buildPayload());
       if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
         const blob = new Blob([body], { type: "application/json" });
         navigator.sendBeacon("/api/session/end", blob);
@@ -691,6 +777,7 @@ export default function App() {
       window.removeEventListener("pagehide", onPageHide);
       document.removeEventListener("visibilitychange", onVisibility);
       interactionEvents.forEach((e) => window.removeEventListener(e, onInteraction));
+      observer?.disconnect();
       end();
     };
   }, []);
@@ -968,6 +1055,7 @@ export default function App() {
         onJump={jumpToProject}
         onDownloadPdf={() => window.print()}
         seed={chatSeed}
+        onPrompt={onChatPrompt}
       />
 
       {import.meta.env.DEV ? <CommentMode /> : null}
@@ -1567,13 +1655,15 @@ function PortfolioChat({
   onJump,
   onDownloadPdf,
   open,
-  seed
+  seed,
+  onPrompt
 }: {
   onClose: () => void;
   onJump: (anchor: string) => void;
   onDownloadPdf: () => void;
   open: boolean;
   seed: { question: string; term: boolean; nonce: number } | null;
+  onPrompt?: () => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -1597,6 +1687,7 @@ function PortfolioChat({
     setQuestion("");
     setLoading(true);
     setMessages((current) => [...current, { role: "user", content: trimmed }]);
+    if (!isTerm) onPrompt?.();
 
     if (
       hasKeyword(trimmed, [
